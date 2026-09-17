@@ -85,7 +85,15 @@ for name in "${CONTRACTS[@]}"; do
   out="$TARGET_ROOT/$(basename "$name")"
   echo
   echo "== $name"
-  echo -n "   memory: "; free -h 2>/dev/null | awk '/^Mem:/ {print "available " $7 " of " $2}' || echo "(free unavailable)"
+  if avail_mb=$(free -m 2>/dev/null | awk '/^Mem:/ {print $7}') && [ -n "$avail_mb" ]; then
+    echo "   memory: ${avail_mb} MiB available"
+    # Proving-key generation is this toolchain's memory peak and this is a
+    # shared host. Below 1.5 GiB, stop rather than push the machine into swap.
+    if [ "${SKIP_ZK:-}" != "true" ] && [ "$avail_mb" -lt 1536 ]; then
+      echo "   refusing to generate proving keys with less than 1.5 GiB available" >&2
+      exit 3
+    fi
+  fi
   mkdir -p "$out"
   compiler ${FLAGS[@]+"${FLAGS[@]}"} --sourceRoot "$SOURCE_ROOT" "$src" "$out"
 done
