@@ -988,6 +988,11 @@ export const pureCircuits = {
 };
 export const contractReferenceLocations =
   { tag: 'publicLedgerArray', indices: { } };
-export const expectedVk = {};
+export const expectedVk = {
+  'mint': '76bd2d0f75d83acff06a02138d922adab3204cd1f9a5f97a93c6b737e2439b6e',
+  'mints': '807711f46c0753b6cd8875cb2e1267b57190402a2da7c59dd42905b3e65a91ae',
+  'publishMetadata': '264e2849f114c2d3011530cd9c4ed1296a80e6f5c6af5ef7b0398b2b921d815a',
+  'tokenColor': '63019acb3d5d95b4894888001306f22e5b720c29b0db9d9bfeb1002f5c6de4fa',
+};
 
 //# sourceMappingURL=index.js.map

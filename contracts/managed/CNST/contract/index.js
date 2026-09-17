@@ -1345,6 +1345,17 @@ export const pureCircuits = {
 };
 export const contractReferenceLocations =
   { tag: 'publicLedgerArray', indices: { } };
-export const expectedVk = {};
+export const expectedVk = {
+  'mintPiece': '55c8b07d864e761b826afcd3918f0a4f41f37feafacb3bf889009d5119b6923f',
+  'mintedPieces': '62bc962997f0d591fe4fd452e596f6a4b813ccd2a08b5583cd02f1fe809ffa16',
+  'publishAltair': '3eba72038cce714fd7f69cb3aa2f3e4672f30ec83d240066b98a78f474c02937',
+  'publishCygnus': '4f9ed3c1b55e365b3c329fada12aa0dc60f6ba8d4db955057ceccb90d4694d28',
+  'publishLyra': '41c5d0f84a670c7273db33707eef074db960f667d85b4eb8c4dbfaa10221a22e',
+  'publishOrion': '604c1fd482b893a44b207e4a78ae5ed0633172c0b75cdd30d82f941889a15dd3',
+  'publishVega': '9ff70d8538c3deb0c2a82829fe4d4b68c42aa19622600437cc90832538e93e1c',
+  'tokenColor': '2474828e04485c29e6240e65fae14125eee1e2d82a65cfc48202d566bb8e6585',
+  'updateOrion1': 'bd1698df30222095e66200492fc4da22a9496458740af20ea37a20beefc17fa6',
+  'updateOrion2': 'ca815f122d6b0c132d42dc7c0027611eb1e287e1c5e71254a3ad4b5cacb57b78',
+};
 
 //# sourceMappingURL=index.js.map

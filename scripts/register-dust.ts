@@ -142,10 +142,18 @@ try {
 
     const finalized = await wallet.finalizeRecipe(recipe);
     log('finalized');
-    await wallet.validateTransaction(finalized, {
-      flags: { enforceBalancing: true, verifySignatures: true, enforceLimits: true },
-    });
-    log('validated');
+    // Advisory only. On a FIRST registration this check reports
+    // "insufficient dust to cover registration fee allowance: 0 available" because the
+    // NIGHT UTxO is not registered yet, so the state it is evaluated against has generated
+    // nothing — the whole point of the transaction being built. The node is the authority.
+    try {
+      await wallet.validateTransaction(finalized, {
+        flags: { enforceBalancing: true, verifySignatures: true, enforceLimits: true },
+      });
+      log('validated');
+    } catch (error) {
+      log('validate-warning', { cause: String((error as { cause?: unknown }).cause ?? error) });
+    }
 
     const identifier = await wallet.submitTransaction(finalized);
     log('submitted', { identifier });

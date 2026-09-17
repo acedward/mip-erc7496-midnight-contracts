@@ -20,31 +20,79 @@
     },
     "index.js": {
       "type": "file",
-      "size": 32647,
-      "hash": "79972bca9676a339bb9c338bc8e610063d4bcd220d7172185b80e4c94f9c49b1"
+      "size": 32889,
+      "hash": "4640fbae3361a0b732375ec461e631ec748a6069a511fbf1b9b3dda659abc8ed"
     },
     "index.js.map": {
       "type": "file",
-      "size": 1743,
-      "hash": "a49658eb6cfa43200265749e8f7657fd73731621c8b59cf8095cc179c234c843"
+      "size": 1747,
+      "hash": "a2f4f9c37b846b4867dd83892aafa567d179d9468a7dfd570ecdc102f9809016"
     }
   },
   "zkir": {
     "type": "directory",
+    "mint.bzkir": {
+      "type": "file",
+      "size": 674,
+      "hash": "15bb56f89e969a66fca71466ca05c19ee7a0597ee36e3ae5023b8e7bddc325c3"
+    },
     "mint.zkir": {
       "type": "file",
       "size": 9894,
       "hash": "bc0c0f6b1cb3e12b30c2487fcc4493a413ab9cf5fb85688bb2b64a79957ae9a4"
+    },
+    "mints.bzkir": {
+      "type": "file",
+      "size": 73,
+      "hash": "707fbade819719eb9f0e982009197252fe8e50850ba9654ca8686f0ca6c399e9"
     },
     "mints.zkir": {
       "type": "file",
       "size": 992,
       "hash": "26e84c47d8d64a8d15038852c4bb8488aa3ba39ac0d8b1fae8745d25cfeeb904"
     },
+    "tokenColor.bzkir": {
+      "type": "file",
+      "size": 131,
+      "hash": "2187b80f53d09f440a725bdd8ce781dffdf15cbb8f37805aba072361895360d0"
+    },
     "tokenColor.zkir": {
       "type": "file",
       "size": 1522,
       "hash": "6784811f6a6c4e7b7417fedf0ccce4f6ec264b51caf3139a5d093967909445b2"
+    }
+  },
+  "keys": {
+    "type": "directory",
+    "mint.prover": {
+      "type": "file",
+      "size": 5205643,
+      "hash": "8326fb34143df7185cd72766630edeadf01477a8ce800efb0b421c0619dc5fe4"
+    },
+    "mint.verifier": {
+      "type": "file",
+      "size": 2119,
+      "hash": "a45109fc884310d271d74876c0a99a4f1380202fe428867c9659da95735527a4"
+    },
+    "mints.prover": {
+      "type": "file",
+      "size": 22435,
+      "hash": "8709a160c4bf8bd12399c4012aadda4cadfbf6e8100825a1d32e013c775be6c7"
+    },
+    "mints.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "62bc962997f0d591fe4fd452e596f6a4b813ccd2a08b5583cd02f1fe809ffa16"
+    },
+    "tokenColor.prover": {
+      "type": "file",
+      "size": 2814660,
+      "hash": "c0a80a2b0d43fef0e528767505b6014af1f05b1443cc133c581d863d89eccf4c"
+    },
+    "tokenColor.verifier": {
+      "type": "file",
+      "size": 2119,
+      "hash": "45be3d5415978308795b1ddb09da773250e771d4c5d52d627c751b011035c50d"
     }
   }
 }
