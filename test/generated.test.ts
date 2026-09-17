@@ -77,9 +77,9 @@ for (const row of matrix.rows) {
 
   describe(`generated ${row.id} (${row.name})`, () => {
     it('emits exactly the payloads the matrix records', async () => {
-      const { Contract } = (await import(`../contracts/managed/${row.contract}/contract/index.js`)) as {
-        Contract: new (witnesses: Record<string, never>) => never;
-      };
+      const { Contract } = (await import(
+        `../contracts/managed/${row.contract}/contract/index.js`
+      )) as unknown as { Contract: new (witnesses: Record<string, never>) => never };
       const instance = await deploy(new Contract({}) as never, {});
 
       for (const step of emitting) {
@@ -105,9 +105,9 @@ for (const row of matrix.rows) {
     });
 
     it('declares the kind byte and the domain separator the matrix says', async () => {
-      const { pureCircuits } = (await import(`../contracts/managed/${row.contract}/contract/index.js`)) as {
-        pureCircuits: Record<string, () => unknown>;
-      };
+      const { pureCircuits } = (await import(
+        `../contracts/managed/${row.contract}/contract/index.js`
+      )) as unknown as { pureCircuits: Record<string, () => unknown> };
       // A collection takes its domain per call, so it has no contract-wide `domainSep()`.
       if (row.template !== 'ShieldedCollection') {
         expect(hex(pureCircuits.domainSep!() as Uint8Array)).toBe(
@@ -121,12 +121,12 @@ for (const row of matrix.rows) {
 
 describe('a literal payload is byte-identical to the parameterised template’s', () => {
   it('SSTAR.publishMetadata equals NativeShieldedToken.publishMetadata', async () => {
-    const generated = (await import('../contracts/managed/SSTAR/contract/index.js')) as {
+    const generated = (await import('../contracts/managed/SSTAR/contract/index.js')) as unknown as {
       Contract: new (w: Record<string, never>) => never;
     };
-    const template = (await import('../contracts/managed/NativeShieldedToken/contract/index.js')) as {
-      Contract: new (w: Record<string, unknown>) => never;
-    };
+    const template = (await import(
+      '../contracts/managed/NativeShieldedToken/contract/index.js'
+    )) as unknown as { Contract: new (w: Record<string, unknown>) => never };
 
     const address = '11'.repeat(32);
     const ownerSecretKey = new Uint8Array(32).fill(7);

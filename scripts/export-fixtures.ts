@@ -366,6 +366,14 @@ writeFileSync(
   `${JSON.stringify({ ...provenance, vectors: colorVectors }, null, 2)}\n`,
 );
 
+// `out/` is a scratch directory and is not committed, but the deployment record — the
+// addresses and transaction hashes everything else in this repository refers to — is the
+// artefact of the run and belongs in git next to the matrix that produced it.
+writeFileSync(
+  path.join(REPOSITORY_ROOT, 'deployments', 'stagenet-deployment.json'),
+  `${JSON.stringify(deployment, null, 2)}\n`,
+);
+
 log('written', {
   transactions: rawTxs.length,
   events: events.length,
