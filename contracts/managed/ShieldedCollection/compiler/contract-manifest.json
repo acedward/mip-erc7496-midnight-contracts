@@ -1,0 +1,80 @@
+{
+  "manifest-version": "1",
+  "compiler-version": "0.34.0",
+  "language-version": "0.26.0",
+  "runtime-version": "0.19.0",
+  "compiler": {
+    "type": "directory",
+    "contract-info.json": {
+      "type": "file",
+      "size": 8366,
+      "hash": "5cf84d99430387c98379c06acf895be200f863c33a743fd8c62c45b07fcb663e"
+    }
+  },
+  "contract": {
+    "type": "directory",
+    "index.d.ts": {
+      "type": "file",
+      "size": 6624,
+      "hash": "ded0efedae3e803f2d037614436d5c534971d65830de7a7de2242e8acd81c6e4"
+    },
+    "index.js": {
+      "type": "file",
+      "size": 107157,
+      "hash": "ae59bf637801cdecdf3c3e545683af1dd2c0fcbac6e2b32e5022a6c05bab8ae6"
+    },
+    "index.js.map": {
+      "type": "file",
+      "size": 5736,
+      "hash": "59b56ebe413998a74c320e06fd2c2008bece8f0d40052637e8fda58af329d2d2"
+    }
+  },
+  "zkir": {
+    "type": "directory",
+    "decimals.zkir": {
+      "type": "file",
+      "size": 1624,
+      "hash": "9678fd0ca03f4b5556d2bbdf48a21b9f2766ae4fe63a7fb7506344fbedefb4bd"
+    },
+    "mintPiece.zkir": {
+      "type": "file",
+      "size": 11009,
+      "hash": "5c01eab14f70cc8dc271b1946bf43704d97b22fad890b42d134022b962173482"
+    },
+    "mintedPieces.zkir": {
+      "type": "file",
+      "size": 953,
+      "hash": "6d2371dfbf0aae950bfffd7964498b80f1b65eb33b9e5e86a547fbd6d998b274"
+    },
+    "name.zkir": {
+      "type": "file",
+      "size": 1664,
+      "hash": "d942a5c71f8cb4f5d84c4716f31ac5114351a40c438a2165e20675e70ee1bca3"
+    },
+    "owner.zkir": {
+      "type": "file",
+      "size": 2255,
+      "hash": "b16ebc08602a5018f834c370084dc51eb893bbb41b10c7710a7b6d28e99d0a22"
+    },
+    "publishPiece.zkir": {
+      "type": "file",
+      "size": 101060,
+      "hash": "71088e70fc161bff0e6fe140d0cb9f9c95e3c33717737c043eff47e158994f85"
+    },
+    "setPieceTrait.zkir": {
+      "type": "file",
+      "size": 76034,
+      "hash": "2509ec92a4b4eb4a9539347e86aac52eb704d41ffba4f088f24c4009c5a9bdd0"
+    },
+    "symbol.zkir": {
+      "type": "file",
+      "size": 1664,
+      "hash": "bde2000e99ee5dc13247a7278536871fa727650fcd58460936a5e36393fbf28f"
+    },
+    "tokenColor.zkir": {
+      "type": "file",
+      "size": 2366,
+      "hash": "3eacd78a7f6ac2e2b5c952202974ae1e324e99a43a9c5963d522eae0255220ef"
+    }
+  }
+}

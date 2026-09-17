@@ -5,6 +5,10 @@
 #   ./scripts/compile.sh NativeShieldedToken   compile just one (name without .compact)
 #   ./scripts/compile.sh --check          compile into a temp tree and diff against the committed one
 #   SKIP_ZK=true ./scripts/compile.sh     skip proving-key generation (fast; TypeScript output only)
+#   ZKIR_V3=true ./scripts/compile.sh     emit ZKIR v3 instead of the default v2
+#                                         (~4.4x fewer rows — see README "Proving
+#                                         cost"; only use it once a probe deploy
+#                                         has shown the network accepts v3)
 #
 # Contracts are compiled ONE AT A TIME on purpose: proving-key generation is the
 # memory peak of this toolchain and this repository is developed on a shared,
@@ -52,6 +56,10 @@ FLAGS=()
 if [ "${SKIP_ZK:-}" = "true" ]; then
   FLAGS+=(--skip-zk)
   echo "== SKIP_ZK=true: no proving keys will be generated"
+fi
+if [ "${ZKIR_V3:-}" = "true" ]; then
+  FLAGS+=(--feature-zkir-v3)
+  echo "== ZKIR_V3=true: generating ZKIR version 3 circuits"
 fi
 
 TARGET_ROOT="$OUT_DIR"

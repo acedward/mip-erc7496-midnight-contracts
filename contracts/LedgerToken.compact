@@ -1,0 +1,121 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// A LEDGER token: balances live in the contract's own state, not in UTxOs.
+// Nothing is ever minted at the protocol level, so no colour exists and no
+// scanner can ever see this token in a transaction's mint effects. Its
+// TokenMetadata events (kind `2` — unshielded ledger) are the ONLY way it can
+// appear in a token table at all, which is the half of the standard that a
+// native token cannot demonstrate.
+//
+// Composition:
+//   OpenZeppelin `FungibleToken`  balances, allowances, transfer
+//   OpenZeppelin `Ownable`        who may update the metadata
+//   `TokenMetadata`               the events
+//
+// The domain separator is an arbitrary 32-byte label this contract picks for
+// itself (`pad(32, "umbra:lsun")` in the reference deployment). It identifies
+// the token inside the contract exactly as it would for a native token; it just
+// never reaches `kernel.mintUnshielded`.
+
+pragma language_version >= 0.26.0;
+
+import CompactStandardLibrary;
+import "./TokenMetadata" prefix TM_;
+import "../node_modules/@openzeppelin/compact-contracts/access/Ownable" prefix Ownable_;
+import "../node_modules/@openzeppelin/compact-contracts/token/FungibleToken" prefix Token_;
+
+export { ContractAddress, Either, Maybe };
+
+/** The label this contract uses as the token's `domainSep` in its events. */
+export sealed ledger _domain: Bytes<32>;
+export sealed ledger _nameBytes: Bytes<32>;
+export sealed ledger _nameLen: Uint<8>;
+export sealed ledger _symbolBytes: Bytes<16>;
+export sealed ledger _symbolLen: Uint<8>;
+export ledger _published: Boolean;
+
+constructor(
+  owner: Either<Bytes<32>, ContractAddress>,
+  domain_: Bytes<32>,
+  name_: Opaque<"string">,
+  nameBytes_: Bytes<32>,
+  nameLen_: Uint<8>,
+  symbol_: Opaque<"string">,
+  symbolBytes_: Bytes<16>,
+  symbolLen_: Uint<8>,
+  decimals_: Uint<8>
+) {
+  Ownable_initialize(owner);
+  Token_initialize(name_, symbol_, decimals_);
+  _domain = disclose(domain_);
+  _nameBytes = disclose(nameBytes_);
+  _nameLen = disclose(nameLen_);
+  _symbolBytes = disclose(symbolBytes_);
+  _symbolLen = disclose(symbolLen_);
+}
+
+export circuit domainSep(): Bytes<32> {
+  return _domain;
+}
+
+export circuit name(): Opaque<"string"> {
+  return Token_name();
+}
+
+export circuit symbol(): Opaque<"string"> {
+  return Token_symbol();
+}
+
+export circuit decimals(): Uint<8> {
+  return Token_decimals();
+}
+
+export circuit totalSupply(): Uint<128> {
+  return Token_totalSupply();
+}
+
+export circuit balanceOf(account: Either<Bytes<32>, ContractAddress>): Uint<128> {
+  return Token_balanceOf(account);
+}
+
+/**
+ * @description Publishes `name`, `symbol` and `decimals` as three TokenMetadata
+ * events with the LEDGER kind byte (`2` = unshielded ledger). Callable once.
+ */
+export circuit publishMetadata(): [] {
+  assert(!_published, "TokenMetadata: already published");
+  _published = true;
+  TM_emitStandardFields(
+    _domain,
+    TM_KIND_LEDGER_FLAG(),  // 2: unshielded, ledger-held
+    _nameBytes,
+    _nameLen,
+    _symbolBytes,
+    _symbolLen,
+    Token__decimals
+  );
+}
+
+/** Sets or replaces one metadata key (EIP-7496 dynamic trait). Owner only. */
+export circuit setMetadata(key: Bytes<32>, len: Uint<8>, value: Bytes<190>): [] {
+  Ownable_assertOnlyOwner();
+  TM_emitTokenMetadata(_domain, TM_KIND_LEDGER_FLAG(), disclose(key), disclose(len), disclose(value));
+}
+
+/**
+ * @description Credits `amount` to `account` in contract state. No protocol
+ * mint happens, so no transaction effect records this and no colour exists.
+ */
+export circuit mint(account: Either<Bytes<32>, ContractAddress>, amount: Uint<128>): [] {
+  Ownable_assertOnlyOwner();
+  Token__mint(disclose(account), disclose(amount));
+}
+
+/** Moves `amount` from the caller's balance to `to`. */
+export circuit transfer(to: Either<Bytes<32>, ContractAddress>, amount: Uint<128>): Boolean {
+  return Token_transfer(disclose(to), disclose(amount));
+}
+
+export circuit owner(): Either<Bytes<32>, ContractAddress> {
+  return Ownable_owner();
+}

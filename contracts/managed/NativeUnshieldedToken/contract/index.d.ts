@@ -1,0 +1,103 @@
+import type * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
+
+export type ContractAddress = { bytes: Uint8Array };
+
+export type Either<A, B> = { is_left: boolean; left: A; right: B };
+
+export type Maybe<T> = { is_some: boolean; value: T };
+
+export type UserAddress = { bytes: Uint8Array };
+
+export type Witnesses<PS> = {
+  wit_OwnableSK(context: __compactRuntime.WitnessContext<Ledger, PS>): [PS, Uint8Array];
+}
+
+export type ImpureCircuits<PS> = {
+  tokenColor(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  domainSep(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  decimals(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+  kind(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+  publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  setMetadata(context: __compactRuntime.CircuitContext<PS>,
+              key_0: Uint8Array,
+              len_0: bigint,
+              value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  mint(context: __compactRuntime.CircuitContext<PS>,
+       recipient_0: Either<ContractAddress, UserAddress>,
+       amount_0: bigint): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  owner(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Either<Uint8Array,
+                                                                                                          ContractAddress>>>;
+}
+
+export type ProvableCircuits<PS> = {
+  tokenColor(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  domainSep(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  decimals(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+  kind(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+  publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  setMetadata(context: __compactRuntime.CircuitContext<PS>,
+              key_0: Uint8Array,
+              len_0: bigint,
+              value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  mint(context: __compactRuntime.CircuitContext<PS>,
+       recipient_0: Either<ContractAddress, UserAddress>,
+       amount_0: bigint): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  owner(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Either<Uint8Array,
+                                                                                                          ContractAddress>>>;
+}
+
+export type PureCircuits = {
+}
+
+export type Circuits<PS> = {
+  tokenColor(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  domainSep(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  decimals(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+  kind(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+  publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  setMetadata(context: __compactRuntime.CircuitContext<PS>,
+              key_0: Uint8Array,
+              len_0: bigint,
+              value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  mint(context: __compactRuntime.CircuitContext<PS>,
+       recipient_0: Either<ContractAddress, UserAddress>,
+       amount_0: bigint): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  owner(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Either<Uint8Array,
+                                                                                                          ContractAddress>>>;
+}
+
+export type Ledger = {
+  readonly _domain: Uint8Array;
+  readonly _kind: bigint;
+  readonly _nameBytes: Uint8Array;
+  readonly _nameLen: bigint;
+  readonly _symbolBytes: Uint8Array;
+  readonly _symbolLen: bigint;
+  readonly _decimals: bigint;
+  readonly _published: boolean;
+}
+
+export type ContractReferenceLocations = any;
+
+export declare const contractReferenceLocations : ContractReferenceLocations;
+
+export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>> {
+  witnesses: W;
+  circuits: Circuits<PS>;
+  impureCircuits: ImpureCircuits<PS>;
+  provableCircuits: ProvableCircuits<PS>;
+  constructor(witnesses: W);
+  initialState(context: __compactRuntime.ConstructorContext<PS>,
+               owner_0: Either<Uint8Array, ContractAddress>,
+               domain__0: Uint8Array,
+               nameBytes__0: Uint8Array,
+               nameLen__0: bigint,
+               symbolBytes__0: Uint8Array,
+               symbolLen__0: bigint,
+               decimals__0: bigint,
+               kind__0: bigint): Promise<__compactRuntime.ConstructorResult<PS>>;
+}
+
+export declare function ledger(state: __compactRuntime.StateValue | __compactRuntime.ChargedState): Ledger;
+export declare const pureCircuits: PureCircuits;
+export declare const expectedVk: Record<string, string>;
