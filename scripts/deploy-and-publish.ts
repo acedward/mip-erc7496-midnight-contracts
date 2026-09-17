@@ -199,9 +199,15 @@ async function main(): Promise<void> {
     );
     log('wallet.keys', { coinPublicKey, unshieldedAddress: unshieldedAddressString });
 
-    const zswapRecipient = (label: string) => ({
+    // A SHIELDED mint always goes to the deployer. A Zswap output is encrypted to its
+    // recipient, so midnight-js has to know that recipient's ENCRYPTION public key —
+    // `Unable to resolve encryption public key for recipient <hex>. Provide a mapping via
+    // the encryptionPublicKeyResolver.` is what a made-up 32-byte coin public key gets you
+    // (measured against Stagenet on 2026-09-17 with row SSTAR). Only the unshielded mints
+    // below can address arbitrary bytes, and `UMET`'s three recipients are unshielded.
+    const zswapRecipient = (_label: string) => ({
       is_left: true,
-      left: { bytes: label === 'owner' ? new Uint8Array(Buffer.from(coinPublicKey, 'hex')) : derivedAddress(label) },
+      left: { bytes: new Uint8Array(Buffer.from(coinPublicKey, 'hex')) },
       right: { bytes: new Uint8Array(32) },
     });
     const userRecipient = (label: string) => ({
