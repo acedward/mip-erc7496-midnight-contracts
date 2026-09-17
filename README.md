@@ -198,10 +198,81 @@ inconsistent state, not two rows.
 
 ## Deploy
 
-Not yet part of this repository: `scripts/deploy-and-publish.ts` is where the
-resumable on-chain runner for the reference set will live, alongside a fixture
-exporter that records the same corpus from a real chain (block heights,
-transaction hashes, indexer event ids and all).
+The reference set is deployed to **Midnight Stagenet**, a public test network.
+Nothing here is worth anything; the deployment wallet holds test tokens only.
+
+### 1. A proof server
+
+    docker run -d --name my-proof-server --memory 6g \
+      -p 127.0.0.1:10030:6300 midnightntwrk/proof-server:9.0.0-rc.6
+
+It downloads its public parameters on first start and answers on `/` after
+about half a minute. **`9.0.0-rc.6` is the version Stagenet accepts** — verified
+2026-09-17 by deploying and calling a contract from this repository (`rc.5` was
+never needed). Stop it when you are not proving; it is the memory peak of this
+workflow after key generation.
+
+### 2. DUST
+
+A Midnight transaction pays its fee in DUST, which NIGHT generates only once
+its UTxO is *registered*. A fresh wallet holds none:
+
+    MN_SEED=<hex> npx tsx scripts/register-dust.ts            # estimate only
+    MN_SEED=<hex> MODE=register npx tsx scripts/register-dust.ts
+
+The registration pays its own fee out of the DUST its guaranteed NIGHT UTxO has
+already generated, so no second funded wallet and no faucet DUST is needed — but
+the NIGHT must have been sitting in the wallet long enough (a few hours at
+41 335 000 000 000 SPECK/s per 5 000 NIGHT covers a ~26 DUST fee many times
+over). It needs **no proof server**: a registration is signature-only.
+
+Two traps the script documents in its header: the recipe that
+`registerNightUtxosForDustGeneration` returns is **already signed**, and signing
+it again makes the node reject the transaction as malformed (`Custom error: 192`
+= `InputsSignaturesLengthMismatch`); and `validateTransaction` reports
+"insufficient dust to cover registration fee allowance: 0 available" on a first
+registration, which is a false alarm — the allowance is what the transaction is
+about to create.
+
+### 3. Generate, compile, deploy
+
+    npx tsx scripts/generate-literal-contracts.ts      # contracts/generated/*.compact
+    ./scripts/compile.sh generated/SSTAR               # one at a time
+    MN_SEED=<hex> MN_PROOF_SERVER_URL=http://127.0.0.1:10030 \
+      npx tsx scripts/deploy-and-publish.ts SSTAR UCOM LSUN DAUR CNST
+
+With no row arguments every non-optional row runs. The script is **resumable per
+row and per step**: `out/deployment.json` records the address and each completed
+step and a re-run skips them, so an interrupted deployment is restarted with the
+same command. A failing step stops that row only.
+
+`contracts/generated/` holds one contract per token with every metadata payload
+as a compile-time literal — see "Proving cost" above for why, and
+`scripts/generate-literal-contracts.ts`'s header for what those contracts give
+up (no `Ownable`, no constructor arguments). The bytes they emit are exactly the
+bytes `contracts/`'s parameterised templates emit.
+
+### 4. Record the fixtures
+
+    npx tsx scripts/export-fixtures.ts
+
+reads the public indexer for every transaction in `out/deployment.json` and
+writes `fixtures/stagenet/{raw-tx,events,expected-tokens,color-vectors}.json`:
+real transaction bytes, real `MiscContractEvent` payloads, the token rows a
+consumer should fold out of them, and the colour for each `(address, domainSep)`
+pair. `fixtures/simulator/` is the offline corpus and is not touched.
+
+### Environment
+
+| variable | default |
+|---|---|
+| `MN_SEED` | — (required; 64-byte BIP-39 seed as hex) |
+| `MN_NODE_URL` | `https://rpc.stagenet.shielded.tools` |
+| `MN_INDEXER_URL` | `https://indexer.stagenet.shielded.tools/api/v4/graphql` |
+| `MN_INDEXER_WS_URL` | `wss://indexer.stagenet.shielded.tools/api/v4/graphql/ws` |
+| `MN_PROOF_SERVER_URL` | `http://127.0.0.1:6300` |
+| `ROWS` | the rows to run, comma-separated (arguments win) |
+| `VERIFY_COLOR_ONCHAIN` | `1` also calls `tokenColor()` once per row (one extra proven transaction each) |
 
 ## License
 

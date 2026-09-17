@@ -29,7 +29,7 @@
  * Writes `contracts/generated/<ID>.compact` and `deployments/generated-matrix.json`
  * (the step-by-step deployment plan `scripts/deploy-and-publish.ts` executes).
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(new URL(import.meta.url).pathname, '..', '..');
@@ -604,7 +604,13 @@ if (selected.length > 0 && rows.length !== selected.length) {
 
 mkdirSync(OUT_CONTRACTS, { recursive: true });
 
-const matrixRows: unknown[] = [];
+// Generating a SUBSET must not shrink the matrix: load what is already there and replace
+// only the rows regenerated now, keeping the reference set's order.
+const existing: Record<string, unknown> = {};
+if (existsSync(OUT_MATRIX)) {
+  const previous = JSON.parse(readFileSync(OUT_MATRIX, 'utf8')) as { rows?: { id: string }[] };
+  for (const row of previous.rows ?? []) existing[row.id] = row;
+}
 
 for (const row of rows) {
   const planned = planSteps(row);
@@ -637,7 +643,7 @@ for (const row of rows) {
     ).padStart(2)} events  -> contracts/generated/${row.id}.compact`,
   );
 
-  matrixRows.push({
+  existing[row.id] = {
     id: row.id,
     contract: row.id,
     template: row.template,
@@ -674,8 +680,10 @@ for (const row of rows) {
           }
         : step,
     ),
-  });
+  };
 }
+
+const matrixRows = referenceSet.rows.map((row) => existing[row.id]).filter((row) => row !== undefined);
 
 writeFileSync(
   OUT_MATRIX,

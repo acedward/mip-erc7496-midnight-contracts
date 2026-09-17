@@ -233,6 +233,46 @@ above is exactly 256 elements. (`serialize<T, n>` is not an option — Compact
 instantiates it only for standard event types, not for `Bytes<32>` or a
 user-defined struct.)
 
+## 6a. Circuit cost — literal versus runtime payloads
+
+The standard fixes the bytes on the wire, not how a contract assembles them, and the two
+ways of assembling them differ by four orders of magnitude in proving cost. Measured with
+compactc 0.34.0 and `zkir mock-compile` (`./scripts/circuit-cost.sh`; no proving keys
+needed), ZKIR v2, which is the compiler default and what every contract live on Stagenet
+today was built with:
+
+| what the circuit emits | k | rows | proving key |
+|---|---|---|---|
+| a payload of compile-time literals | 6–7 | 23–28 | ~40 KB, seconds to generate |
+| one **runtime** byte, the rest literal | 15 | 26 422 | ~4 MB |
+| a payload assembled from ledger fields, per event | 17 | 122 419 | ~17 MB |
+| `emitTokenMetadata(…, value: Bytes<190>)` — the standard's setter | 19 | 328 671 | 134 MB, ~6 min |
+| `publishMetadata()` — three such events | 19 | 416 601 | 134 MB, ~6 min |
+| six events in one circuit | 20 | 832 004 | ~270 MB |
+
+Two facts follow, and both are about **circuits**, not about the standard:
+
+1. **An emit is dominated by a fixed ~26 000-row cost the moment any runtime value reaches
+   it**, plus roughly 550–1 400 rows per runtime byte. A literal payload skips all of it.
+2. **Splitting helps linearly, literals help exponentially.** Keeping a circuit under k=19
+   is a matter of emitting at most three runtime-built events; getting to k=7 is a matter of
+   knowing the bytes at compile time.
+
+This repository ships both shapes, and they emit **identical bytes**:
+
+- `contracts/*.compact` — the reference **implementation**: parameterised, `Ownable`-gated,
+  metadata taken at construction or at call time. This is what a real issuer writes, and it
+  pays k=19 per publish.
+- `contracts/generated/*.compact` — the reference **deployment**, produced by
+  `scripts/generate-literal-contracts.ts` from `deployments/reference-set.json` with every
+  field baked in. `publishMetadata()` there is **k=7, 28 rows**, and the eleven-contract set
+  key-generates in about three minutes instead of an hour and a half.
+
+Choose literals when a contract's metadata is fixed at deployment (most tokens), and pay for
+runtime payloads when it genuinely is not. ZKIR v3 (`--feature-zkir-v3`) is uniformly about
+4.4× cheaper than the table above, but its acceptance by a live network has not been
+established here and the deployed reference set does not use it.
+
 ## 7. Mapping to EIP-7496
 
 | EIP-7496 | here |
