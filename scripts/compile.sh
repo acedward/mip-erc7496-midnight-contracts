@@ -120,7 +120,11 @@ if [ "$CHECK" = "1" ]; then
     base="$(basename "$name")"
     # keys/ is not committed (a k=19 .prover is ~134 MB and is a pure function
     # of the ZKIR); compare the generated TypeScript, the ZKIR and the metadata.
-    if diff -r -q -x keys "$OUT_DIR/$base" "$TARGET_ROOT/$base"; then
+    # *.bzkir is excluded for the same reason: it is a byproduct that `zkir`
+    # writes beside a .zkir during key generation or ./scripts/circuit-cost.sh,
+    # it is gitignored, and a --check run (which implies SKIP_ZK) never produces
+    # one — so without this, measuring a circuit's cost would "break" --check.
+    if diff -r -q -x keys -x '*.bzkir' "$OUT_DIR/$base" "$TARGET_ROOT/$base"; then
       echo "== $base: managed/ matches the sources"
     else
       echo "== $base: managed/ DIFFERS from a fresh compile" >&2

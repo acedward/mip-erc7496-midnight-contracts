@@ -1,26 +1,46 @@
 # mip-erc7496-midnight-contracts
 
-On-chain token metadata for Midnight: a standard, a Compact module and reference
-contracts that publish a token's `name`, `symbol`, `decimals` and arbitrary
-key/value traits as contract events, so an indexer can build a token table
-without a registry and without trusting anyone but the emitting contract.
+The reference implementation of **[MIP PR #315, "On-Chain Token Metadata
+Emission"](https://github.com/midnightntwrk/midnight-improvement-proposals/pull/315)**
+(`mips/mip-xxxx-on-chain-token-metadata.md` @ `f433056`): a Compact module and
+reference contracts that publish a token's `name`, `symbol`, `decimals` and
+arbitrary key/value traits as contract events, so an indexer can build a token
+table without a registry and without trusting anyone but the emitting contract.
 
 Midnight tokens are ERC-1155-like — one contract mints many tokens, each keyed by
 a 32-byte *domain separator*, and the token's colour (its type) is
 `persistentCommit([domainSep, contractAddress], pad(32, "midnight:derive_token"))`.
-Nothing on chain says what a colour means. This repository fixes that with one
-event shape, in the spirit of [EIP-7496 (NFT Dynamic Traits)](https://eips.ethereum.org/EIPS/eip-7496).
+Nothing on chain says what a colour means. The MIP fixes that with one event
+shape, in the spirit of [EIP-7496 (NFT Dynamic Traits)](https://eips.ethereum.org/EIPS/eip-7496).
 
-**[`TOKEN-METADATA.md`](./TOKEN-METADATA.md) is the standard.** Read that if you
-want your own contract to appear in a token indexer. This file is about building
-and running what is here.
+**The MIP is the standard.** [`TOKEN-METADATA.md`](./TOKEN-METADATA.md) points at
+it and records how this repository implements it — the module's API, the
+placeholder-number caveat, the measured circuit cost and the fixtures. This file
+is about building and running what is here.
 
-Status: **experimental**, first proof of concept.
+The event a conforming contract emits is a `Misc` event named
+`pad(32, "mip-xxxx:token-metadata[v1]")` with a 256-byte payload:
+
+```
+offset  0  32  domainSep    the token within this contract
+offset 32   1  kind         0 unshielded native · 1 shielded native
+                            2 unshielded ledger · 3 shielded ledger
+offset 33  32  key          UTF-8, NUL-padded
+offset 65   1  val-type     0 opaque · 1 string · 2 integer · 3 JSON · 4 URI
+offset 66   1  val-len      0..189
+offset 67 189  value
+```
+
+`xxxx` is a placeholder until the MIP is merged and numbered. **The event name is
+the version**, so everything deployed under the placeholder has to be redeployed
+once the number is assigned — see TOKEN-METADATA.md.
+
+Status: **experimental**, tracking a draft MIP.
 
 ## Layout
 
 ```
-TOKEN-METADATA.md                    the standard (normative)
+TOKEN-METADATA.md                    pointer to the MIP + implementation notes
 contracts/TokenMetadata.compact      the module every conforming contract imports
 contracts/NativeShieldedToken.compact    one static domain, shielded  (kind 1)
 contracts/NativeUnshieldedToken.compact  one static domain, unshielded (kind 0)
@@ -31,7 +51,9 @@ contracts/probe/MetadataProbe.compact    the byte-layout proof; emits arbitrary 
 contracts/managed/<name>/            compiled output (see below)
 scripts/compile.sh                   compile with the pinned toolchain
 scripts/circuit-cost.sh              report k and rows without generating keys
-test/token-metadata.ts               the payload decoder and the simulator harness
+scripts/generate-literal-contracts.ts  the reference set as literal-payload contracts
+scripts/export-simulator-fixtures.ts   the offline fixture corpus
+test/token-metadata.ts               the payload decoder, the validator and the simulator harness
 test/*.test.ts                       the tests
 ```
 
@@ -111,16 +133,22 @@ or circuit arguments — i.e. any real token's metadata) is expensive in ZKIR v2
 Measured with `./scripts/circuit-cost.sh`, which runs `zkir mock-compile` and
 needs no keys:
 
-| what is emitted | ZKIR v2 (default) | ZKIR v3 |
-|---|---|---|
-| a payload of compile-time literals | k=6, 23 rows | k=6, 55 |
-| one runtime byte, the rest literal | k=15, 26 422 | k=13, 4 764 |
-| a payload built from ledger fields (per event) | k=17, 122 419 | k=15, 27 148 |
-| a whole runtime `Bytes<256>`, no concatenation | k=18, 166 241 | k=16, 37 721 |
-| `emitTokenMetadata(…, value: Bytes<190>)` | k=19, 328 671 | k=17, 74 247 |
-| the same with `value: Bytes<64>` | k=18, 182 102 | k=16, 41 090 |
-| `publishMetadata` — three events | k=19, 416 601 | — |
-| six events in one circuit | k=20, 832 004 | — |
+| what is emitted | ZKIR v2 (default) |
+|---|---|
+| one event, every byte a compile-time literal | k=6, 23 rows |
+| three events, all literal (`SSTAR.publishMetadata`) | k=7, 28 |
+| one runtime byte, the rest literal | k=15, 26 422 |
+| a payload built from ledger fields (per event) | k=17, ~122 000 |
+| `emitTokenMetadata(…, valType, valLen, value: Bytes<189>)` | k=19, 330 369 |
+| `publishMetadata` — three events from ledger fields | k=19, 467 284 |
+| `publishPiece` — three events, collection | k=19, 470 165 |
+| six events in one circuit (before the split) | k=20, 832 004 |
+
+The pre-MIP layout measured 416 601 rows for `publishMetadata` and 330 711 for
+the setter. The val-type byte made the setter marginally *cheaper* (the value
+field gave up a byte for it); the rest of the increase is `symbol` widening from
+`Bytes<16>` to `Bytes<32>` so the module covers the whole range MIP Appendix A
+allows. ZKIR v3 measured ~4.4× cheaper across the board.
 
 For scale, OpenZeppelin's shielded `_mint` is k=14 and its `_burn` k=16.
 
@@ -137,6 +165,10 @@ Consequences, all of them already applied here:
   (`ZKIR_V3=true ./scripts/compile.sh`), but nothing here has yet shown that a
   live Midnight network and proof server accept a v3 verifier key. Settle that
   with a single probe deployment before relying on it.
+- **The contracts that are actually deployed are the generated literal ones.**
+  They emit byte-identical payloads — `test/generated.test.ts` asserts it
+  against the parameterised template — for a four-figure factor less proving
+  work.
 
 ## Test
 
@@ -146,10 +178,10 @@ npm run typecheck
 ```
 
 The tests run every template through `@midnight-ntwrk/compact-runtime`, decode
-the `Misc` events the circuits emit, and check them against the standard as
-written in `TOKEN-METADATA.md` — the decoder in `test/token-metadata.ts`
-deliberately re-implements the layout from the document rather than importing
-anything from the contracts, so a disagreement fails a test.
+the `Misc` events the circuits emit, and check them against the MIP — the
+decoder and validator in `test/token-metadata.ts` deliberately re-implement
+sections 1, 2.1, 2.2 and 3 from the MIP text rather than importing anything from
+the contracts, so a disagreement fails a test.
 
 They also check the two properties an indexer depends on: the colour derived off
 chain from `(domainSep, address)` equals both the contract's `tokenColor()` and
@@ -168,7 +200,9 @@ GraphQL gets the full 256-byte payload already re-padded.
 reference deployment as data: eleven rows across all four families, including
 the three cases a token table has to render and nobody remembers to build — a
 token minted but never described, one described but never minted, and one that
-declares itself a ledger token and then mints natively anyway.
+describes its ledger side and then mints natively anyway. Every metadata step
+carries the `val-type` of MIP section 2.1, and the generator refuses to write a
+payload a conforming consumer would have to reject.
 
 ```sh
 npm run export:fixtures:simulator
@@ -181,8 +215,8 @@ runs the whole set through the simulator and writes `fixtures/simulator/`:
 | `events.json` | every `TokenMetadata` event, with its 256-byte payload as hex |
 | `mints.json` | every mint effect a scanner would read out of a transcript |
 | `color-vectors.json` | `(domainSep, address) → colour`, checked against each contract's own `tokenColor()` |
-| `expected-tokens.json` | the rows an indexer should end up with — all four states: observed, declared, described, inconsistent |
-| `negative-payloads.json` | payloads a conforming consumer must reject, emitted on purpose by the probe |
+| `expected-tokens.json` | the rows an indexer should end up with — 17 rows over 17 identities, in the MIP's three states: observed, declared, described |
+| `negative-payloads.json` | 22 payloads that are not simply applied: 11 a consumer must **reject** (one per rule of MIP sections 2.1, 2.2 and 3, each with its reason), 1 it must **ignore** (the pre-MIP event name), and 10 it must **apply** — six of them well-known keys whose Appendix A projection fails while the event stands |
 
 Contract addresses are `sha256("umbra:00020:<row id>")`, so every byte —
 including every colour — is reproducible. There are no block heights,
@@ -191,10 +225,28 @@ deployed. An indexer can be written and tested byte-exactly against this corpus
 long before a chain is involved.
 
 One subtlety the corpus encodes: a token row is keyed by
-`(address, domainSep, kind)` where `kind` is **bit 0** of the kind byte — bit 1
-(native versus ledger) is a column, not part of the key. So the "Ledger Liar"
-row, which declares kind `2` and then mints natively, is *one* row in the
-inconsistent state, not two rows.
+`(address, domainSep, kind)` with the **full** kind byte (MIP section 4), and
+`privacy`/`storage` are derived from it rather than stored beside it. So the
+"Ledger Liar" row, which declares kind `2` and then mints natively, is **two**
+rows: an `observed` kind-0 row with no name and a `declared` kind-2 row with
+one. Neither can hide or relabel the other, which is exactly the point of MIP
+section 6.3 — and it is why this corpus has 17 rows where the pre-MIP one had
+16.
+
+### ⚠ `fixtures/stagenet/` and `deployments/stagenet-deployment.json` are the PRE-MIP layout
+
+Both were recorded from the Stagenet deployment of 2026-09-17, which ran under
+the earlier, repo-local layout: the event name `TokenMetadata`, no `val-type`
+byte, a 190-byte value, and a token table keyed on bit 0 of the kind byte (which
+is why its `expected-tokens.json` still contains an `inconsistent` row). They
+are kept verbatim as the record of what that deployment emitted, and a MIP
+consumer **ignores** every event in them.
+
+They are **superseded by the 00021 redeploy**, which replaces both files with a
+set emitting `mip-xxxx:token-metadata[v1]`. Until then, use
+`fixtures/simulator/` for anything that has to be current: it is regenerated
+from the compiled contracts and is the only corpus in this repository that
+carries the MIP layout.
 
 ## Deploy
 
