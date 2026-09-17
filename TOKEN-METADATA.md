@@ -273,6 +273,11 @@ runtime payloads when it genuinely is not. ZKIR v3 (`--feature-zkir-v3`) is unif
 4.4× cheaper than the table above, but its acceptance by a live network has not been
 established here and the deployed reference set does not use it.
 
+Measured Compact-v3/MinoCrab-v3 comparisons, exact source pins, and the focused
+MinoCrab metadata reference are in [`benchmarks/`](./benchmarks/) and
+[`minocrab/`](./minocrab/README.md). The separate typed-format measurements are
+benchmark examples and do not alter this standard's wire format.
+
 ## 7. Mapping to EIP-7496
 
 | EIP-7496 | here |

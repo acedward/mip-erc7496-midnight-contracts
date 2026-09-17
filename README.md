@@ -15,6 +15,13 @@ event shape, in the spirit of [EIP-7496 (NFT Dynamic Traits)](https://eips.ether
 want your own contract to appear in a token indexer. This file is about building
 and running what is here.
 
+The [`minocrab/`](./minocrab/README.md) directory contains the tested MinoCrab
+reference ports for metadata routines and publishers, comparable Compact
+fixtures, differential checks, and reproducible result data. The measured
+reports are under [`benchmarks/`](./benchmarks/). Stagenet addresses and
+transactions remain in the
+[Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/main/stagenet-token-metadata-deployments.md).
+
 Status: **experimental**, first proof of concept.
 
 ## Layout
@@ -33,6 +40,8 @@ scripts/compile.sh                   compile with the pinned toolchain
 scripts/circuit-cost.sh              report k and rows without generating keys
 test/token-metadata.ts               the payload decoder and the simulator harness
 test/*.test.ts                       the tests
+minocrab/                             MinoCrab metadata reference and reproducible evidence
+benchmarks/                           Compact/MinoCrab measurements and scope reports
 ```
 
 Each template composes three things: the metadata module, an access-control
@@ -137,6 +146,12 @@ Consequences, all of them already applied here:
   (`ZKIR_V3=true ./scripts/compile.sh`), but nothing here has yet shown that a
   live Midnight network and proof server accept a v3 verifier key. Settle that
   with a single probe deployment before relying on it.
+
+The [Compact/MinoCrab K-size comparison](./benchmarks/token-metadata-k-sizes.md)
+and [metadata-shape measurements](./benchmarks/token-metadata-shapes.md) preserve
+the measured v3 results, exact source pins, and reproduction evidence. The
+typed 189-byte examples in the latter are benchmark-local and do not change the
+standard or deployed contracts.
 
 ## Test
 
