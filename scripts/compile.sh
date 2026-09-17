@@ -85,8 +85,9 @@ if [ "$CHECK" = "1" ]; then
   status=0
   for name in "${CONTRACTS[@]}"; do
     base="$(basename "$name")"
-    # .prover keys are not committed (megabytes, regenerable); compare everything else.
-    if diff -r -q -x '*.prover' "$OUT_DIR/$base" "$TARGET_ROOT/$base"; then
+    # keys/ is not committed (a k=19 .prover is ~134 MB and is a pure function
+    # of the ZKIR); compare the generated TypeScript, the ZKIR and the metadata.
+    if diff -r -q -x keys "$OUT_DIR/$base" "$TARGET_ROOT/$base"; then
       echo "== $base: managed/ matches the sources"
     else
       echo "== $base: managed/ DIFFERS from a fresh compile" >&2
