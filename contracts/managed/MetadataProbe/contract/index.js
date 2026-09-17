@@ -572,11 +572,6 @@ const _dummyContract = new Contract({ });
 export const pureCircuits = {};
 export const contractReferenceLocations =
   { tag: 'publicLedgerArray', indices: { } };
-export const expectedVk = {
-  'calls': '62bc962997f0d591fe4fd452e596f6a4b813ccd2a08b5583cd02f1fe809ffa16',
-  'publishFixture': '606f0de654328a8a3adaa26d43b59ec7a46185787c35258daba3da96f5b3e8cc',
-  'publishRaw': '5b475a7442cbc6d58c1482ee33cfaba5507a49f4c216e3fe5ed817b66a6a5828',
-  'publishStandard': '8205c7b13b505aea1784bef4efb58cb4e20d64954b2c92075283a904f38ae95e',
-};
+export const expectedVk = {};
 
 //# sourceMappingURL=index.js.map

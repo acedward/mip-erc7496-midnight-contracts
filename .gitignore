@@ -9,3 +9,6 @@ out/
 # verifier keys are not: a k=19 circuit's .prover file is ~134 MB, they are a
 # pure function of the committed ZKIR, and `scripts/compile.sh` regenerates them.
 contracts/managed/*/keys/
+# .bzkir is a byproduct of running zkir over a .zkir (key generation, or
+# scripts/circuit-cost.sh); the .zkir files are the committed artefact.
+*.bzkir

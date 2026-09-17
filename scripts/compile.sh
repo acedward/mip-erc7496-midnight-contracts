@@ -3,7 +3,9 @@
 #
 #   ./scripts/compile.sh                  compile all contracts into contracts/managed/<name>/
 #   ./scripts/compile.sh NativeShieldedToken   compile just one (name without .compact)
-#   ./scripts/compile.sh --check          compile into a temp tree and diff against the committed one
+#   ./scripts/compile.sh --check          compile into a temp tree and diff against
+#                                         the committed one (implies SKIP_ZK: keys
+#                                         are not committed and not compared)
 #   SKIP_ZK=true ./scripts/compile.sh     skip proving-key generation (fast; TypeScript output only)
 #   ZKIR_V3=true ./scripts/compile.sh     emit ZKIR v3 instead of the default v2
 #                                         (~4.4x fewer rows — see README "Proving
@@ -50,9 +52,17 @@ compiler() {
   compact compile "+$COMPACT_VERSION" "$@"
 }
 
+# The generated source map records the path from the target directory back to
+# the sources, so without this the output would depend on WHERE it was compiled
+# and `--check` could never match. This is the value a compile into
+# contracts/managed/<name>/ produces.
+SOURCE_ROOT='../../../'
+
 echo "== compactc $(compiler --version) (language $(compiler --language-version), runtime $(compiler --runtime-version))"
 
 FLAGS=()
+# --check never compares keys, so never spend the ten minutes generating them.
+if [ "$CHECK" = "1" ]; then SKIP_ZK=true; fi
 if [ "${SKIP_ZK:-}" = "true" ]; then
   FLAGS+=(--skip-zk)
   echo "== SKIP_ZK=true: no proving keys will be generated"
@@ -77,7 +87,7 @@ for name in "${CONTRACTS[@]}"; do
   echo "== $name"
   echo -n "   memory: "; free -h 2>/dev/null | awk '/^Mem:/ {print "available " $7 " of " $2}' || echo "(free unavailable)"
   mkdir -p "$out"
-  compiler ${FLAGS[@]+"${FLAGS[@]}"} "$src" "$out"
+  compiler ${FLAGS[@]+"${FLAGS[@]}"} --sourceRoot "$SOURCE_ROOT" "$src" "$out"
 done
 
 if [ "$CHECK" = "1" ]; then
