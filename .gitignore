@@ -12,3 +12,8 @@ contracts/managed/*/keys/
 # .bzkir is a byproduct of running zkir over a .zkir (key generation, or
 # scripts/circuit-cost.sh); the .zkir files are the committed artefact.
 *.bzkir
+
+# The private-state provider (midnight-js level-private-state-provider) creates this
+# LevelDB in the working directory. The generated contracts have NO private state, so it
+# only ever holds the maintenance signing keys of a local deployment run.
+midnight-level-db/
