@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "deploy": "node --import tsx scripts/deploy-and-publish.ts",
-    "export:fixtures": "node --import tsx scripts/export-fixtures.ts"
+    "export:fixtures": "node --import tsx scripts/export-fixtures.ts",
+    "export:fixtures:simulator": "node --import tsx scripts/export-simulator-fixtures.ts",
+    "circuit-cost": "./scripts/circuit-cost.sh"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-js": "2.5.5-rc.8",
