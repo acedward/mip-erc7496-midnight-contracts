@@ -1,0 +1,238 @@
+{
+  "manifest-version": "1",
+  "compiler-version": "0.34.0",
+  "language-version": "0.26.0",
+  "runtime-version": "0.19.0",
+  "compiler": {
+    "type": "directory",
+    "contract-info.json": {
+      "type": "file",
+      "size": 4776,
+      "hash": "d164d9c673d73d964d59320fd3e8306b5c81b7cafe28e934f985f21e00cdc277"
+    }
+  },
+  "contract": {
+    "type": "directory",
+    "index.d.ts": {
+      "type": "file",
+      "size": 5527,
+      "hash": "b9defb7c787bf8b92bff0a36c3c26fa56f6c6c85b490cd08cf2e127556adb129"
+    },
+    "index.js": {
+      "type": "file",
+      "size": 105644,
+      "hash": "edfb84edc64e2477e28d8d2648f4fc9067876d710290d0f33c77739405c82c05"
+    },
+    "index.js.map": {
+      "type": "file",
+      "size": 3018,
+      "hash": "953fee95b03e08573fa7a6721c7e5ef952c7e7f5ed2e8fe0d478d9d0d2e5a972"
+    }
+  },
+  "zkir": {
+    "type": "directory",
+    "mintPiece.bzkir": {
+      "type": "file",
+      "size": 655,
+      "hash": "879edfe95862a7b945d4cb68ce302df0126215a66cd061b4de6416b52d8dc74e"
+    },
+    "mintPiece.zkir": {
+      "type": "file",
+      "size": 9820,
+      "hash": "cb3dbbc42adc962b51aeacdda25d0bd4e6beb824dfbaff3386eddb532a8fe233"
+    },
+    "mintedPieces.bzkir": {
+      "type": "file",
+      "size": 73,
+      "hash": "707fbade819719eb9f0e982009197252fe8e50850ba9654ca8686f0ca6c399e9"
+    },
+    "mintedPieces.zkir": {
+      "type": "file",
+      "size": 992,
+      "hash": "26e84c47d8d64a8d15038852c4bb8488aa3ba39ac0d8b1fae8745d25cfeeb904"
+    },
+    "publishAltair.bzkir": {
+      "type": "file",
+      "size": 649,
+      "hash": "eaee9602bed4b0a5ce87396cd362d133f590562d39daa7d6b5f8828d897555b9"
+    },
+    "publishAltair.zkir": {
+      "type": "file",
+      "size": 7706,
+      "hash": "572be44058989fc2b6aeec9a57e41e8c25dd90f0a6ec6c9e41e33c21112a7073"
+    },
+    "publishCygnus.bzkir": {
+      "type": "file",
+      "size": 757,
+      "hash": "58c7cb1365408618f1f5f325d6e055224bd340713a67bc0b0d85a2468665b810"
+    },
+    "publishCygnus.zkir": {
+      "type": "file",
+      "size": 9127,
+      "hash": "b2b3bdb27c7cd8bda61c479e89d5f229a9e4b8bb56711ffc9bba8f7755f3dd10"
+    },
+    "publishLyra.bzkir": {
+      "type": "file",
+      "size": 741,
+      "hash": "0db0e8dffc0238d2bdf7855a0e92fa0611c6fe3a06a8c900935eb8f6d95e05d3"
+    },
+    "publishLyra.zkir": {
+      "type": "file",
+      "size": 9095,
+      "hash": "8f34b62b415f152d171dcc600f488c596264635c4bd8e1c637210c42545e9dfd"
+    },
+    "publishOrion.bzkir": {
+      "type": "file",
+      "size": 751,
+      "hash": "40b7d1e382d886531de24c98a7c44646fcd9d813564caee552a13d4080269386"
+    },
+    "publishOrion.zkir": {
+      "type": "file",
+      "size": 9115,
+      "hash": "0868973c3589b0fb2bd6ff1ba35f07faa0aea039f191352f1db7d6c94a1f708c"
+    },
+    "publishVega.bzkir": {
+      "type": "file",
+      "size": 633,
+      "hash": "1eb01cd4c966e7047bb662556e47e13519040bb677dae97a92de968740a53522"
+    },
+    "publishVega.zkir": {
+      "type": "file",
+      "size": 7674,
+      "hash": "739d2e550e50495fc6cb93f08043d4068f0a6cfa8202abc8f84565b5ffc9b47e"
+    },
+    "tokenColor.bzkir": {
+      "type": "file",
+      "size": 124,
+      "hash": "7c3c462648f91fd07310e2f56aeb95c4df01625ce5e25aeed7650a61bc453762"
+    },
+    "tokenColor.zkir": {
+      "type": "file",
+      "size": 1570,
+      "hash": "710022ee175b8ba7d74ca3a6804ed8af6dcdecf70efc0dcfb565d62b4b6fd281"
+    },
+    "updateOrion1.bzkir": {
+      "type": "file",
+      "size": 152,
+      "hash": "5e0f3c93744528ed7ced369c11940c54d79de0e8d075b6aca0b82a7fa951128b"
+    },
+    "updateOrion1.zkir": {
+      "type": "file",
+      "size": 1860,
+      "hash": "cef46007af03cf89a330a3d62b4024dc85bf4a3d94a446334e1a0b7125fd6141"
+    },
+    "updateOrion2.bzkir": {
+      "type": "file",
+      "size": 439,
+      "hash": "8f56cc70e885658ad66fca7597cdcc5b73d35d2f27ea94c78ef20a1af402ff34"
+    },
+    "updateOrion2.zkir": {
+      "type": "file",
+      "size": 3807,
+      "hash": "195c6fdeb0bfafdc64c615286fb75ab32b932304c06da0d535e7e6faebcc0b60"
+    }
+  },
+  "keys": {
+    "type": "directory",
+    "mintPiece.prover": {
+      "type": "file",
+      "size": 5205568,
+      "hash": "c1769b121b1ee5250d71ab20887426ee2113f4662ad750ec48509b24a5f3c303"
+    },
+    "mintPiece.verifier": {
+      "type": "file",
+      "size": 2119,
+      "hash": "55c8b07d864e761b826afcd3918f0a4f41f37feafacb3bf889009d5119b6923f"
+    },
+    "mintedPieces.prover": {
+      "type": "file",
+      "size": 22435,
+      "hash": "8709a160c4bf8bd12399c4012aadda4cadfbf6e8100825a1d32e013c775be6c7"
+    },
+    "mintedPieces.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "62bc962997f0d591fe4fd452e596f6a4b813ccd2a08b5583cd02f1fe809ffa16"
+    },
+    "publishAltair.prover": {
+      "type": "file",
+      "size": 72898,
+      "hash": "f0c1dcd19386f89f95198774cfca63c7e7bd9c0452bca7aae91ca5562278c98b"
+    },
+    "publishAltair.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "3eba72038cce714fd7f69cb3aa2f3e4672f30ec83d240066b98a78f474c02937"
+    },
+    "publishCygnus.prover": {
+      "type": "file",
+      "size": 72989,
+      "hash": "5f1f5250cef3d0f79affb1462621aad129c2315bfc56a348e2b3b55a396cf98e"
+    },
+    "publishCygnus.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "4f9ed3c1b55e365b3c329fada12aa0dc60f6ba8d4db955057ceccb90d4694d28"
+    },
+    "publishLyra.prover": {
+      "type": "file",
+      "size": 72988,
+      "hash": "1e165d67aebf7e5f5f89e88f4af060512120ba6d551f06a7bda8105809133e25"
+    },
+    "publishLyra.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "41c5d0f84a670c7273db33707eef074db960f667d85b4eb8c4dbfaa10221a22e"
+    },
+    "publishOrion.prover": {
+      "type": "file",
+      "size": 72991,
+      "hash": "4b9260d9716b8d0e94b0f7561c04941b498a0a1dcdedf0a685788e4688392fbc"
+    },
+    "publishOrion.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "604c1fd482b893a44b207e4a78ae5ed0633172c0b75cdd30d82f941889a15dd3"
+    },
+    "publishVega.prover": {
+      "type": "file",
+      "size": 72892,
+      "hash": "7e1da202b8fd8f0022cc284603f890bfab3979fc73de7f7f9d414b59c72ca3bd"
+    },
+    "publishVega.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "9ff70d8538c3deb0c2a82829fe4d4b68c42aa19622600437cc90832538e93e1c"
+    },
+    "tokenColor.prover": {
+      "type": "file",
+      "size": 2820121,
+      "hash": "884041bdef81cd49f58bb0a47bd695a913780720e458c8d773d139d67d8a2c44"
+    },
+    "tokenColor.verifier": {
+      "type": "file",
+      "size": 2119,
+      "hash": "2474828e04485c29e6240e65fae14125eee1e2d82a65cfc48202d566bb8e6585"
+    },
+    "updateOrion1.prover": {
+      "type": "file",
+      "size": 22663,
+      "hash": "e9773a3f233739932924af3e2a28fbe3dc1a88a904a12a0ea7c89551eda01a7c"
+    },
+    "updateOrion1.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "bd1698df30222095e66200492fc4da22a9496458740af20ea37a20beefc17fa6"
+    },
+    "updateOrion2.prover": {
+      "type": "file",
+      "size": 23103,
+      "hash": "f977b3f267b46be9209d8b4ed3e129b671c263684c15a9d4b2b4910b3e23c95d"
+    },
+    "updateOrion2.verifier": {
+      "type": "file",
+      "size": 1351,
+      "hash": "ca815f122d6b0c132d42dc7c0027611eb1e287e1c5e71254a3ad4b5cacb57b78"
+    }
+  }
+}

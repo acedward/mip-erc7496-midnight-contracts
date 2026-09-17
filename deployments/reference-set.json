@@ -1,0 +1,202 @@
+{
+  "$comment": "The reference set of spec 00020 §7.1: every family, every table state a token indexer has to render. Each row is one contract deployment plus the ordered steps taken against it. `domain` and `piece` strings are passed through Compact's pad(32, …); `name`/`symbol` are padded to 32 and 16 bytes. This file drives scripts/export-simulator-fixtures.ts today and is the seed for the on-chain deployment matrix.",
+  "rows": [
+    {
+      "id": "LSUN",
+      "name": "Ledger Sun",
+      "symbol": "LSUN",
+      "decimals": 6,
+      "kind": 2,
+      "template": "LedgerToken",
+      "domain": "umbra:lsun",
+      "expect": { "status": "declared", "storage": "ledger", "color": null, "mintCount": 0 },
+      "steps": [
+        { "op": "publishMetadata" },
+        { "op": "ledgerMint", "to": "owner", "amount": "1000000" },
+        { "op": "transfer", "to": "holder:lsun-1", "amount": "250000" }
+      ]
+    },
+    {
+      "id": "LMOON",
+      "name": "Ledger Moon",
+      "symbol": "LMOON",
+      "decimals": 8,
+      "kind": 2,
+      "template": "LedgerToken",
+      "domain": "umbra:lmoon",
+      "expect": { "status": "declared", "storage": "ledger", "color": null, "mintCount": 0 },
+      "steps": [
+        { "op": "publishMetadata" },
+        { "op": "ledgerMint", "to": "owner", "amount": "5000000" },
+        { "op": "setMetadata", "key": "name", "value": "Ledger Moon (renamed)" },
+        { "op": "setMetadata", "key": "description", "value": "A ledger token that renamed itself in a later block." }
+      ]
+    },
+    {
+      "id": "SSTAR",
+      "name": "Shielded Star",
+      "symbol": "SSTAR",
+      "decimals": 6,
+      "kind": 1,
+      "template": "NativeShieldedToken",
+      "domain": "umbra:sstar",
+      "expect": { "status": "described", "storage": "native", "mintCount": 1, "totalMinted": "5000000" },
+      "steps": [
+        { "op": "publishMetadata" },
+        { "op": "mint", "to": "holder:sstar-1", "amount": "5000000", "nonce": "sstar:1" }
+      ]
+    },
+    {
+      "id": "SNEB",
+      "name": "Shielded Nebula",
+      "symbol": "SNEB",
+      "decimals": 0,
+      "kind": 1,
+      "template": "NativeShieldedToken",
+      "domain": "umbra:sneb",
+      "expect": { "status": "described", "storage": "native", "mintCount": 2, "totalMinted": "3" },
+      "steps": [
+        { "op": "publishMetadata" },
+        { "op": "setMetadata", "key": "metadata/0", "value": "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" },
+        { "op": "setMetadata", "key": "metadata/1", "value": "nt carries at most 190 bytes of value and this JSON does not fit in one." },
+        { "op": "setMetadata", "key": "metadata/2", "value": "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" },
+        { "op": "setMetadata", "key": "metadata/3", "value": ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " },
+        { "op": "setMetadata", "key": "metadata/4", "value": "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" },
+        { "op": "setMetadata", "key": "metadata/5", "value": "nce set\"}" },
+        { "op": "mint", "to": "holder:sneb-1", "amount": "1", "nonce": "sneb:1" },
+        { "op": "mint", "to": "holder:sneb-2", "amount": "2", "nonce": "sneb:2" }
+      ]
+    },
+    {
+      "id": "SGHOST",
+      "name": "Shielded Ghost",
+      "symbol": "SGHOST",
+      "decimals": 0,
+      "kind": 1,
+      "template": "NativeShieldedToken",
+      "domain": "umbra:sghost",
+      "$comment": "Minted, never described: the 'unknown colour' row a wallet sees today.",
+      "expect": { "status": "observed", "storage": "native", "mintCount": 1, "totalMinted": "13", "name": null },
+      "steps": [{ "op": "mint", "to": "holder:sghost-1", "amount": "13", "nonce": "sghost:1" }]
+    },
+    {
+      "id": "UCOM",
+      "name": "Unshielded Comet",
+      "symbol": "UCOM",
+      "decimals": 6,
+      "kind": 0,
+      "template": "NativeUnshieldedToken",
+      "domain": "umbra:ucom",
+      "expect": { "status": "described", "storage": "native", "mintCount": 1, "totalMinted": "2500000" },
+      "steps": [
+        { "op": "publishMetadata" },
+        { "op": "mint", "to": "user:ucom-1", "amount": "2500000" }
+      ]
+    },
+    {
+      "id": "UMET",
+      "name": "Unshielded Meteor",
+      "symbol": "UMET",
+      "decimals": 2,
+      "kind": 0,
+      "template": "NativeUnshieldedToken",
+      "domain": "umbra:umet",
+      "$comment": "Mints first, describes afterwards: the row moves observed -> described.",
+      "expect": { "status": "described", "storage": "native", "mintCount": 3, "totalMinted": "600" },
+      "steps": [
+        { "op": "mint", "to": "user:umet-0", "amount": "100" },
+        { "op": "mint", "to": "user:umet-1", "amount": "200" },
+        { "op": "mint", "to": "user:umet-2", "amount": "300" },
+        { "op": "publishMetadata" }
+      ]
+    },
+    {
+      "id": "UPROM",
+      "name": "Unshielded Promise",
+      "symbol": "UPROM",
+      "decimals": 6,
+      "kind": 0,
+      "template": "NativeUnshieldedToken",
+      "domain": "umbra:uprom",
+      "$comment": "Described, never minted: declared with a derivable colour and no mints.",
+      "expect": { "status": "declared", "storage": "native", "mintCount": 0, "totalMinted": "0" },
+      "steps": [{ "op": "publishMetadata" }]
+    },
+    {
+      "id": "DAUR",
+      "name": "Dual Aurora",
+      "symbol": "DAUR",
+      "decimals": 6,
+      "kind": 1,
+      "template": "NativeDualToken",
+      "domain": "umbra:daur",
+      "$comment": "One domain separator, two kinds: two rows sharing one 32-byte colour.",
+      "expect": { "status": "described", "storage": "native", "rows": 2 },
+      "steps": [
+        { "op": "publishUnshielded" },
+        { "op": "publishShielded" },
+        { "op": "mintShielded", "to": "holder:daur-1", "amount": "1000", "nonce": "daur:1" },
+        { "op": "mintUnshielded", "to": "user:daur-2", "amount": "2000" }
+      ]
+    },
+    {
+      "id": "CNST",
+      "name": "Constellations",
+      "symbol": "CNST",
+      "decimals": 0,
+      "kind": 1,
+      "template": "ShieldedCollection",
+      "$comment": "One address, one domain separator per piece — the ERC-1155 / EIP-7496 shape. Orion's magnitude is written three times so the indexer's last-write-wins fold and its history both have something to show.",
+      "pieces": ["orion", "lyra", "cygnus", "vega", "altair"],
+      "expect": { "status": "described", "storage": "native", "rows": 5 },
+      "steps": [
+        { "op": "mintPiece", "piece": "orion", "to": "holder:cnst-orion", "nonce": "cnst:orion:1" },
+        { "op": "publishPiece", "piece": "orion", "pieceName": "Constellations · Orion" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "tokenUri", "value": "http://localhost:10020/constellations/orion" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "hemisphere", "value": "equatorial" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "value": "0.18" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "value": "0.42" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "value": "1.25" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "metadata", "value": "{\"collection\":\"Constellations\",\"image\":\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'><path d='M0 4 L2 0 L4 4' stroke='%23fff'/></svg>\"}" },
+
+        { "op": "mintPiece", "piece": "lyra", "to": "holder:cnst-lyra", "nonce": "cnst:lyra:1" },
+        { "op": "publishPiece", "piece": "lyra", "pieceName": "Constellations · Lyra" },
+        { "op": "setPieceTrait", "piece": "lyra", "key": "tokenUri", "value": "http://localhost:10020/constellations/lyra" },
+        { "op": "setPieceTrait", "piece": "lyra", "key": "hemisphere", "value": "northern" },
+        { "op": "setPieceTrait", "piece": "lyra", "key": "magnitude", "value": "0.03" },
+
+        { "op": "mintPiece", "piece": "cygnus", "to": "holder:cnst-cygnus", "nonce": "cnst:cygnus:1" },
+        { "op": "publishPiece", "piece": "cygnus", "pieceName": "Constellations · Cygnus" },
+        { "op": "setPieceTrait", "piece": "cygnus", "key": "tokenUri", "value": "http://localhost:10020/constellations/cygnus" },
+        { "op": "setPieceTrait", "piece": "cygnus", "key": "hemisphere", "value": "northern" },
+        { "op": "setPieceTrait", "piece": "cygnus", "key": "magnitude", "value": "1.25" },
+
+        { "op": "mintPiece", "piece": "vega", "to": "holder:cnst-vega", "nonce": "cnst:vega:1" },
+        { "op": "publishPiece", "piece": "vega", "pieceName": "Constellations · Vega" },
+        { "op": "setPieceTrait", "piece": "vega", "key": "tokenUri", "value": "http://localhost:10020/constellations/vega" },
+        { "op": "setPieceTrait", "piece": "vega", "key": "hemisphere", "value": "northern" },
+
+        { "op": "mintPiece", "piece": "altair", "to": "holder:cnst-altair", "nonce": "cnst:altair:1" },
+        { "op": "publishPiece", "piece": "altair", "pieceName": "Constellations · Altair" },
+        { "op": "setPieceTrait", "piece": "altair", "key": "tokenUri", "value": "http://localhost:10020/constellations/altair" },
+        { "op": "setPieceTrait", "piece": "altair", "key": "hemisphere", "value": "equatorial" }
+      ]
+    },
+    {
+      "id": "LLIAR",
+      "name": "Ledger Liar",
+      "symbol": "LLIAR",
+      "decimals": 6,
+      "kind": 2,
+      "template": "NativeUnshieldedToken",
+      "domain": "umbra:lliar",
+      "$comment": "Declares kind 2 (ledger) and then mints natively anyway. The observed mint wins; the declaration is kept and the row is flagged inconsistent.",
+      "optional": true,
+      "expect": { "status": "inconsistent", "storage": "native", "mintCount": 1, "totalMinted": "7" },
+      "steps": [
+        { "op": "publishMetadata" },
+        { "op": "mint", "to": "user:lliar-1", "amount": "7" }
+      ]
+    }
+  ]
+}

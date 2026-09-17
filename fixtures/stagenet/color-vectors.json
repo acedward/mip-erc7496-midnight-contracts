@@ -1,0 +1,128 @@
+{
+  "$comment": "Recorded from the PUBLIC Midnight Stagenet indexer for the contracts in out/deployment.json. Every byte here came off the chain; fixtures/simulator/ is the offline counterpart.",
+  "network": "stagenet",
+  "indexer": "https://indexer.stagenet.shielded.tools/api/v4/graphql",
+  "recordedAt": "2026-09-17T06:20:14.133Z",
+  "vectors": [
+    {
+      "row": "SSTAR",
+      "piece": null,
+      "address": "7d0bbc9546e0976f27a069e43490deb670ec0d51514c2da634b062e65b2938c7",
+      "domainSep": "756d6272613a7373746172000000000000000000000000000000000000000000",
+      "color": "a988a5eccbc9ba6faa93c72aa344db0776dae4962a6c67dbe1b1633a883df997",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "UCOM",
+      "piece": null,
+      "address": "40918a6666a2390010f189cdb535b5b17cdd9479f502241e02ec4a76a69eebf2",
+      "domainSep": "756d6272613a75636f6d00000000000000000000000000000000000000000000",
+      "color": "b92eb7e767009c202a9419a7f8952002959d42c2a1672efc7171a8af1e0c7fa4",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "LSUN",
+      "piece": null,
+      "address": "76c2fd63ad1a637dc5900e2bbfac47c2a30405eb3b8b2c0c32d675846c100058",
+      "domainSep": "756d6272613a6c73756e00000000000000000000000000000000000000000000",
+      "color": "231ccd99aacff5ac2ad9527b261f1a5c803d1ec0bd448ac7cb33f29600976f90",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "DAUR",
+      "piece": null,
+      "address": "57244319c3660e539b6f7f66248e46642c0d31d862986bedb2c1d4186061d685",
+      "domainSep": "756d6272613a6461757200000000000000000000000000000000000000000000",
+      "color": "0cc414ba41fbfcc579fcc23abc40d15686ba0256e366e53e8145683a97fef136",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "orion",
+      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
+      "domainSep": "636e73743a6f72696f6e00000000000000000000000000000000000000000000",
+      "color": "00a3eb500a600b975ff35b9ac624513e0c1c4277f794a3df4d5dfd3e0b487b93",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "lyra",
+      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
+      "domainSep": "636e73743a6c7972610000000000000000000000000000000000000000000000",
+      "color": "cd99dea3f3a4e691f045d76e4b98747b68e3fa4f90b9c8414337a5b3e6758081",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "cygnus",
+      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
+      "domainSep": "636e73743a6379676e7573000000000000000000000000000000000000000000",
+      "color": "4d04dab56afbb37ce2b135937f6efeac132b7a7e79139daec9854fc908da2868",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "vega",
+      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
+      "domainSep": "636e73743a766567610000000000000000000000000000000000000000000000",
+      "color": "3d9180f0b7b00dd52c8a35c0ee1558d901e11619bcea9e2e4aaef1a0722bf64f",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "altair",
+      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
+      "domainSep": "636e73743a616c74616972000000000000000000000000000000000000000000",
+      "color": "9e7032f27cb031d4a3518d970391c0d775485b8f15f41cbf18d4142c7e1f15b1",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "SNEB",
+      "piece": null,
+      "address": "e7597c0205132b33c76d1df7f062ed022616807bd868d0fc101a65a89fee6fce",
+      "domainSep": "756d6272613a736e656200000000000000000000000000000000000000000000",
+      "color": "b147dc1b324117e5c5f8d06cf8b2277b4067b1feeb285f00b76e692e1f760566",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "SGHOST",
+      "piece": null,
+      "address": "520b8ecf3517a9fa797352bb97f438ccab0aa8f3cc452d3b3ef57df519a77298",
+      "domainSep": "756d6272613a7367686f73740000000000000000000000000000000000000000",
+      "color": "14422c1082c4af5037779011e96926fd13f59786fa36e6df61a45c41d75e7f11",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "UMET",
+      "piece": null,
+      "address": "f184f92ffe9f015d1a2cdb76d7b5621fe50714175360310b046c9a7fe8fee43e",
+      "domainSep": "756d6272613a756d657400000000000000000000000000000000000000000000",
+      "color": "1677a42ad8a035718b84662852e9be4961870b1d601c2b35a709be68ebee0438",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "UPROM",
+      "piece": null,
+      "address": "64f7b33d55c2647b6ce11a8a6c631f9558da6a6354f0ffa9a852cccc4c547da2",
+      "domainSep": "756d6272613a7570726f6d000000000000000000000000000000000000000000",
+      "color": "19e18ca3ee12f6e93e24ec53ca5dfe3f3904509767e3ffd8e5fd02498b471cf9",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "LMOON",
+      "piece": null,
+      "address": "9fe4724d67cb395791ad69ba040f8c7dae872b9e961bd766a390db3954694932",
+      "domainSep": "756d6272613a6c6d6f6f6e000000000000000000000000000000000000000000",
+      "color": "60a4aef306f0c87a9fce9d5deddf6dd12d4dae8eac088fd2f4de4b6120fb3400",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "LLIAR",
+      "piece": null,
+      "address": "b006a6647c26829987ec1bd59de1d4107019d7f54c097d3fdc25a4dddcf1231e",
+      "domainSep": "756d6272613a6c6c696172000000000000000000000000000000000000000000",
+      "color": "322445b1187ef7c276c68740958ed158f32b7582b2ad8b4d67ef05c9b5de988d",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    }
+  ]
+}
