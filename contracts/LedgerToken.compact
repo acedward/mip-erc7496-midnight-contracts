@@ -30,7 +30,7 @@ export { ContractAddress, Either, Maybe };
 export sealed ledger _domain: Bytes<32>;
 export sealed ledger _nameBytes: Bytes<32>;
 export sealed ledger _nameLen: Uint<8>;
-export sealed ledger _symbolBytes: Bytes<16>;
+export sealed ledger _symbolBytes: Bytes<32>;
 export sealed ledger _symbolLen: Uint<8>;
 export ledger _published: Boolean;
 
@@ -41,7 +41,7 @@ constructor(
   nameBytes_: Bytes<32>,
   nameLen_: Uint<8>,
   symbol_: Opaque<"string">,
-  symbolBytes_: Bytes<16>,
+  symbolBytes_: Bytes<32>,
   symbolLen_: Uint<8>,
   decimals_: Uint<8>
 ) {
@@ -97,9 +97,9 @@ export circuit publishMetadata(): [] {
 }
 
 /** Sets or replaces one metadata key (EIP-7496 dynamic trait). Owner only. */
-export circuit setMetadata(key: Bytes<32>, len: Uint<8>, value: Bytes<190>): [] {
+export circuit setMetadata(key: Bytes<32>, valType: Uint<8>, valLen: Uint<8>, value: Bytes<189>): [] {
   Ownable_assertOnlyOwner();
-  TM_emitTokenMetadata(_domain, TM_KIND_LEDGER_FLAG(), disclose(key), disclose(len), disclose(value));
+  TM_emitTokenMetadata(_domain, TM_KIND_LEDGER_FLAG(), disclose(key), disclose(valType), disclose(valLen), disclose(value));
 }
 
 /**

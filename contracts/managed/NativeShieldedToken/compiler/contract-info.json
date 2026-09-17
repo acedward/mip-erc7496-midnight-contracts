@@ -83,7 +83,14 @@
           }
         },
         {
-          "name": "len",
+          "name": "valType",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "valLen",
           "type": {
             "type-name": "Uint",
             "maxval": 255
@@ -93,7 +100,7 @@
           "name": "value",
           "type": {
             "type-name": "Bytes",
-            "length": 190
+            "length": 189
           }
         }
       ],
@@ -381,7 +388,7 @@
       "storage": "Cell",
       "type": {
         "type-name": "Bytes",
-        "length": 16
+        "length": 32
       }
     },
     {

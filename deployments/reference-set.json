@@ -1,5 +1,5 @@
 {
-  "$comment": "The reference set of spec 00020 §7.1: every family, every table state a token indexer has to render. Each row is one contract deployment plus the ordered steps taken against it. `domain` and `piece` strings are passed through Compact's pad(32, …); `name`/`symbol` are padded to 32 and 16 bytes. This file drives scripts/export-simulator-fixtures.ts today and is the seed for the on-chain deployment matrix.",
+  "$comment": "The reference set of spec 00020 §7.1: every family, every table state a token indexer has to render. Each row is one contract deployment plus the ordered steps taken against it. `domain` and `piece` strings are passed through Compact's pad(32, …); `name` and `symbol` are padded to 32 bytes each. Every metadata step carries the `valType` of MIP section 2.1 (1 UTF-8 string, 2 unsigned integer, 3 JSON, 4 absolute URI), which is what the generator writes into the payload's type byte. This file drives scripts/export-simulator-fixtures.ts and scripts/generate-literal-contracts.ts, and is the seed for the on-chain deployment matrix.",
   "rows": [
     {
       "id": "LSUN",
@@ -28,8 +28,8 @@
       "steps": [
         { "op": "publishMetadata" },
         { "op": "ledgerMint", "to": "owner", "amount": "5000000" },
-        { "op": "setMetadata", "key": "name", "value": "Ledger Moon (renamed)" },
-        { "op": "setMetadata", "key": "description", "value": "A ledger token that renamed itself in a later block." }
+        { "op": "setMetadata", "key": "name", "valType": 1, "value": "Ledger Moon (renamed)" },
+        { "op": "setMetadata", "key": "description", "valType": 1, "value": "A ledger token that renamed itself in a later block." }
       ]
     },
     {
@@ -57,12 +57,12 @@
       "expect": { "status": "described", "storage": "native", "mintCount": 2, "totalMinted": "3" },
       "steps": [
         { "op": "publishMetadata" },
-        { "op": "setMetadata", "key": "metadata/0", "value": "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" },
-        { "op": "setMetadata", "key": "metadata/1", "value": "nt carries at most 190 bytes of value and this JSON does not fit in one." },
-        { "op": "setMetadata", "key": "metadata/2", "value": "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" },
-        { "op": "setMetadata", "key": "metadata/3", "value": ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " },
-        { "op": "setMetadata", "key": "metadata/4", "value": "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" },
-        { "op": "setMetadata", "key": "metadata/5", "value": "nce set\"}" },
+        { "op": "setMetadata", "key": "metadata/0", "valType": 3, "value": "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" },
+        { "op": "setMetadata", "key": "metadata/1", "valType": 3, "value": "nt carries at most 189 bytes of value and this JSON does not fit in one." },
+        { "op": "setMetadata", "key": "metadata/2", "valType": 3, "value": "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" },
+        { "op": "setMetadata", "key": "metadata/3", "valType": 3, "value": ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " },
+        { "op": "setMetadata", "key": "metadata/4", "valType": 3, "value": "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" },
+        { "op": "setMetadata", "key": "metadata/5", "valType": 3, "value": "nce set\"}" },
         { "op": "mint", "to": "holder:sneb-1", "amount": "1", "nonce": "sneb:1" },
         { "op": "mint", "to": "holder:sneb-2", "amount": "2", "nonce": "sneb:2" }
       ]
@@ -152,34 +152,34 @@
       "steps": [
         { "op": "mintPiece", "piece": "orion", "to": "holder:cnst-orion", "nonce": "cnst:orion:1" },
         { "op": "publishPiece", "piece": "orion", "pieceName": "Constellations · Orion" },
-        { "op": "setPieceTrait", "piece": "orion", "key": "tokenUri", "value": "http://localhost:10020/constellations/orion" },
-        { "op": "setPieceTrait", "piece": "orion", "key": "hemisphere", "value": "equatorial" },
-        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "value": "0.18" },
-        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "value": "0.42" },
-        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "value": "1.25" },
-        { "op": "setPieceTrait", "piece": "orion", "key": "metadata", "value": "{\"collection\":\"Constellations\",\"image\":\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'><path d='M0 4 L2 0 L4 4' stroke='%23fff'/></svg>\"}" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "tokenUri", "valType": 4, "value": "http://localhost:10020/constellations/orion" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "hemisphere", "valType": 1, "value": "equatorial" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "valType": 1, "value": "0.18" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "valType": 1, "value": "0.42" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "magnitude", "valType": 1, "value": "1.25" },
+        { "op": "setPieceTrait", "piece": "orion", "key": "metadata", "valType": 3, "value": "{\"collection\":\"Constellations\",\"image\":\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'><path d='M0 4 L2 0 L4 4' stroke='%23fff'/></svg>\"}" },
 
         { "op": "mintPiece", "piece": "lyra", "to": "holder:cnst-lyra", "nonce": "cnst:lyra:1" },
         { "op": "publishPiece", "piece": "lyra", "pieceName": "Constellations · Lyra" },
-        { "op": "setPieceTrait", "piece": "lyra", "key": "tokenUri", "value": "http://localhost:10020/constellations/lyra" },
-        { "op": "setPieceTrait", "piece": "lyra", "key": "hemisphere", "value": "northern" },
-        { "op": "setPieceTrait", "piece": "lyra", "key": "magnitude", "value": "0.03" },
+        { "op": "setPieceTrait", "piece": "lyra", "key": "tokenUri", "valType": 4, "value": "http://localhost:10020/constellations/lyra" },
+        { "op": "setPieceTrait", "piece": "lyra", "key": "hemisphere", "valType": 1, "value": "northern" },
+        { "op": "setPieceTrait", "piece": "lyra", "key": "magnitude", "valType": 1, "value": "0.03" },
 
         { "op": "mintPiece", "piece": "cygnus", "to": "holder:cnst-cygnus", "nonce": "cnst:cygnus:1" },
         { "op": "publishPiece", "piece": "cygnus", "pieceName": "Constellations · Cygnus" },
-        { "op": "setPieceTrait", "piece": "cygnus", "key": "tokenUri", "value": "http://localhost:10020/constellations/cygnus" },
-        { "op": "setPieceTrait", "piece": "cygnus", "key": "hemisphere", "value": "northern" },
-        { "op": "setPieceTrait", "piece": "cygnus", "key": "magnitude", "value": "1.25" },
+        { "op": "setPieceTrait", "piece": "cygnus", "key": "tokenUri", "valType": 4, "value": "http://localhost:10020/constellations/cygnus" },
+        { "op": "setPieceTrait", "piece": "cygnus", "key": "hemisphere", "valType": 1, "value": "northern" },
+        { "op": "setPieceTrait", "piece": "cygnus", "key": "magnitude", "valType": 1, "value": "1.25" },
 
         { "op": "mintPiece", "piece": "vega", "to": "holder:cnst-vega", "nonce": "cnst:vega:1" },
         { "op": "publishPiece", "piece": "vega", "pieceName": "Constellations · Vega" },
-        { "op": "setPieceTrait", "piece": "vega", "key": "tokenUri", "value": "http://localhost:10020/constellations/vega" },
-        { "op": "setPieceTrait", "piece": "vega", "key": "hemisphere", "value": "northern" },
+        { "op": "setPieceTrait", "piece": "vega", "key": "tokenUri", "valType": 4, "value": "http://localhost:10020/constellations/vega" },
+        { "op": "setPieceTrait", "piece": "vega", "key": "hemisphere", "valType": 1, "value": "northern" },
 
         { "op": "mintPiece", "piece": "altair", "to": "holder:cnst-altair", "nonce": "cnst:altair:1" },
         { "op": "publishPiece", "piece": "altair", "pieceName": "Constellations · Altair" },
-        { "op": "setPieceTrait", "piece": "altair", "key": "tokenUri", "value": "http://localhost:10020/constellations/altair" },
-        { "op": "setPieceTrait", "piece": "altair", "key": "hemisphere", "value": "equatorial" }
+        { "op": "setPieceTrait", "piece": "altair", "key": "tokenUri", "valType": 4, "value": "http://localhost:10020/constellations/altair" },
+        { "op": "setPieceTrait", "piece": "altair", "key": "hemisphere", "valType": 1, "value": "equatorial" }
       ]
     },
     {
@@ -190,9 +190,13 @@
       "kind": 2,
       "template": "NativeUnshieldedToken",
       "domain": "umbra:lliar",
-      "$comment": "Declares kind 2 (ledger) and then mints natively anyway. The observed mint wins; the declaration is kept and the row is flagged inconsistent.",
+      "$comment": "Describes its LEDGER side (kind 2) and mints natively (kind 0). MIP sections 4, 6.3 and 7.2: the full kind byte is the identity, so the two never contradict — this contract yields TWO rows, an observed kind-0 row with no name and a declared kind-2 row with one. A consumer MAY hint that they share a domainSep.",
       "optional": true,
-      "expect": { "status": "inconsistent", "storage": "native", "mintCount": 1, "totalMinted": "7" },
+      "expect": { "rows": 2 },
+      "expectRows": [
+        { "kind": 0, "status": "observed", "privacy": "unshielded", "storage": "native", "name": null, "mintCount": 1, "totalMinted": "7" },
+        { "kind": 2, "status": "declared", "privacy": "unshielded", "storage": "ledger", "color": null, "mintCount": 0, "totalMinted": "0" }
+      ],
       "steps": [
         { "op": "publishMetadata" },
         { "op": "mint", "to": "user:lliar-1", "amount": "7" }

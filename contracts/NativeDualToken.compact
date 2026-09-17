@@ -8,8 +8,8 @@
 // `publishMetadata` therefore emits SIX events: the three standard fields for
 // kind 0 (unshielded native) and the three for kind 1 (shielded native).
 //
-// See ../TOKEN-METADATA.md section 3 ("the (domainSep, kind) pair identifies a
-// token").
+// See MIP section 4: a token is identified by (contractAddress, domainSep,
+// kind), with the FULL kind byte, so these two halves are two rows.
 
 pragma language_version >= 0.26.0;
 
@@ -22,7 +22,7 @@ export { ContractAddress, Either, Maybe, ShieldedCoinInfo, UserAddress, ZswapCoi
 export sealed ledger _domain: Bytes<32>;
 export sealed ledger _nameBytes: Bytes<32>;
 export sealed ledger _nameLen: Uint<8>;
-export sealed ledger _symbolBytes: Bytes<16>;
+export sealed ledger _symbolBytes: Bytes<32>;
 export sealed ledger _symbolLen: Uint<8>;
 export sealed ledger _decimals: Uint<8>;
 export ledger _publishedUnshielded: Boolean;
@@ -33,7 +33,7 @@ constructor(
   domain_: Bytes<32>,
   nameBytes_: Bytes<32>,
   nameLen_: Uint<8>,
-  symbolBytes_: Bytes<16>,
+  symbolBytes_: Bytes<32>,
   symbolLen_: Uint<8>,
   decimals_: Uint<8>
 ) {
@@ -83,9 +83,9 @@ export circuit publishShielded(): [] {
 }
 
 /** Sets one metadata key for one kind (EIP-7496 dynamic trait). Owner only. */
-export circuit setMetadata(kind: Uint<8>, key: Bytes<32>, len: Uint<8>, value: Bytes<190>): [] {
+export circuit setMetadata(kind: Uint<8>, key: Bytes<32>, valType: Uint<8>, valLen: Uint<8>, value: Bytes<189>): [] {
   Ownable_assertOnlyOwner();
-  TM_emitTokenMetadata(_domain, disclose(kind), disclose(key), disclose(len), disclose(value));
+  TM_emitTokenMetadata(_domain, disclose(kind), disclose(key), disclose(valType), disclose(valLen), disclose(value));
 }
 
 /** Mints the shielded form of the token. */

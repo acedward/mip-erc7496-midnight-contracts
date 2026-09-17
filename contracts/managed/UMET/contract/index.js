@@ -1,9 +1,9 @@
 import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
 __compactRuntime.checkRuntimeVersion('0.19.0');
 
-const _descriptor_0 = __compactRuntime.CompactTypeBoolean;
+const _descriptor_0 = new __compactRuntime.CompactTypeUnsignedInteger(65535n, 2);
 
-const _descriptor_1 = new __compactRuntime.CompactTypeUnsignedInteger(65535n, 2);
+const _descriptor_1 = __compactRuntime.CompactTypeBoolean;
 
 const _descriptor_2 = new __compactRuntime.CompactTypeBytes(32);
 
@@ -41,17 +41,17 @@ const _descriptor_4 = new _UserAddress_0();
 
 class _Either_0 {
   alignment() {
-    return _descriptor_0.alignment().concat(_descriptor_3.alignment().concat(_descriptor_4.alignment()));
+    return _descriptor_1.alignment().concat(_descriptor_3.alignment().concat(_descriptor_4.alignment()));
   }
   fromValue(value_0) {
     return {
-      is_left: _descriptor_0.fromValue(value_0),
+      is_left: _descriptor_1.fromValue(value_0),
       left: _descriptor_3.fromValue(value_0),
       right: _descriptor_4.fromValue(value_0)
     }
   }
   toValue(value_0) {
-    return _descriptor_0.toValue(value_0.is_left).concat(_descriptor_3.toValue(value_0.left).concat(_descriptor_4.toValue(value_0.right)));
+    return _descriptor_1.toValue(value_0.is_left).concat(_descriptor_3.toValue(value_0.left).concat(_descriptor_4.toValue(value_0.right)));
   }
 }
 
@@ -63,21 +63,21 @@ const _descriptor_7 = new __compactRuntime.CompactTypeUnsignedInteger(255n, 1);
 
 const _descriptor_8 = new __compactRuntime.CompactTypeBytes(288);
 
-const _descriptor_9 = new __compactRuntime.CompactTypeBytes(190);
+const _descriptor_9 = new __compactRuntime.CompactTypeBytes(189);
 
 class _Either_1 {
   alignment() {
-    return _descriptor_0.alignment().concat(_descriptor_2.alignment().concat(_descriptor_2.alignment()));
+    return _descriptor_1.alignment().concat(_descriptor_2.alignment().concat(_descriptor_2.alignment()));
   }
   fromValue(value_0) {
     return {
-      is_left: _descriptor_0.fromValue(value_0),
+      is_left: _descriptor_1.fromValue(value_0),
       left: _descriptor_2.fromValue(value_0),
       right: _descriptor_2.fromValue(value_0)
     }
   }
   toValue(value_0) {
-    return _descriptor_0.toValue(value_0.is_left).concat(_descriptor_2.toValue(value_0.left).concat(_descriptor_2.toValue(value_0.right)));
+    return _descriptor_1.toValue(value_0.is_left).concat(_descriptor_2.toValue(value_0.left).concat(_descriptor_2.toValue(value_0.right)));
   }
 }
 
@@ -112,7 +112,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('tokenColor',
                                      'argument 1 (as invoked from Typescript)',
-                                     'UMET.compact line 36 char 1',
+                                     'UMET.compact line 37 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -142,7 +142,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('mints',
                                      'argument 1 (as invoked from Typescript)',
-                                     'UMET.compact line 49 char 1',
+                                     'UMET.compact line 50 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -166,7 +166,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('publishMetadata',
                                      'argument 1 (as invoked from Typescript)',
-                                     'UMET.compact line 56 char 1',
+                                     'UMET.compact line 57 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -192,21 +192,21 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('mint',
                                      'argument 1 (as invoked from Typescript)',
-                                     'UMET.compact line 71 char 1',
+                                     'UMET.compact line 72 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(typeof(recipient_0) === 'object' && typeof(recipient_0.is_left) === 'boolean' && typeof(recipient_0.left) === 'object' && recipient_0.left.bytes.buffer instanceof ArrayBuffer && recipient_0.left.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.left.bytes.length === 32 && typeof(recipient_0.right) === 'object' && recipient_0.right.bytes.buffer instanceof ArrayBuffer && recipient_0.right.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.right.bytes.length === 32)) {
           __compactRuntime.typeError('mint',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'UMET.compact line 71 char 1',
+                                     'UMET.compact line 72 char 1',
                                      'struct Either<is_left: Boolean, left: struct ContractAddress<bytes: Bytes<32>>, right: struct UserAddress<bytes: Bytes<32>>>',
                                      recipient_0)
         }
         if (!(typeof(amount_0) === 'bigint' && amount_0 >= 0n && amount_0 <= 18446744073709551615n)) {
           __compactRuntime.typeError('mint',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'UMET.compact line 71 char 1',
+                                     'UMET.compact line 72 char 1',
                                      'Uint<0..18446744073709551616>',
                                      amount_0)
         }
@@ -279,8 +279,8 @@ export class Contract {
                                                  value: __compactRuntime.StateValue.newCell({ value: _descriptor_7.toValue(0n),
                                                                                               alignment: _descriptor_7.alignment() }).encode() } },
                                        { push: { storage: true,
-                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_0.toValue(false),
-                                                                                              alignment: _descriptor_0.alignment() }).encode() } },
+                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_1.toValue(false),
+                                                                                              alignment: _descriptor_1.alignment() }).encode() } },
                                        { ins: { cached: false, n: 1 } }]);
     __compactRuntime.queryLedgerState(context,
                                       partialProofData,
@@ -448,12 +448,16 @@ export class Contract {
                                                        rand_0);
     return result_0;
   }
+  _EVENT_NAME_0() {
+    return new Uint8Array([109, 105, 112, 45, 120, 120, 120, 120, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
+  }
   async _emitTokenMetadata_0(context,
                              partialProofData,
                              domainSep_0,
                              kind_0,
                              key_0,
-                             len_0,
+                             valType_0,
+                             valLen_0,
                              value_0)
   {
     let t_0;
@@ -465,14 +469,15 @@ export class Contract {
                                                           .arrayPush(__compactRuntime.StateValue.newCell({ value: _descriptor_13.toValue(1n),
                                                                                                            alignment: _descriptor_13.alignment() })).arrayPush(__compactRuntime.StateValue.newCell({ value: _descriptor_7.toValue(10n),
                                                                                                                                                                                                      alignment: _descriptor_7.alignment() })).arrayPush(__compactRuntime.StateValue.newCell({ value: _descriptor_8.toValue((t_0 = { name:
-                                                                                                                                                                                                                                                                                                                                      new Uint8Array([84, 111, 107, 101, 110, 77, 101, 116, 97, 100, 97, 116, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                                                                                                                                                                                                                                                                                                                      this._EVENT_NAME_0(),
                                                                                                                                                                                                                                                                                                                                     payload:
                                                                                                                                                                                                                                                                                                                                       Uint8Array.from([...Array.from(domainSep_0,
                                                                                                                                                                                                                                                                                                                                                                      BigInt),
                                                                                                                                                                                                                                                                                                                                                        kind_0,
                                                                                                                                                                                                                                                                                                                                                        ...Array.from(key_0,
                                                                                                                                                                                                                                                                                                                                                                      BigInt),
-                                                                                                                                                                                                                                                                                                                                                       len_0,
+                                                                                                                                                                                                                                                                                                                                                       valType_0,
+                                                                                                                                                                                                                                                                                                                                                       valLen_0,
                                                                                                                                                                                                                                                                                                                                                        ...Array.from(value_0,
                                                                                                                                                                                                                                                                                                                                                                      BigInt)],
                                                                                                                                                                                                                                                                                                                                                       Number) },
@@ -521,7 +526,7 @@ export class Contract {
                                                                                  result: undefined } }]).value);
   }
   async _publishMetadata_0(context, partialProofData) {
-    __compactRuntime.assert(!_descriptor_0.fromValue(__compactRuntime.queryLedgerState(context,
+    __compactRuntime.assert(!_descriptor_1.fromValue(__compactRuntime.queryLedgerState(context,
                                                                                        partialProofData,
                                                                                        [
                                                                                         { dup: { n: 0 } },
@@ -541,31 +546,34 @@ export class Contract {
                                                  value: __compactRuntime.StateValue.newCell({ value: _descriptor_7.toValue(0n),
                                                                                               alignment: _descriptor_7.alignment() }).encode() } },
                                        { push: { storage: true,
-                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_0.toValue(true),
-                                                                                              alignment: _descriptor_0.alignment() }).encode() } },
+                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_1.toValue(true),
+                                                                                              alignment: _descriptor_1.alignment() }).encode() } },
                                        { ins: { cached: false, n: 1 } }]);
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 117, 109, 101, 116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     0n,
                                     new Uint8Array([110, 97, 109, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    1n,
                                     17n,
-                                    new Uint8Array([85, 110, 115, 104, 105, 101, 108, 100, 101, 100, 32, 77, 101, 116, 101, 111, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+                                    new Uint8Array([85, 110, 115, 104, 105, 101, 108, 100, 101, 100, 32, 77, 101, 116, 101, 111, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 117, 109, 101, 116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     0n,
                                     new Uint8Array([115, 121, 109, 98, 111, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    1n,
                                     4n,
-                                    new Uint8Array([85, 77, 69, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+                                    new Uint8Array([85, 77, 69, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 117, 109, 101, 116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     0n,
                                     new Uint8Array([100, 101, 99, 105, 109, 97, 108, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    2n,
                                     1n,
                                     Uint8Array.from([2n,
-                                                     ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                                     ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                                                    BigInt)],
                                                     Number));
     return [];
@@ -583,8 +591,8 @@ export class Contract {
                                                          value: { value: _descriptor_7.toValue(1n),
                                                                   alignment: _descriptor_7.alignment() } }] } },
                                        { addi: { immediate: parseInt(__compactRuntime.valueToBigInt(
-                                                              { value: _descriptor_1.toValue(tmp_0),
-                                                                alignment: _descriptor_1.alignment() }
+                                                              { value: _descriptor_0.toValue(tmp_0),
+                                                                alignment: _descriptor_0.alignment() }
                                                                 .value
                                                             )) } },
                                        { ins: { cached: true, n: 1 } }]);
@@ -614,7 +622,7 @@ export function ledger(stateOrChargedState) {
   };
   return {
     get _published() {
-      return _descriptor_0.fromValue(__compactRuntime.queryLedgerState(context,
+      return _descriptor_1.fromValue(__compactRuntime.queryLedgerState(context,
                                                                        partialProofData,
                                                                        [
                                                                         { dup: { n: 0 } },
@@ -669,11 +677,6 @@ export const pureCircuits = {
 };
 export const contractReferenceLocations =
   { tag: 'publicLedgerArray', indices: { } };
-export const expectedVk = {
-  'mint': '3b0c9d31d91f9feb8cce64ab0c460230d0d69da0bd9f2cd2e6ae7346e195ae7c',
-  'mints': '807711f46c0753b6cd8875cb2e1267b57190402a2da7c59dd42905b3e65a91ae',
-  'publishMetadata': 'f79605470ebda9e68397bcba037409e2b53d2cd6a950fae5f450a74c7ec46b00',
-  'tokenColor': '8bd13ec2852cac4856048233ba16b62df2b67878978f99100ef07d067da1ef85',
-};
+export const expectedVk = {};
 
 //# sourceMappingURL=index.js.map

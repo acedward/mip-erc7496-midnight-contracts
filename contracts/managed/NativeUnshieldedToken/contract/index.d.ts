@@ -20,7 +20,8 @@ export type ImpureCircuits<PS> = {
   publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   setMetadata(context: __compactRuntime.CircuitContext<PS>,
               key_0: Uint8Array,
-              len_0: bigint,
+              valType_0: bigint,
+              valLen_0: bigint,
               value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   mint(context: __compactRuntime.CircuitContext<PS>,
        recipient_0: Either<ContractAddress, UserAddress>,
@@ -37,7 +38,8 @@ export type ProvableCircuits<PS> = {
   publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   setMetadata(context: __compactRuntime.CircuitContext<PS>,
               key_0: Uint8Array,
-              len_0: bigint,
+              valType_0: bigint,
+              valLen_0: bigint,
               value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   mint(context: __compactRuntime.CircuitContext<PS>,
        recipient_0: Either<ContractAddress, UserAddress>,
@@ -57,7 +59,8 @@ export type Circuits<PS> = {
   publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   setMetadata(context: __compactRuntime.CircuitContext<PS>,
               key_0: Uint8Array,
-              len_0: bigint,
+              valType_0: bigint,
+              valLen_0: bigint,
               value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   mint(context: __compactRuntime.CircuitContext<PS>,
        recipient_0: Either<ContractAddress, UserAddress>,

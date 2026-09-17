@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // A native UNSHIELDED token with one static domain separator that describes
-// itself on chain per ../TOKEN-METADATA.md.
+// itself on chain per MIP PR #315 (`mips/mip-xxxx-on-chain-token-metadata.md`
+// @ `f433056`), the normative text; ../TOKEN-METADATA.md points at it.
 //
 // OpenZeppelin has no unshielded counterpart to `NativeShieldedToken`, so the
 // minimal body is inlined here: `mintUnshieldedToken` from the Compact standard
@@ -9,10 +10,11 @@
 // control and the metadata events are the shared modules.
 //
 // The `kind_` constructor argument exists so the reference deployment can also
-// produce a deliberately WRONG declaration (a token that mints natively but
-// claims `kind = 2`, i.e. ledger) — the "Ledger Liar" row of the reference set,
-// which is how a consumer's `inconsistent` state gets exercised. Honest
-// deployments pass `TM_KIND_UNSHIELDED()` (0).
+// describe its LEDGER side (`kind = 2`) while minting natively (kind 0) — the
+// "Ledger Liar" row of the reference set. Under MIP section 4 the full kind
+// byte is part of the token identity, so that is not a contradiction: it is two
+// rows, an OBSERVED kind-0 row with no name and a DECLARED kind-2 row with one
+// (MIP sections 6.3 and 7.2). Honest deployments pass `TM_KIND_UNSHIELDED()` (0).
 
 pragma language_version >= 0.26.0;
 
@@ -28,7 +30,7 @@ export sealed ledger _domain: Bytes<32>;
 export sealed ledger _kind: Uint<8>;
 export sealed ledger _nameBytes: Bytes<32>;
 export sealed ledger _nameLen: Uint<8>;
-export sealed ledger _symbolBytes: Bytes<16>;
+export sealed ledger _symbolBytes: Bytes<32>;
 export sealed ledger _symbolLen: Uint<8>;
 export sealed ledger _decimals: Uint<8>;
 export ledger _published: Boolean;
@@ -38,7 +40,7 @@ constructor(
   domain_: Bytes<32>,
   nameBytes_: Bytes<32>,
   nameLen_: Uint<8>,
-  symbolBytes_: Bytes<16>,
+  symbolBytes_: Bytes<32>,
   symbolLen_: Uint<8>,
   decimals_: Uint<8>,
   kind_: Uint<8>
@@ -66,7 +68,7 @@ export circuit decimals(): Uint<8> {
   return _decimals;
 }
 
-/** The kind byte this contract declares (see ../TOKEN-METADATA.md section 3). */
+/** The kind byte this contract declares (see MIP section 3). */
 export circuit kind(): Uint<8> {
   return _kind;
 }
@@ -90,9 +92,9 @@ export circuit publishMetadata(): [] {
 }
 
 /** Sets or replaces one metadata key (EIP-7496 dynamic trait). Owner only. */
-export circuit setMetadata(key: Bytes<32>, len: Uint<8>, value: Bytes<190>): [] {
+export circuit setMetadata(key: Bytes<32>, valType: Uint<8>, valLen: Uint<8>, value: Bytes<189>): [] {
   Ownable_assertOnlyOwner();
-  TM_emitTokenMetadata(_domain, _kind, disclose(key), disclose(len), disclose(value));
+  TM_emitTokenMetadata(_domain, _kind, disclose(key), disclose(valType), disclose(valLen), disclose(value));
 }
 
 /**
