@@ -162,11 +162,46 @@ trimmed**, while declaring `length: 288`. Zero-extend before slicing
 (`rawMiscBytes` does). An indexer reading `MiscContractEvent.payload` over
 GraphQL gets the full 256-byte payload already re-padded.
 
+## The reference set and its fixtures
+
+[`deployments/reference-set.json`](./deployments/reference-set.json) is the
+reference deployment as data: eleven rows across all four families, including
+the three cases a token table has to render and nobody remembers to build — a
+token minted but never described, one described but never minted, and one that
+declares itself a ledger token and then mints natively anyway.
+
+```sh
+npm run export:fixtures:simulator
+```
+
+runs the whole set through the simulator and writes `fixtures/simulator/`:
+
+| file | what is in it |
+|---|---|
+| `events.json` | every `TokenMetadata` event, with its 256-byte payload as hex |
+| `mints.json` | every mint effect a scanner would read out of a transcript |
+| `color-vectors.json` | `(domainSep, address) → colour`, checked against each contract's own `tokenColor()` |
+| `expected-tokens.json` | the rows an indexer should end up with — all four states: observed, declared, described, inconsistent |
+| `negative-payloads.json` | payloads a conforming consumer must reject, emitted on purpose by the probe |
+
+Contract addresses are `sha256("umbra:00020:<row id>")`, so every byte —
+including every colour — is reproducible. There are no block heights,
+transaction hashes or indexer event ids; those only exist once something is
+deployed. An indexer can be written and tested byte-exactly against this corpus
+long before a chain is involved.
+
+One subtlety the corpus encodes: a token row is keyed by
+`(address, domainSep, kind)` where `kind` is **bit 0** of the kind byte — bit 1
+(native versus ledger) is a column, not part of the key. So the "Ledger Liar"
+row, which declares kind `2` and then mints natively, is *one* row in the
+inconsistent state, not two rows.
+
 ## Deploy
 
-Not yet part of this repository: `deployments/` and
-`scripts/deploy-and-publish.ts` are where the reference deployment matrix and
-its resumable runner will live.
+Not yet part of this repository: `scripts/deploy-and-publish.ts` is where the
+resumable on-chain runner for the reference set will live, alongside a fixture
+exporter that records the same corpus from a real chain (block heights,
+transaction hashes, indexer event ids and all).
 
 ## License
 
