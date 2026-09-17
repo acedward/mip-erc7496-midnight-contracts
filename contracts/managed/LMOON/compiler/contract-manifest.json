@@ -1,0 +1,65 @@
+{
+  "manifest-version": "1",
+  "compiler-version": "0.34.0",
+  "language-version": "0.26.0",
+  "runtime-version": "0.19.0",
+  "compiler": {
+    "type": "directory",
+    "contract-info.json": {
+      "type": "file",
+      "size": 3627,
+      "hash": "bf11126aa83e543aa5f3e342682be2cffa484baab71743234fc15c7d47c8ee2f"
+    }
+  },
+  "contract": {
+    "type": "directory",
+    "index.d.ts": {
+      "type": "file",
+      "size": 4401,
+      "hash": "49f9dda6d89df334ffe53359c32661ad217dcdc56574fd10f70df8b97223a27c"
+    },
+    "index.js": {
+      "type": "file",
+      "size": 75215,
+      "hash": "cc0675bcf8c4af103fafd71fdf4aea3dfede443c195d127e50850aaede7b8766"
+    },
+    "index.js.map": {
+      "type": "file",
+      "size": 2825,
+      "hash": "32616519f5761e0520e48db8081fe12bb66d7ab14d9507e01ccfd6bb999fa3aa"
+    }
+  },
+  "zkir": {
+    "type": "directory",
+    "balanceOf.zkir": {
+      "type": "file",
+      "size": 3118,
+      "hash": "36d7b6d7c1a23a2f7649b00dca2e538b4d6f520fb6b09cde9b6a33ea291995ee"
+    },
+    "ledgerMint.zkir": {
+      "type": "file",
+      "size": 5854,
+      "hash": "18ab3cb087c0eae1ac1d841825edb66fc58ce349623dca73a820e7156e00c1cd"
+    },
+    "publishMetadata.zkir": {
+      "type": "file",
+      "size": 6281,
+      "hash": "7a0445d0de9163966331946be056c09f655d4d45499e13b986546072a60246bb"
+    },
+    "publishRename.zkir": {
+      "type": "file",
+      "size": 3449,
+      "hash": "fbd6c020318d89c0e5af3aeb76702c05ea8b2e61fe256454fcda050c014f6613"
+    },
+    "totalSupply.zkir": {
+      "type": "file",
+      "size": 953,
+      "hash": "fbbf077b6b99fc33278f64a43f29e871353b174c23912f189e4f11437ad0033e"
+    },
+    "transfer.zkir": {
+      "type": "file",
+      "size": 8326,
+      "hash": "3582caa023eed6ef67b723860ee103eca884960458fb22d906e8ec04651c58da"
+    }
+  }
+}

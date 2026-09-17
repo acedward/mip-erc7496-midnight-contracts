@@ -1,0 +1,85 @@
+{
+  "manifest-version": "1",
+  "compiler-version": "0.34.0",
+  "language-version": "0.26.0",
+  "runtime-version": "0.19.0",
+  "compiler": {
+    "type": "directory",
+    "contract-info.json": {
+      "type": "file",
+      "size": 4776,
+      "hash": "d164d9c673d73d964d59320fd3e8306b5c81b7cafe28e934f985f21e00cdc277"
+    }
+  },
+  "contract": {
+    "type": "directory",
+    "index.d.ts": {
+      "type": "file",
+      "size": 5527,
+      "hash": "b9defb7c787bf8b92bff0a36c3c26fa56f6c6c85b490cd08cf2e127556adb129"
+    },
+    "index.js": {
+      "type": "file",
+      "size": 104788,
+      "hash": "6adf22ed2b53be40f327c50028f77c98f1ef3a0ef8305f2d3aa5993dfcaf9013"
+    },
+    "index.js.map": {
+      "type": "file",
+      "size": 3007,
+      "hash": "0f95979d62190324f384c312f1d2343ea4962e21eba7886bd6c13d3d5b62bf3b"
+    }
+  },
+  "zkir": {
+    "type": "directory",
+    "mintPiece.zkir": {
+      "type": "file",
+      "size": 9820,
+      "hash": "cb3dbbc42adc962b51aeacdda25d0bd4e6beb824dfbaff3386eddb532a8fe233"
+    },
+    "mintedPieces.zkir": {
+      "type": "file",
+      "size": 992,
+      "hash": "26e84c47d8d64a8d15038852c4bb8488aa3ba39ac0d8b1fae8745d25cfeeb904"
+    },
+    "publishAltair.zkir": {
+      "type": "file",
+      "size": 7706,
+      "hash": "572be44058989fc2b6aeec9a57e41e8c25dd90f0a6ec6c9e41e33c21112a7073"
+    },
+    "publishCygnus.zkir": {
+      "type": "file",
+      "size": 9127,
+      "hash": "b2b3bdb27c7cd8bda61c479e89d5f229a9e4b8bb56711ffc9bba8f7755f3dd10"
+    },
+    "publishLyra.zkir": {
+      "type": "file",
+      "size": 9095,
+      "hash": "8f34b62b415f152d171dcc600f488c596264635c4bd8e1c637210c42545e9dfd"
+    },
+    "publishOrion.zkir": {
+      "type": "file",
+      "size": 9115,
+      "hash": "0868973c3589b0fb2bd6ff1ba35f07faa0aea039f191352f1db7d6c94a1f708c"
+    },
+    "publishVega.zkir": {
+      "type": "file",
+      "size": 7674,
+      "hash": "739d2e550e50495fc6cb93f08043d4068f0a6cfa8202abc8f84565b5ffc9b47e"
+    },
+    "tokenColor.zkir": {
+      "type": "file",
+      "size": 1570,
+      "hash": "710022ee175b8ba7d74ca3a6804ed8af6dcdecf70efc0dcfb565d62b4b6fd281"
+    },
+    "updateOrion1.zkir": {
+      "type": "file",
+      "size": 1860,
+      "hash": "cef46007af03cf89a330a3d62b4024dc85bf4a3d94a446334e1a0b7125fd6141"
+    },
+    "updateOrion2.zkir": {
+      "type": "file",
+      "size": 3807,
+      "hash": "195c6fdeb0bfafdc64c615286fb75ab32b932304c06da0d535e7e6faebcc0b60"
+    }
+  }
+}

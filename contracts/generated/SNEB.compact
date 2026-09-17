@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// GENERATED FILE — do not edit. Produced by scripts/generate-literal-contracts.ts from
+// deployments/reference-set.json row "SNEB" (Shielded Nebula).
+//
+// Shielded Nebula (SNEB), 0 decimals, kind byte 1, template
+// NativeShieldedToken. Every TokenMetadata payload below is a compile-time literal, so each
+// emitting circuit costs about eight rows per event (k=7) instead of the ~120 000 rows per
+// runtime event the parameterised templates in contracts/ pay — see TOKEN-METADATA.md
+// "Circuit cost" and question Q13. The bytes emitted are exactly the standard's bytes.
+//
+// Circuits the deployment calls, in order:
+//   publishMetadata (9 events)
+//   mint
+//   mint
+
+pragma language_version >= 0.26.0;
+
+import CompactStandardLibrary;
+import "../TokenMetadata" prefix TM_;
+
+export { ContractAddress, Either, Maybe, ShieldedCoinInfo, ZswapCoinPublicKey };
+
+/** True once `publishMetadata` has run; it may run only once. */
+export ledger _published: Boolean;
+/** How many mints this contract has made, for a cheap read-back after deployment. */
+export ledger _mints: Counter;
+
+/** The domain separator this contract mints and describes under. */
+export circuit domainSep(): Bytes<32> {
+  return pad(32, "umbra:sneb");
+}
+
+/** The token's colour: `tokenType(domainSep, this contract)`. */
+export circuit tokenColor(): Bytes<32> {
+  return tokenType(pad(32, "umbra:sneb"), kernel.self());
+}
+
+/** The kind byte this contract declares (see ../../TOKEN-METADATA.md section 3). */
+export circuit kind(): Uint<8> {
+  return 1;
+}
+
+export circuit decimals(): Uint<8> {
+  return 0;
+}
+
+export circuit mints(): Uint<64> {
+  return _mints.read() as Uint<64>;
+}
+
+/**
+ * @description publishMetadata + setMetadata + setMetadata + setMetadata + setMetadata + setMetadata + setMetadata — 9 TokenMetadata events, every byte a compile-time literal.
+ */
+export circuit publishMetadata(): [] {
+  assert(!_published, "TokenMetadata: already published");
+  _published = true;
+  // name = "Shielded Nebula" (len 15)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "name"), 15, pad(190, "Shielded Nebula"));
+  // symbol = "SNEB" (len 4)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "symbol"), 4, pad(190, "SNEB"));
+  // decimals = "0" (len 1)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
+  // metadata/0 = "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" (len 74)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/0"), 74, Bytes[
+    0x7b, 0x22, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f,
+    0x6e, 0x22, 0x3a, 0x22, 0x41, 0x20, 0x6e, 0x65, 0x62, 0x75, 0x6c, 0x61,
+    0x20, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x65, 0x64, 0x20, 0x69,
+    0x6e, 0x20, 0x70, 0x61, 0x72, 0x74, 0x73, 0x2c, 0x20, 0x62, 0x65, 0x63,
+    0x61, 0x75, 0x73, 0x65, 0x20, 0x6f, 0x6e, 0x65, 0x20, 0x54, 0x6f, 0x6b,
+    0x65, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x20, 0x65,
+    0x76, 0x65, ...pad(116, "")
+  ]);
+  // metadata/1 = "nt carries at most 190 bytes of value and this JSON does not fit in one." (len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/1"), 72, pad(190, "nt carries at most 190 bytes of value and this JSON does not fit in one."));
+  // metadata/2 = "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" (len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/2"), 72, Bytes[
+    0x22, 0x2c, 0x22, 0x77, 0x65, 0x62, 0x73, 0x69, 0x74, 0x65, 0x22, 0x3a,
+    0x22, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x65, 0x78, 0x61,
+    0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x69, 0x6e, 0x76, 0x61, 0x6c, 0x69, 0x64,
+    0x2f, 0x6e, 0x65, 0x62, 0x75, 0x6c, 0x61, 0x22, 0x2c, 0x22, 0x69, 0x6d,
+    0x61, 0x67, 0x65, 0x22, 0x3a, 0x22, 0x64, 0x61, 0x74, 0x61, 0x3a, 0x69,
+    0x6d, 0x61, 0x67, 0x65, 0x2f, 0x73, 0x76, 0x67, 0x2b, 0x78, 0x6d, 0x6c,
+    ...pad(118, "")
+  ]);
+  // metadata/3 = ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " (len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/3"), 72, pad(190, ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle "));
+  // metadata/4 = "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" (len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/4"), 72, Bytes[
+    0x63, 0x78, 0x3d, 0x27, 0x34, 0x27, 0x20, 0x63, 0x79, 0x3d, 0x27, 0x34,
+    0x27, 0x20, 0x72, 0x3d, 0x27, 0x33, 0x27, 0x20, 0x66, 0x69, 0x6c, 0x6c,
+    0x3d, 0x27, 0x25, 0x32, 0x33, 0x36, 0x62, 0x34, 0x66, 0x61, 0x30, 0x27,
+    0x2f, 0x3e, 0x3c, 0x2f, 0x73, 0x76, 0x67, 0x3e, 0x22, 0x2c, 0x22, 0x63,
+    0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3a, 0x22,
+    0x55, 0x6d, 0x62, 0x72, 0x61, 0x20, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65,
+    ...pad(118, "")
+  ]);
+  // metadata/5 = "nce set\"}" (len 9)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/5"), 9, Bytes[0x6e, 0x63, 0x65, 0x20, 0x73, 0x65, 0x74, 0x22, 0x7d, ...pad(181, "")]);
+}
+
+/**
+ * @description Mints `amount` of this token to `recipient` as a shielded coin.
+ * @param {Bytes<32>} nonce - Caller-supplied and unique per mint.
+ */
+export circuit mint(
+  recipient: Either<ZswapCoinPublicKey, ContractAddress>,
+  amount: Uint<64>,
+  nonce: Bytes<32>
+): ShieldedCoinInfo {
+  assert(amount > 0, "amount must be positive");
+  _mints.increment(1);
+  return mintShieldedToken(pad(32, "umbra:sneb"), disclose(amount), disclose(nonce), disclose(recipient));
+}
