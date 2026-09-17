@@ -30,7 +30,14 @@
           }
         },
         {
-          "name": "len",
+          "name": "valType",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "valLen",
           "type": {
             "type-name": "Uint",
             "maxval": 255
@@ -40,7 +47,7 @@
           "name": "value",
           "type": {
             "type-name": "Bytes",
-            "length": 190
+            "length": 189
           }
         }
       ],
@@ -87,7 +94,7 @@
           "name": "symbol_",
           "type": {
             "type-name": "Bytes",
-            "length": 16
+            "length": 32
           }
         },
         {
@@ -116,6 +123,60 @@
       "pure": false,
       "proof": true,
       "arguments": [
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "publishLegacyName",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "domainSep",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "kind",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "key",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "valType",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "valLen",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "value",
+          "type": {
+            "type-name": "Bytes",
+            "length": 189
+          }
+        }
       ],
       "result-type": {
         "type-name": "Tuple",

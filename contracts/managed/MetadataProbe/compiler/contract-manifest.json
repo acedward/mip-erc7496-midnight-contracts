@@ -7,26 +7,26 @@
     "type": "directory",
     "contract-info.json": {
       "type": "file",
-      "size": 2792,
-      "hash": "86f2a29846ec12c107d9e52ed43fb0f38d69997dd3f27084d2a69f20ed215dc8"
+      "size": 3984,
+      "hash": "a12a6b16a8cba450a77f913e9f19751cdfb195ce653ca63aac7859f84bbb15aa"
     }
   },
   "contract": {
     "type": "directory",
     "index.d.ts": {
       "type": "file",
-      "size": 3638,
-      "hash": "9e434c4c5c182b01a0903e3bddd21bcb54e5d1e5a25f0ac68d7b400e1af6747e"
+      "size": 4808,
+      "hash": "7bbd3aa1fbf2f9791c05f3ac61e680fd61f6b785fe18d0549fa92b2d230ccd24"
     },
     "index.js": {
       "type": "file",
-      "size": 39744,
-      "hash": "7918f3220e79923d61cede70599a607b9508edfebbd9c18ef76881c310601f83"
+      "size": 55383,
+      "hash": "3cc9be0c618a02ea9c38a45d6c50b212483a937ef242814c0ffb34c75b68e662"
     },
     "index.js.map": {
       "type": "file",
-      "size": 2284,
-      "hash": "d4788e46c668b9168bb21052b6f44f2cfa030675513e72bd36b0e03708336438"
+      "size": 2964,
+      "hash": "392e58123c617f263f3896f94e66ef0e6ef0a69ac5192c12d6d63a04aa47809a"
     }
   },
   "zkir": {
@@ -38,18 +38,23 @@
     },
     "publishFixture.zkir": {
       "type": "file",
-      "size": 5294,
-      "hash": "d6f3ae1e3ac8bf1faf365a4186fc28480b72c99af29fbb9776da6e0998126de3"
+      "size": 5384,
+      "hash": "4f8d9842212ff8e0c0af426876dbba1d6343a4f50b2619382d4eaa631fa90999"
+    },
+    "publishLegacyName.zkir": {
+      "type": "file",
+      "size": 72405,
+      "hash": "f4e5601e156bbd88a45f70b3c04e89ba0183747d4040597ddacb8d8369854829"
     },
     "publishRaw.zkir": {
       "type": "file",
-      "size": 72413,
-      "hash": "919e1733852977ba38eebef61afefb4080978c8e9dffe26ff0f601f68a8c6aee"
+      "size": 72433,
+      "hash": "12de38abbb984176951458321d73f05209583304e939b22c1935988a788a97fd"
     },
     "publishStandard.zkir": {
       "type": "file",
-      "size": 95725,
-      "hash": "94325310cb16f0bb9e21f040f48494286875e1b0b73ecb4e903f1a88061153c6"
+      "size": 106941,
+      "hash": "1840fce664e71470b4a389b982b1154b698649b8a657e687292914ca067f90aa"
     }
   }
 }
