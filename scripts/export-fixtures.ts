@@ -296,6 +296,9 @@ interface ExpectedToken {
   symbol: string | null;
   decimals: number | null;
   traits: Record<string, { value: string; text: string | null; len: number }>;
+  /** Mints of this exact row, from the matrix; the chain's effect map is the authority. */
+  mintCount: number;
+  totalMinted: string;
   expect: Record<string, unknown>;
 }
 
@@ -326,6 +329,8 @@ for (const matrixRow of matrix.rows) {
         symbol: null,
         decimals: null,
         traits: {},
+        mintCount: 0,
+        totalMinted: '0',
         expect: matrixRow.expect,
       };
       byRowKey.set(rowKey, token);
@@ -347,6 +352,41 @@ for (const matrixRow of matrix.rows) {
         }
     }
   }
+  // A row can exist with NO events at all: `SGHOST` is minted and never described, which is
+  // exactly the "unknown colour" case a wallet shows today. Fold the mint steps in too, so
+  // the corpus carries every row of the matrix and not only the ones that spoke.
+  for (const step of matrixRow.steps) {
+    if (step.kind !== 'mint') continue;
+    const domainSep = step.domainSepHex!;
+    const kind: 'shielded' | 'unshielded' = step.mintKind === 'shielded' ? 'shielded' : 'unshielded';
+    const rowKey = `${domainSep}:${kind}`;
+    let token = byRowKey.get(rowKey);
+    if (!token) {
+      token = {
+        row: matrixRow.id,
+        address: record.address,
+        domainSep,
+        kind,
+        storage: 'native',
+        color: hexOf(deriveColor(new Uint8Array(Buffer.from(domainSep, 'hex')), record.address)),
+        name: null,
+        symbol: null,
+        decimals: null,
+        traits: {},
+        mintCount: 0,
+        totalMinted: '0',
+        expect: matrixRow.expect,
+      };
+      byRowKey.set(rowKey, token);
+    }
+    // A mint is always NATIVE: the ledger has no other way to create a token. A row that
+    // declared `ledger` and then minted natively (row 12, the Liar) is therefore
+    // `storage = native` AND inconsistent — the observation wins over the declaration.
+    token.storage = 'native';
+    token.mintCount += 1;
+    token.totalMinted = (BigInt(token.totalMinted) + BigInt(step.amount ?? '0')).toString();
+  }
+
   expected.push(...byRowKey.values());
 }
 
