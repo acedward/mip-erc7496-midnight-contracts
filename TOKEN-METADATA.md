@@ -133,6 +133,12 @@ emit byte-identical payloads for a four-figure factor less proving work
 and is one switch away (`ZKIR_V3=true ./scripts/compile.sh`), but no deployment
 has shown a live network accepts a v3 verifier key.
 
+Historical Compact/MinoCrab results and their exact fixtures are archived under
+[`benchmarks/`](./benchmarks/) and [`minocrab/`](./minocrab/README.md). Those
+fixtures use the earlier `TokenMetadata` event name and `Bytes<16>` symbols.
+One experiment also uses a 189-byte value, but matching the current payload
+width does not make it a measurement of this MIP format or deployment.
+
 ## Fixtures
 
 `fixtures/simulator/` is the offline corpus: the whole reference set executed in

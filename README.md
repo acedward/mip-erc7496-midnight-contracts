@@ -55,6 +55,8 @@ scripts/generate-literal-contracts.ts  the reference set as literal-payload cont
 scripts/export-simulator-fixtures.ts   the offline fixture corpus
 test/token-metadata.ts               the payload decoder, the validator and the simulator harness
 test/*.test.ts                       the tests
+minocrab/                             historical MinoCrab metadata fixtures and evidence
+benchmarks/                           historical Compact/MinoCrab measurement reports
 ```
 
 Each template composes three things: the metadata module, an access-control
@@ -169,6 +171,16 @@ Consequences, all of them already applied here:
   They emit byte-identical payloads — `test/generated.test.ts` asserts it
   against the parameterised template — for a four-figure factor less proving
   work.
+
+### Historical MinoCrab benchmarks
+
+[`minocrab/`](./minocrab/README.md) and [`benchmarks/`](./benchmarks/) preserve
+the earlier Compact/MinoCrab comparison and a typed-shape experiment at their
+audited source pins. They are historical fixtures: both use the legacy
+`TokenMetadata` event name and `Bytes<16>` symbols. The typed experiment happens
+to use a 189-byte value, but its tags are benchmark-local. Neither suite measures
+the current `mip-xxxx:token-metadata[v1]` implementation above, whose standard
+fields use `Bytes<32>` symbols.
 
 ## Test
 
