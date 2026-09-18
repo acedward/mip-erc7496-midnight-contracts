@@ -1,6 +1,7 @@
 /**
  * Generate one Compact contract per row of `deployments/reference-set.json`, with every
- * TokenMetadata payload written as a COMPILE-TIME LITERAL.
+ * TokenMetadata payload (MIP PR #315 section 2, val-type byte included) written as a
+ * COMPILE-TIME LITERAL.
  *
  * Why (question Q13, decided 2026-09-17):
  *   A `Misc` event whose payload contains runtime bytes costs ~26 000 rows for a single
@@ -38,8 +39,74 @@ const OUT_CONTRACTS = path.join(ROOT, 'contracts', 'generated');
 const OUT_MATRIX = path.join(ROOT, 'deployments', 'generated-matrix.json');
 
 const KEY_SIZE = 32;
-const VALUE_SIZE = 190;
+/** MIP section 2: the `value` field is 189 bytes wide. */
+const VALUE_SIZE = 189;
 const DOMAIN_SIZE = 32;
+
+/**
+ * MIP section 2.1 — the `val-type` byte.
+ *
+ * 0 opaque · 1 UTF-8 string · 2 unsigned big-endian integer (1..16 bytes) ·
+ * 3 UTF-8 JSON · 4 UTF-8 absolute URI · 5..255 reserved (a consumer rejects).
+ */
+const VAL_TYPE_STRING = 1;
+const VAL_TYPE_INTEGER = 2;
+const VAL_TYPE_JSON = 3;
+const VAL_TYPE_URI = 4;
+
+/**
+ * The val-type MIP Appendix A gives each well-known key. A step in the
+ * reference set may state its own `valType`; this is the fallback, and an
+ * unknown key defaults to a UTF-8 string.
+ *
+ * `magnitude` is deliberately type 1 and not 2: the collection's magnitudes are
+ * decimals with a fraction ("1.25") and type 2 is integers only (spec 00021 Q6).
+ */
+const WELL_KNOWN_VAL_TYPE: Record<string, number> = {
+  name: VAL_TYPE_STRING,
+  symbol: VAL_TYPE_STRING,
+  decimals: VAL_TYPE_INTEGER,
+  metadata: VAL_TYPE_JSON,
+  tokenUri: VAL_TYPE_URI,
+  description: VAL_TYPE_STRING,
+  magnitude: VAL_TYPE_STRING,
+  hemisphere: VAL_TYPE_STRING,
+};
+
+/** `metadata/<n>` parts are JSON fragments; everything else falls back to text. */
+function valTypeFor(key: string, declared: number | undefined): number {
+  if (declared !== undefined) return declared;
+  if (/^metadata\/\d+$/.test(key)) return VAL_TYPE_JSON;
+  return WELL_KNOWN_VAL_TYPE[key] ?? VAL_TYPE_STRING;
+}
+
+/**
+ * MIP section 2.1 again, from the emitter's side: an event whose value breaks
+ * its declared type's rule MUST be rejected by every consumer, so the generator
+ * refuses to write one.
+ */
+function assertValueMatchesType(where: string, valType: number, value: Uint8Array): void {
+  if (valType < 0 || valType > 4) {
+    throw new Error(`${where}: val-type ${valType} is reserved (MIP section 2.1)`);
+  }
+  const text = Buffer.from(value).toString('utf8');
+  const roundTrips = Buffer.from(text, 'utf8').equals(Buffer.from(value));
+  if ((valType === VAL_TYPE_STRING || valType === VAL_TYPE_JSON || valType === VAL_TYPE_URI) && !roundTrips) {
+    throw new Error(`${where}: val-type ${valType} requires valid UTF-8`);
+  }
+  if (valType === VAL_TYPE_INTEGER && (value.length < 1 || value.length > 16)) {
+    throw new Error(`${where}: val-type 2 requires 1 <= val-len <= 16, got ${value.length}`);
+  }
+  if (valType === VAL_TYPE_URI) {
+    let absolute = false;
+    try {
+      absolute = new URL(text).protocol.length > 1;
+    } catch {
+      absolute = false;
+    }
+    if (!absolute) throw new Error(`${where}: val-type 4 requires an absolute URI, got "${text}"`);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // the reference set as data
@@ -48,6 +115,7 @@ const DOMAIN_SIZE = 32;
 interface Step {
   op: string;
   key?: string;
+  valType?: number;
   value?: string;
   to?: string;
   amount?: string;
@@ -110,7 +178,7 @@ const byteLiteral = (bytes: Uint8Array, size: number): string => {
   const items: string[] = [];
   for (const b of meaningful) items.push(`0x${b.toString(16).padStart(2, '0')}`);
   // Trailing NULs come from one `pad` spread rather than a wall of 0x00, exactly as
-  // TokenMetadata.compact itself writes `Bytes[decimals_, ...pad(189, "")]`.
+  // TokenMetadata.compact itself writes `Bytes[decimals_, ...pad(188, "")]`.
   if (meaningful.length < size) items.push(`...pad(${size - meaningful.length}, "")`);
   const lines: string[] = [];
   for (let i = 0; i < items.length; i += 12) {
@@ -130,7 +198,9 @@ interface Emit {
   domainSepHex: string;
   kind: number;
   key: string;
-  /** the meaningful value bytes (before NUL padding to 190) */
+  /** MIP section 2.1 — how a consumer reads `value` */
+  valType: number;
+  /** the meaningful value bytes (before NUL padding to 189) */
   value: Uint8Array;
   valueHex: string;
   len: number;
@@ -141,10 +211,18 @@ interface Emit {
 const domainFor = (row: Row, piece?: string): string =>
   piece ? `cnst:${piece}` : (row.domain ?? `umbra:${row.symbol.toLowerCase()}`);
 
-const makeEmit = (row: Row, key: string, value: Uint8Array, text: string | null, piece?: string): Emit => {
+const makeEmit = (
+  row: Row,
+  key: string,
+  valType: number,
+  value: Uint8Array,
+  text: string | null,
+  piece?: string,
+): Emit => {
   if (value.length > VALUE_SIZE) {
     throw new Error(`${row.id}: value for "${key}" is ${value.length} bytes (max ${VALUE_SIZE})`);
   }
+  assertValueMatchesType(`${row.id}/${key}`, valType, value);
   const domain = domainFor(row, piece);
   return {
     piece: piece ?? null,
@@ -152,6 +230,7 @@ const makeEmit = (row: Row, key: string, value: Uint8Array, text: string | null,
     domainSepHex: hex(padTo(utf8(domain), DOMAIN_SIZE)),
     kind: row.kind,
     key,
+    valType,
     value,
     valueHex: hex(padTo(value, VALUE_SIZE)),
     len: value.length,
@@ -159,10 +238,11 @@ const makeEmit = (row: Row, key: string, value: Uint8Array, text: string | null,
   };
 };
 
+/** The three core fields of MIP Appendix A: name (1), symbol (1), decimals (2). */
 const standardEmits = (row: Row, name: string, piece?: string): Emit[] => [
-  makeEmit(row, 'name', utf8(name), name, piece),
-  makeEmit(row, 'symbol', utf8(row.symbol), row.symbol, piece),
-  makeEmit(row, 'decimals', new Uint8Array([row.decimals]), String(row.decimals), piece),
+  makeEmit(row, 'name', VAL_TYPE_STRING, utf8(name), name, piece),
+  makeEmit(row, 'symbol', VAL_TYPE_STRING, utf8(row.symbol), row.symbol, piece),
+  makeEmit(row, 'decimals', VAL_TYPE_INTEGER, new Uint8Array([row.decimals]), String(row.decimals), piece),
 ];
 
 // ---------------------------------------------------------------------------
@@ -243,11 +323,25 @@ function planSteps(row: Row): PlannedStep[] {
         push(standardEmits(row, step.pieceName ?? row.name, step.piece), step.op, step.piece ?? null, 'publishPiece');
         break;
       case 'setMetadata':
-        push([makeEmit(row, step.key!, utf8(step.value!), step.value!)], step.op, null, null);
+        push(
+          [makeEmit(row, step.key!, valTypeFor(step.key!, step.valType), utf8(step.value!), step.value!)],
+          step.op,
+          null,
+          null,
+        );
         break;
       case 'setPieceTrait':
         push(
-          [makeEmit(row, step.key!, utf8(step.value!), step.value!, step.piece)],
+          [
+            makeEmit(
+              row,
+              step.key!,
+              valTypeFor(step.key!, step.valType),
+              utf8(step.value!),
+              step.value!,
+              step.piece,
+            ),
+          ],
           step.op,
           step.piece ?? null,
           null,
@@ -300,14 +394,22 @@ function planSteps(row: Row): PlannedStep[] {
 // Compact source
 // ---------------------------------------------------------------------------
 
+const VAL_TYPE_NAME: Record<number, string> = {
+  0: 'opaque',
+  1: 'string',
+  2: 'integer',
+  3: 'JSON',
+  4: 'URI',
+};
+
 const emitCall = (emit: Emit): string => {
   const domain = byteLiteral(utf8(emit.domain), DOMAIN_SIZE);
   const key = byteLiteral(utf8(emit.key), KEY_SIZE);
   const value = byteLiteral(emit.value, VALUE_SIZE);
   return `  // ${emit.piece ? `${emit.piece}: ` : ''}${emit.key} = ${
     emit.text === null ? '<bytes>' : JSON.stringify(emit.text)
-  } (len ${emit.len})
-  TM_emitTokenMetadata(${domain}, ${emit.kind}, ${key}, ${emit.len}, ${value});`;
+  } (val-type ${emit.valType} ${VAL_TYPE_NAME[emit.valType]}, val-len ${emit.len})
+  TM_emitTokenMetadata(${domain}, ${emit.kind}, ${key}, ${emit.valType}, ${emit.len}, ${value});`;
 };
 
 const emitCircuit = (step: Extract<PlannedStep, { kind: 'emit' }>, guard: string | null): string => {
@@ -334,7 +436,8 @@ const HEADER = (row: Row, planned: PlannedStep[]): string => `// SPDX-License-Id
 // ${row.template}. Every TokenMetadata payload below is a compile-time literal, so each
 // emitting circuit costs about eight rows per event (k=7) instead of the ~120 000 rows per
 // runtime event the parameterised templates in contracts/ pay — see TOKEN-METADATA.md
-// "Circuit cost" and question Q13. The bytes emitted are exactly the standard's bytes.
+// "Circuit cost" and question Q13. The bytes emitted are exactly the bytes MIP
+// section 2 fixes, val-type byte included.
 //
 // Circuits the deployment calls, in order:
 ${planned.map((s) => `//   ${s.circuit}${s.kind === 'emit' ? ` (${s.emits.length} event${s.emits.length === 1 ? '' : 's'})` : ''}`).join('\n')}
@@ -397,7 +500,7 @@ export circuit tokenColor(): Bytes<32> {
   return tokenType(${domainLiteral}, kernel.self());
 }
 
-/** The kind byte this contract declares (see ../../TOKEN-METADATA.md section 3). */
+/** The kind byte this contract declares (see MIP section 3). */
 export circuit kind(): Uint<8> {
   return ${row.kind};
 }
@@ -548,7 +651,7 @@ export circuit domainSep(): Bytes<32> {
   return ${domainLiteral};
 }
 
-/** The kind byte this contract declares: ${row.kind} — see ../../TOKEN-METADATA.md section 3. */
+/** The kind byte this contract declares: ${row.kind} — see MIP section 3. */
 export circuit kind(): Uint<8> {
   return ${row.kind};
 }
@@ -673,6 +776,7 @@ for (const row of rows) {
               domainSep: e.domainSepHex,
               kind: e.kind,
               key: e.key,
+              valType: e.valType,
               len: e.len,
               value: e.valueHex,
               text: e.text,

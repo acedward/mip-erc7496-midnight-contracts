@@ -8,7 +8,7 @@
  *                                          block height and hash — real Stagenet bytes
  *   fixtures/stagenet/events.json          every `MiscContractEvent` those transactions
  *                                          emitted, with the 256-byte payload decoded into
- *                                          the standard's five fields
+ *                                          the MIP's six fields
  *   fixtures/stagenet/expected-tokens.json one entry per expected token row (spec section 5's
  *                                          `Token` shape), built from the events and the
  *                                          matrix's `expect` block
@@ -109,7 +109,7 @@ const EVENTS_QUERY = `
   }`;
 
 // ---------------------------------------------------------------------------
-// the standard's payload
+// the MIP's payload
 // ---------------------------------------------------------------------------
 
 const textOf = (bytes: Uint8Array): string | null => {
@@ -126,27 +126,38 @@ interface DecodedPayload {
   kind: number;
   key: string;
   keyText: string | null;
+  /** MIP section 2.1 — how a consumer reads `value`. */
+  valType: number;
   len: number;
   value: string;
   valueText: string | null;
 }
 
-/** TOKEN-METADATA.md section 2: 32 domainSep, 1 kind, 32 key, 1 len, 190 value. */
+/** The MIP's event name, `pad(32, "mip-xxxx:token-metadata[v1]")` (MIP section 1). */
+const EVENT_NAME = 'mip-xxxx:token-metadata[v1]';
+/** The value field is 189 bytes wide (MIP section 2). */
+const MAX_VALUE_LEN = 189;
+
+/**
+ * MIP section 2: 32 domainSep, 1 kind, 32 key, 1 val-type, 1 val-len, 189 value.
+ */
 function decodePayload(payloadHex: string): DecodedPayload | { error: string } {
   const bytes = new Uint8Array(Buffer.from(payloadHex.replace(/^0x/i, ''), 'hex'));
   if (bytes.length !== 256) return { error: `payload is ${bytes.length} bytes, not 256` };
   const key = bytes.slice(33, 65);
   const trimmedKey = key.slice(0, key.indexOf(0) === -1 ? 32 : key.indexOf(0));
-  const len = bytes[65]!;
-  const value = bytes.slice(66, 256);
+  const valType = bytes[65]!;
+  const len = bytes[66]!;
+  const value = bytes.slice(67, 256);
   return {
     domainSep: hexOf(bytes.slice(0, 32)),
     kind: bytes[32]!,
     key: hexOf(key),
     keyText: textOf(trimmedKey),
+    valType,
     len,
     value: hexOf(value),
-    valueText: len <= 190 ? textOf(value.slice(0, len)) : null,
+    valueText: len <= MAX_VALUE_LEN ? textOf(value.slice(0, len)) : null,
   };
 }
 
@@ -289,18 +300,52 @@ interface ExpectedToken {
   row: string;
   address: string;
   domainSep: string;
-  kind: 'shielded' | 'unshielded';
+  /** MIP section 4: the identity byte, 0..3. `privacy`/`storage` derive from it. */
+  kind: number;
+  privacy: 'shielded' | 'unshielded';
   storage: 'native' | 'ledger';
   color: string | null;
   name: string | null;
   symbol: string | null;
   decimals: number | null;
-  traits: Record<string, { value: string; text: string | null; len: number }>;
+  traits: Record<string, { valType: number; value: string; text: string | null; len: number }>;
   /** Mints of this exact row, from the matrix; the chain's effect map is the authority. */
   mintCount: number;
   totalMinted: string;
+  /** MIP section 7.2: observed | declared | described. */
+  status: 'observed' | 'declared' | 'described';
+  declared: boolean;
   expect: Record<string, unknown>;
 }
+
+const newExpected = (
+  row: string,
+  address: string,
+  domainSep: string,
+  kindByte: number,
+  expect: Record<string, unknown>,
+): ExpectedToken => {
+  const native = (kindByte & 2) === 0;
+  return {
+    row,
+    address,
+    domainSep,
+    kind: kindByte,
+    privacy: (kindByte & 1) === 1 ? 'shielded' : 'unshielded',
+    storage: native ? 'native' : 'ledger',
+    // MIP section 3: a colour exists only for the native kinds.
+    color: native ? hexOf(deriveColor(new Uint8Array(Buffer.from(domainSep, 'hex')), address)) : null,
+    name: null,
+    symbol: null,
+    decimals: null,
+    traits: {},
+    mintCount: 0,
+    totalMinted: '0',
+    status: 'declared',
+    declared: false,
+    expect,
+  };
+};
 
 const expected: ExpectedToken[] = [];
 for (const matrixRow of matrix.rows) {
@@ -310,46 +355,28 @@ for (const matrixRow of matrix.rows) {
   for (const event of events.filter((e) => e.row === matrixRow.id).sort((a, b) => a.eventId - b.eventId)) {
     const decoded = event.decoded;
     if ('error' in decoded) continue;
-    const kind: 'shielded' | 'unshielded' = (decoded.kind & 1) === 1 ? 'shielded' : 'unshielded';
-    const storage: 'native' | 'ledger' = (decoded.kind & 2) === 2 ? 'ledger' : 'native';
-    const rowKey = `${decoded.domainSep}:${kind}`;
+    // MIP section 1: only events under the MIP's name are TokenMetadata events.
+    if (event.nameText !== EVENT_NAME) continue;
+    // MIP section 4: the FULL kind byte is part of the identity.
+    const rowKey = `${decoded.domainSep}:${decoded.kind}`;
     let token = byRowKey.get(rowKey);
     if (!token) {
-      token = {
-        row: matrixRow.id,
-        address: record.address,
-        domainSep: decoded.domainSep,
-        kind,
-        storage,
-        color:
-          storage === 'ledger'
-            ? null
-            : hexOf(deriveColor(new Uint8Array(Buffer.from(decoded.domainSep, 'hex')), record.address)),
-        name: null,
-        symbol: null,
-        decimals: null,
-        traits: {},
-        mintCount: 0,
-        totalMinted: '0',
-        expect: matrixRow.expect,
-      };
+      token = newExpected(matrixRow.id, record.address, decoded.domainSep, decoded.kind, matrixRow.expect);
       byRowKey.set(rowKey, token);
     }
+    token.declared = true;
     const valueBytes = new Uint8Array(Buffer.from(decoded.value, 'hex')).slice(0, decoded.len);
-    switch (decoded.keyText) {
-      case 'name':
-        token.name = decoded.valueText;
-        break;
-      case 'symbol':
-        token.symbol = decoded.valueText;
-        break;
-      case 'decimals':
-        token.decimals = valueBytes[0] ?? null;
-        break;
-      default:
-        if (decoded.keyText) {
-          token.traits[decoded.keyText] = { value: decoded.value, text: decoded.valueText, len: decoded.len };
-        }
+    // Appendix A's core keys are projected only when they carry the type it gives them.
+    if (decoded.keyText === 'name' && decoded.valType === 1) token.name = decoded.valueText;
+    else if (decoded.keyText === 'symbol' && decoded.valType === 1) token.symbol = decoded.valueText;
+    else if (decoded.keyText === 'decimals' && decoded.valType === 2) token.decimals = valueBytes[0] ?? null;
+    else if (decoded.keyText) {
+      token.traits[decoded.keyText] = {
+        valType: decoded.valType,
+        value: decoded.value,
+        text: decoded.valueText,
+        len: decoded.len,
+      };
     }
   }
   // A row can exist with NO events at all: `SGHOST` is minted and never described, which is
@@ -358,36 +385,28 @@ for (const matrixRow of matrix.rows) {
   for (const step of matrixRow.steps) {
     if (step.kind !== 'mint') continue;
     const domainSep = step.domainSepHex!;
-    const kind: 'shielded' | 'unshielded' = step.mintKind === 'shielded' ? 'shielded' : 'unshielded';
-    const rowKey = `${domainSep}:${kind}`;
+    // A mint is always NATIVE: the ledger has no other way to create a token, so
+    // the effect's tag fixes the kind byte at 0 or 1 (MIP section 6.3). A contract
+    // that DECLARED kind 2 and minted natively (the Ledger Liar) therefore fills
+    // two rows — this observed one and its own declared one — and neither can
+    // hide or relabel the other.
+    const kindByte = step.mintKind === 'shielded' ? 1 : 0;
+    const rowKey = `${domainSep}:${kindByte}`;
     let token = byRowKey.get(rowKey);
     if (!token) {
-      token = {
-        row: matrixRow.id,
-        address: record.address,
-        domainSep,
-        kind,
-        storage: 'native',
-        color: hexOf(deriveColor(new Uint8Array(Buffer.from(domainSep, 'hex')), record.address)),
-        name: null,
-        symbol: null,
-        decimals: null,
-        traits: {},
-        mintCount: 0,
-        totalMinted: '0',
-        expect: matrixRow.expect,
-      };
+      token = newExpected(matrixRow.id, record.address, domainSep, kindByte, matrixRow.expect);
       byRowKey.set(rowKey, token);
     }
-    // A mint is always NATIVE: the ledger has no other way to create a token. A row that
-    // declared `ledger` and then minted natively (row 12, the Liar) is therefore
-    // `storage = native` AND inconsistent — the observation wins over the declaration.
-    token.storage = 'native';
     token.mintCount += 1;
     token.totalMinted = (BigInt(token.totalMinted) + BigInt(step.amount ?? '0')).toString();
   }
 
-  expected.push(...byRowKey.values());
+  // MIP section 7.2: three states, and only a native kind can reach `described`.
+  for (const token of byRowKey.values()) {
+    token.status = token.mintCount > 0 ? (token.declared ? 'described' : 'observed') : 'declared';
+  }
+
+  expected.push(...[...byRowKey.values()].sort((a, b) => a.kind - b.kind));
 }
 
 mkdirSync(OUT, { recursive: true });

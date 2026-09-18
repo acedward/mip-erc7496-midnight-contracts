@@ -35,7 +35,8 @@ export type ImpureCircuits<PS> = {
   setPieceTrait(context: __compactRuntime.CircuitContext<PS>,
                 pieceDomain_0: Uint8Array,
                 key_0: Uint8Array,
-                len_0: bigint,
+                valType_0: bigint,
+                valLen_0: bigint,
                 value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   owner(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Either<Uint8Array,
                                                                                                           ContractAddress>>>;
@@ -59,7 +60,8 @@ export type ProvableCircuits<PS> = {
   setPieceTrait(context: __compactRuntime.CircuitContext<PS>,
                 pieceDomain_0: Uint8Array,
                 key_0: Uint8Array,
-                len_0: bigint,
+                valType_0: bigint,
+                valLen_0: bigint,
                 value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   owner(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Either<Uint8Array,
                                                                                                           ContractAddress>>>;
@@ -86,7 +88,8 @@ export type Circuits<PS> = {
   setPieceTrait(context: __compactRuntime.CircuitContext<PS>,
                 pieceDomain_0: Uint8Array,
                 key_0: Uint8Array,
-                len_0: bigint,
+                valType_0: bigint,
+                valLen_0: bigint,
                 value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   owner(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, Either<Uint8Array,
                                                                                                           ContractAddress>>>;

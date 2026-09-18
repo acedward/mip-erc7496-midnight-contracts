@@ -7,7 +7,8 @@
 // LedgerToken. Every TokenMetadata payload below is a compile-time literal, so each
 // emitting circuit costs about eight rows per event (k=7) instead of the ~120 000 rows per
 // runtime event the parameterised templates in contracts/ pay — see TOKEN-METADATA.md
-// "Circuit cost" and question Q13. The bytes emitted are exactly the standard's bytes.
+// "Circuit cost" and question Q13. The bytes emitted are exactly the bytes MIP
+// section 2 fixes, val-type byte included.
 //
 // Circuits the deployment calls, in order:
 //   publishMetadata (3 events)
@@ -36,7 +37,7 @@ export circuit domainSep(): Bytes<32> {
   return pad(32, "umbra:lmoon");
 }
 
-/** The kind byte this contract declares: 2 — see ../../TOKEN-METADATA.md section 3. */
+/** The kind byte this contract declares: 2 — see MIP section 3. */
 export circuit kind(): Uint<8> {
   return 2;
 }
@@ -79,20 +80,20 @@ export circuit transfer(sender: Bytes<32>, recipient: Bytes<32>, amount: Uint<12
 export circuit publishMetadata(): [] {
   assert(!_published, "TokenMetadata: already published");
   _published = true;
-  // name = "Ledger Moon" (len 11)
-  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "name"), 11, pad(190, "Ledger Moon"));
-  // symbol = "LMOON" (len 5)
-  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "symbol"), 5, pad(190, "LMOON"));
-  // decimals = "8" (len 1)
-  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "decimals"), 1, Bytes[0x08, ...pad(189, "")]);
+  // name = "Ledger Moon" (val-type 1 string, val-len 11)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "name"), 1, 11, pad(189, "Ledger Moon"));
+  // symbol = "LMOON" (val-type 1 string, val-len 5)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "symbol"), 1, 5, pad(189, "LMOON"));
+  // decimals = "8" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "decimals"), 2, 1, Bytes[0x08, ...pad(188, "")]);
 }
 
 /**
  * @description setMetadata + setMetadata — 2 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit publishRename(): [] {
-  // name = "Ledger Moon (renamed)" (len 21)
-  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "name"), 21, pad(190, "Ledger Moon (renamed)"));
-  // description = "A ledger token that renamed itself in a later block." (len 52)
-  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "description"), 52, pad(190, "A ledger token that renamed itself in a later block."));
+  // name = "Ledger Moon (renamed)" (val-type 1 string, val-len 21)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "name"), 1, 21, pad(189, "Ledger Moon (renamed)"));
+  // description = "A ledger token that renamed itself in a later block." (val-type 1 string, val-len 52)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "description"), 1, 52, pad(189, "A ledger token that renamed itself in a later block."));
 }

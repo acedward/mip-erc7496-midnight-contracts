@@ -31,7 +31,20 @@ import { Contract as NativeDual } from '../contracts/managed/NativeDualToken/con
 import { Contract as ShieldedCollection } from '../contracts/managed/ShieldedCollection/contract/index.js';
 import { Contract as LedgerTokenContract } from '../contracts/managed/LedgerToken/contract/index.js';
 import { Contract as MetadataProbe } from '../contracts/managed/MetadataProbe/contract/index.js';
-import { MAX_VALUE_LEN, deploy, hex, pad } from '../test/token-metadata.js';
+import {
+  EVENT_NAME,
+  LEGACY_EVENT_NAME,
+  MAX_VALUE_LEN,
+  VAL_TYPE_INTEGER,
+  VAL_TYPE_JSON,
+  VAL_TYPE_OPAQUE,
+  VAL_TYPE_STRING,
+  VAL_TYPE_URI,
+  deploy,
+  hex,
+  pad,
+  validateTokenMetadataEvent,
+} from '../test/token-metadata.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'fixtures', 'simulator');
@@ -69,7 +82,8 @@ function deriveColor(domainSep: Uint8Array, address: string): Uint8Array {
   return persistentCommit(VECTOR2, [domainSep, Uint8Array.from(Buffer.from(address, 'hex'))], DERIVE_TOKEN);
 }
 
-function value190(text: string): { bytes: Uint8Array; len: bigint } {
+/** The MIP's 189-byte `value` field with `text` in its meaningful prefix. */
+function value189(text: string): { bytes: Uint8Array; len: bigint } {
   const encoded = new TextEncoder().encode(text);
   if (encoded.length > MAX_VALUE_LEN) {
     throw new Error(`value of ${encoded.length} bytes exceeds the ${MAX_VALUE_LEN}-byte field: ${text.slice(0, 40)}…`);
@@ -95,6 +109,7 @@ const ledgerAccount = (label: string) =>
 interface Step {
   op: string;
   key?: string;
+  valType?: number;
   value?: string;
   to?: string;
   amount?: string;
@@ -114,7 +129,29 @@ interface Row {
   pieces?: string[];
   optional?: boolean;
   expect?: Record<string, unknown>;
+  expectRows?: Record<string, unknown>[];
   steps: Step[];
+}
+
+/**
+ * The val-type a step carries. The reference set states it explicitly; these
+ * fallbacks are MIP Appendix A's, kept in step with
+ * scripts/generate-literal-contracts.ts.
+ */
+function valTypeOf(step: Step): number {
+  if (step.valType !== undefined) return step.valType;
+  const key = step.key ?? '';
+  if (/^metadata\/\d+$/.test(key)) return VAL_TYPE_JSON;
+  switch (key) {
+    case 'decimals':
+      return VAL_TYPE_INTEGER;
+    case 'metadata':
+      return VAL_TYPE_JSON;
+    case 'tokenUri':
+      return VAL_TYPE_URI;
+    default:
+      return VAL_TYPE_STRING;
+  }
 }
 
 const referenceSet = JSON.parse(readFileSync(join(ROOT, 'deployments', 'reference-set.json'), 'utf8')) as {
@@ -136,6 +173,9 @@ interface EventRecord {
   domainSepText: string;
   kind: number;
   keyText: string;
+  keyHex: string;
+  /** MIP section 2.1 — how a consumer reads `value`. */
+  valType: number;
   len: number;
   valueHex: string;
   valueText: string;
@@ -147,6 +187,8 @@ interface MintRecord {
   op: string;
   contractAddress: string;
   domainSepHex: string;
+  /** The kind byte a mint effect implies: 0 unshielded native, 1 shielded native. */
+  kindByte: 0 | 1;
   kind: 'shielded' | 'unshielded';
   amount: string;
   colorHex: string;
@@ -180,7 +222,7 @@ function constructorArgs(row: Row): unknown[] {
   const domain = pad(32, row.domain ?? '');
   const nameBytes = pad(32, row.name);
   const nameLen = BigInt(new TextEncoder().encode(row.name).length);
-  const symbolBytes = pad(16, row.symbol);
+  const symbolBytes = pad(32, row.symbol);
   const symbolLen = BigInt(new TextEncoder().encode(row.symbol).length);
   const decimals = BigInt(row.decimals);
 
@@ -211,11 +253,12 @@ function callFor(row: Row, step: Step): [string, unknown[]] {
     case 'publishShielded':
       return ['publishShielded', []];
     case 'setMetadata': {
-      const { bytes, len } = value190(step.value!);
+      const { bytes, len } = value189(step.value!);
       const key = pad(32, step.key!);
+      const valType = BigInt(valTypeOf(step));
       return row.template === 'NativeDualToken'
-        ? ['setMetadata', [BigInt(row.kind), key, len, bytes]]
-        : ['setMetadata', [key, len, bytes]];
+        ? ['setMetadata', [BigInt(row.kind), key, valType, len, bytes]]
+        : ['setMetadata', [key, valType, len, bytes]];
     }
     case 'mint':
       return row.template === 'NativeShieldedToken'
@@ -237,8 +280,8 @@ function callFor(row: Row, step: Step): [string, unknown[]] {
         [pieceDomain, pad(32, step.pieceName!), BigInt(new TextEncoder().encode(step.pieceName!).length)],
       ];
     case 'setPieceTrait': {
-      const { bytes, len } = value190(step.value!);
-      return ['setPieceTrait', [pieceDomain, pad(32, step.key!), len, bytes]];
+      const { bytes, len } = value189(step.value!);
+      return ['setPieceTrait', [pieceDomain, pad(32, step.key!), BigInt(valTypeOf(step)), len, bytes]];
     }
     default:
       throw new Error(`unknown step: ${step.op}`);
@@ -256,6 +299,14 @@ async function runRow(row: Row) {
     const call = await contract.call(circuit, ...args);
 
     for (const event of call.events) {
+      // Everything the reference set emits must be a valid MIP event; a corpus
+      // that quietly contained a rejectable payload would be worse than useless.
+      const verdict = validateTokenMetadataEvent(event);
+      if (verdict.outcome !== 'accepted') {
+        throw new Error(
+          `${row.id} step ${index} (${step.op}) emitted a non-conforming event: ${JSON.stringify(verdict)}`,
+        );
+      }
       events.push({
         row: row.id,
         eventId: eventId++,
@@ -268,6 +319,8 @@ async function runRow(row: Row) {
         domainSepText: new TextDecoder().decode(event.domainSep).replace(/\0+$/, ''),
         kind: event.kind,
         keyText: event.keyText,
+        keyHex: hex(event.key),
+        valType: event.valType,
         len: event.len,
         valueHex: hex(event.valueBytes),
         valueText: event.valueText,
@@ -288,6 +341,8 @@ async function runRow(row: Row) {
           op: step.op,
           contractAddress: address,
           domainSepHex: String(domainSepHex),
+          // MIP section 6.3: a mint effect is an observation of a NATIVE kind.
+          kindByte: kind === 'shielded' ? 1 : 0,
           kind,
           amount: String(amount),
           colorHex: hex(deriveColor(domainSep, address)),
@@ -322,115 +377,445 @@ async function runRow(row: Row) {
 
   // The rows an indexer should end up with, as far as the simulator can say.
   //
-  // The row key is `(address, domainSep, kind)` where `kind` is BIT 0 of the
-  // kind byte only — shielded or unshielded. Bit 1 (native vs ledger) is the
-  // `storage` column, not part of the key. That is what makes the "Ledger Liar"
-  // interesting: its declaration (kind byte 2 = unshielded ledger) and its mint
-  // (unshielded native) land on the SAME row, and the row is `inconsistent`.
-  const perToken = new Map<string, Record<string, unknown>>();
-  const rowKey = (domainSepHex: string, kindByte: number) => `${domainSepHex}:${kindByte & 1}`;
+  // MIP section 4: a token is identified by `(contractAddress, domainSep, kind)`
+  // with the FULL kind byte. A declaration populates exactly its own row and a
+  // mint effect populates the native row (kind 0 or 1) its tag implies, so the
+  // two can never contradict each other (MIP section 6.3). That is what makes
+  // the "Ledger Liar" two rows rather than one flagged one: its kind-2
+  // declaration and its kind-0 mint are different tokens as far as the wire
+  // format is concerned, and the honest picture is an observed row without a
+  // name beside a declared row with one (MIP section 7.2).
+  /** One row of the indexer's token table, as far as the simulator can say. */
+  interface ExpectedToken {
+    row: string;
+    contractAddress: string;
+    domainSepHex: string;
+    domainSepText: string;
+    kind: number;
+    privacy: string;
+    storage: string;
+    colorHex: string | null;
+    traits: Record<string, unknown>;
+    declared?: boolean;
+    mintCount: number;
+    totalMinted: string;
+    status?: string;
+    name?: string;
+    symbol?: string;
+    decimals?: number;
+    tokenUri?: string;
+  }
 
-  for (const event of events.filter((e) => e.row === row.id)) {
-    const key = rowKey(event.domainSepHex, event.kind);
-    const declaredLedger = (event.kind & 2) !== 0;
-    const token = perToken.get(key) ?? {
+  const newRow = (domainSepHex: string, domainSepText: string, kindByte: number): ExpectedToken => {
+    const native = (kindByte & 2) === 0;
+    return {
       row: row.id,
       contractAddress: address,
-      domainSepHex: event.domainSepHex,
-      domainSepText: event.domainSepText,
-      kind: event.kind & 1 ? 'shielded' : 'unshielded',
-      declaredKindByte: event.kind,
-      storage: declaredLedger ? 'ledger' : 'native',
-      colorHex: declaredLedger
-        ? null
-        : hex(deriveColor(Uint8Array.from(Buffer.from(event.domainSepHex, 'hex')), address)),
-      traits: {} as Record<string, string>,
+      domainSepHex,
+      domainSepText,
+      /** The MIP's identity byte, 0..3. */
+      kind: kindByte,
+      privacy: (kindByte & 1) === 1 ? 'shielded' : 'unshielded',
+      storage: native ? 'native' : 'ledger',
+      // MIP section 3: a colour exists only for the native kinds.
+      colorHex: native
+        ? hex(deriveColor(Uint8Array.from(Buffer.from(domainSepHex, 'hex')), address))
+        : null,
+      traits: {} as Record<string, unknown>,
+      declared: false,
+      mintCount: 0,
+      totalMinted: '0',
     };
-    // Last write wins, in emission order.
-    if (event.keyText === 'decimals') token.decimals = Number(Buffer.from(event.valueHex, 'hex')[0] ?? 0);
-    else if (event.keyText === 'name') token.name = event.valueText;
-    else if (event.keyText === 'symbol') token.symbol = event.valueText;
-    else if (event.keyText === 'tokenUri') token.tokenUri = event.valueText;
-    else (token.traits as Record<string, string>)[event.keyText] = event.valueText;
-    perToken.set(key, token);
+  };
+
+  /** One map per (domainSep, kind) — the MIP's identity, over this contract. */
+  const byIdentity = new Map<string, ExpectedToken>();
+  const identityKey = (domainSepHex: string, kindByte: number) => `${domainSepHex}:${kindByte}`;
+
+  for (const event of events.filter((e) => e.row === row.id)) {
+    const key = identityKey(event.domainSepHex, event.kind);
+    const token =
+      byIdentity.get(key) ?? newRow(event.domainSepHex, event.domainSepText, event.kind);
+    token.declared = true;
+    // Last write wins, in emission order (MIP section 6.2). Appendix A's core
+    // keys are projected into columns; everything else is a trait, kept verbatim
+    // with its val-type (MIP section 5.2).
+    if (event.keyText === 'decimals' && event.valType === VAL_TYPE_INTEGER) {
+      token.decimals = Number(Buffer.from(event.valueHex, 'hex')[0] ?? 0);
+    } else if (event.keyText === 'name' && event.valType === VAL_TYPE_STRING) {
+      token.name = event.valueText;
+    } else if (event.keyText === 'symbol' && event.valType === VAL_TYPE_STRING) {
+      token.symbol = event.valueText;
+    } else if (event.keyText === 'tokenUri' && event.valType === VAL_TYPE_URI) {
+      token.tokenUri = event.valueText;
+    } else {
+      (token.traits as Record<string, unknown>)[event.keyText] = {
+        valType: event.valType,
+        valLen: event.len,
+        valueHex: event.valueHex,
+        text: event.valType === VAL_TYPE_OPAQUE ? null : event.valueText,
+      };
+    }
+    byIdentity.set(key, token);
   }
 
   for (const mint of mints.filter((m) => m.row === row.id)) {
-    const kindByte = mint.kind === 'shielded' ? 1 : 0;
-    const key = rowKey(mint.domainSepHex, kindByte);
-    const token = perToken.get(key) ?? {
-      row: row.id,
-      contractAddress: address,
-      domainSepHex: mint.domainSepHex,
-      domainSepText: new TextDecoder().decode(Buffer.from(mint.domainSepHex, 'hex')).replace(/\0+$/, ''),
-      kind: mint.kind,
-      storage: 'native',
-      colorHex: mint.colorHex,
-      traits: {},
-    };
-    // An observed mint is a fact and overrides whatever a declaration claimed.
-    token.observedKind = mint.kind;
-    token.storage = 'native';
+    const key = identityKey(mint.domainSepHex, mint.kindByte);
+    const token =
+      byIdentity.get(key) ??
+      newRow(
+        mint.domainSepHex,
+        new TextDecoder().decode(Buffer.from(mint.domainSepHex, 'hex')).replace(/\0+$/, ''),
+        mint.kindByte,
+      );
+    // A mint is a fact about a native kind; it creates or confirms that row and
+    // never touches another one.
     token.colorHex = mint.colorHex;
-    token.mintCount = ((token.mintCount as number) ?? 0) + 1;
-    token.totalMinted = String(BigInt((token.totalMinted as string) ?? '0') + BigInt(mint.amount));
-    perToken.set(key, token);
+    token.mintCount += 1;
+    token.totalMinted = String(BigInt(token.totalMinted) + BigInt(mint.amount));
+    byIdentity.set(key, token);
   }
 
-  for (const token of perToken.values()) {
-    const described = token.name !== undefined || token.symbol !== undefined;
-    const minted = ((token.mintCount as number) ?? 0) > 0;
-    const declaredKind = token.declaredKindByte as number | undefined;
-    // A declaration that calls a token ledger-held while a mint proves it native
-    // (or that disagrees about bit 0) is kept, but the row is flagged.
-    const contradicts =
-      minted &&
-      declaredKind !== undefined &&
-      (((declaredKind & 2) !== 0) || (declaredKind & 1) !== (token.kind === 'shielded' ? 1 : 0));
-    token.mintCount ??= 0;
-    token.totalMinted ??= '0';
-    token.status = !described ? 'observed' : !minted ? 'declared' : contradicts ? 'inconsistent' : 'described';
-    expectedTokens.push(token);
+  // MIP section 7.2: three states, and only native kinds can reach `described`.
+  for (const token of [...byIdentity.values()].sort((a, b) => a.kind - b.kind)) {
+    const declared = token.declared === true;
+    const minted = token.mintCount > 0;
+    delete token.declared;
+    token.status = minted ? (declared ? 'described' : 'observed') : 'declared';
+    expectedTokens.push(token as unknown as Record<string, unknown>);
   }
 }
 
 /**
- * Payloads a conforming consumer must REJECT. They cannot come from the
- * reference templates — those only ever emit valid ones — so the probe emits
- * them on demand.
+ * The events a conforming consumer must NOT simply apply. They cannot come from
+ * the reference templates — those only ever emit valid ones — so the probe emits
+ * them on demand, which keeps them real compiled-contract output like the rest
+ * of the corpus.
+ *
+ * Three outcomes, and the difference between them is the point:
+ *
+ *   - `ignored`   not a TokenMetadata event at all (MIP section 1). Not stored,
+ *                 NOT recorded as rejected: the pre-MIP `TokenMetadata` name is
+ *                 the case that matters here.
+ *   - `rejected`  a TokenMetadata event whose payload breaks MIP section 2.1,
+ *                 2.2 or 3. `reason` is the stable reason of spec 00021 FR-102.
+ *   - `applied`   a valid event at the transport level. Some of these are keys
+ *                 whose Appendix A projection fails (`projectionFails`): the
+ *                 trait is still stored and the event is NOT rejected
+ *                 (MIP sections 5.3 and 7.1).
  */
 async function runNegatives() {
   const address = addressFor('PROBE');
   const probe = await deploy<Record<string, never>>(new MetadataProbe({}) as never, {}, [], { address });
   const empty = new Uint8Array(MAX_VALUE_LEN);
-  const cases: { why: string; kind: number; key: string; len: number; value: Uint8Array }[] = [
-    { why: 'len above the 190-byte value field', kind: 1, key: 'name', len: 200, value: new Uint8Array(MAX_VALUE_LEN).fill(0x41) },
-    { why: 'decimals with a length other than 1', kind: 1, key: 'decimals', len: 3, value: empty },
-    { why: 'decimals above 36', kind: 1, key: 'decimals', len: 1, value: Uint8Array.from([99, ...empty.subarray(1)]) },
-    { why: 'a reserved kind bit is set', kind: 0x80, key: 'name', len: 4, value: value190('good').bytes },
-    { why: 'kind 0x03 — shielded ledger, valid but exercises both bits', kind: 3, key: 'name', len: 4, value: value190('both').bytes },
-    { why: 'an empty name (len 0)', kind: 1, key: 'name', len: 0, value: empty },
-    { why: 'a name that is not valid UTF-8', kind: 1, key: 'name', len: 3, value: Uint8Array.from([0xff, 0xfe, 0xfd, ...empty.subarray(3)]) },
+  const fill = (bytes: number[]): Uint8Array => Uint8Array.from([...bytes, ...empty.subarray(bytes.length)]);
+
+  interface Case {
+    why: string;
+    /** MIP reference the case comes from. */
+    mip: string;
+    expect: 'rejected' | 'applied' | 'ignored';
+    reason?: string;
+    /** True when the event is applied but its Appendix A projection must fail. */
+    projectionFails?: boolean;
+    legacyName?: boolean;
+    kind: number;
+    key: Uint8Array;
+    keyLabel: string;
+    valType: number;
+    len: number;
+    value: Uint8Array;
+  }
+
+  const key = (text: string) => ({ key: pad(32, text), keyLabel: text });
+
+  const cases: Case[] = [
+    // ---- MIP section 1: the event name -----------------------------------
+    {
+      why: 'the pre-MIP event name `TokenMetadata`: a MIP consumer ignores it, and does not record it as rejected',
+      mip: '1',
+      expect: 'ignored',
+      legacyName: true,
+      kind: 1,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 10,
+      value: value189('Old Name!!').bytes,
+    },
+    // ---- MIP section 2.2: transport validation ---------------------------
+    {
+      why: 'val-len 200 is above the 189-byte value field',
+      mip: '2.2',
+      expect: 'rejected',
+      reason: 'val_len_too_long',
+      kind: 1,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 200,
+      value: new Uint8Array(MAX_VALUE_LEN).fill(0x41),
+    },
+    {
+      why: 'an empty key: all 32 bytes NUL, so nothing is left after trimming',
+      mip: '2.2',
+      expect: 'rejected',
+      reason: 'key_empty',
+      kind: 1,
+      key: new Uint8Array(32),
+      keyLabel: '',
+      valType: VAL_TYPE_STRING,
+      len: 4,
+      value: value189('void').bytes,
+    },
+    // ---- MIP section 2.1: the val-type byte ------------------------------
+    {
+      why: 'val-type 5, the first reserved value',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_reserved',
+      kind: 1,
+      ...key('name'),
+      valType: 5,
+      len: 4,
+      value: value189('five').bytes,
+    },
+    {
+      why: 'val-type 7, a reserved value in the middle of the range',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_reserved',
+      kind: 1,
+      ...key('description'),
+      valType: 7,
+      len: 5,
+      value: value189('seven').bytes,
+    },
+    {
+      why: 'val-type 255, the top of the reserved range',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_reserved',
+      kind: 0,
+      ...key('symbol'),
+      valType: 255,
+      len: 3,
+      value: value189('MAX').bytes,
+    },
+    {
+      why: 'val-type 1 carrying bytes that are not valid UTF-8',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_rule',
+      kind: 1,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 3,
+      value: fill([0xff, 0xfe, 0xfd]),
+    },
+    {
+      why: 'val-type 2 with val-len 0 — an integer needs 1..16 bytes',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_rule',
+      kind: 1,
+      ...key('decimals'),
+      valType: VAL_TYPE_INTEGER,
+      len: 0,
+      value: empty,
+    },
+    {
+      why: 'val-type 2 with val-len 17 — above the 16-byte integer ceiling',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_rule',
+      kind: 1,
+      ...key('supplyCap'),
+      valType: VAL_TYPE_INTEGER,
+      len: 17,
+      value: new Uint8Array(MAX_VALUE_LEN).fill(0x01),
+    },
+    {
+      why: 'val-type 4 carrying a relative reference instead of an absolute URI',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_rule',
+      kind: 1,
+      ...key('tokenUri'),
+      valType: VAL_TYPE_URI,
+      len: 22,
+      value: value189('/constellations/orion').bytes,
+    },
+    // ---- MIP section 3: the kind byte ------------------------------------
+    {
+      why: 'kind 4 — the first value MIP section 3 reserves',
+      mip: '3',
+      expect: 'rejected',
+      reason: 'kind_unknown',
+      kind: 4,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 4,
+      value: value189('four').bytes,
+    },
+    {
+      why: 'kind 255 — the pre-MIP layout treated the high bits as flags; they are not',
+      mip: '3',
+      expect: 'rejected',
+      reason: 'kind_unknown',
+      kind: 255,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 3,
+      value: value189('max').bytes,
+    },
+    {
+      why: 'kind 3 — shielded ledger: valid and applied, but purely informative (no colour)',
+      mip: '3',
+      expect: 'applied',
+      kind: 3,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 12,
+      value: value189('Hidden Ledge').bytes,
+    },
+    // ---- MIP sections 5.1, 5.2, 6.2: applied, but awkward -----------------
+    {
+      why: 'a key that is not valid UTF-8: MUST NOT be rejected, and is displayed as hex',
+      mip: '5.1',
+      expect: 'applied',
+      kind: 1,
+      key: Uint8Array.from([0xff, 0xfe, 0x01, ...new Uint8Array(29)]),
+      keyLabel: '<non-UTF-8 key fffe01>',
+      valType: VAL_TYPE_STRING,
+      len: 4,
+      value: value189('odd!').bytes,
+    },
+    {
+      why: 'val-len 0 on a free trait: "present, empty" at the transport level',
+      mip: '6.2',
+      expect: 'applied',
+      kind: 1,
+      ...key('description'),
+      valType: VAL_TYPE_STRING,
+      len: 0,
+      value: empty,
+    },
+    {
+      why: 'val-type 0 opaque bytes: applied and surfaced as hex, no parsing rule at all',
+      mip: '2.1',
+      expect: 'applied',
+      kind: 1,
+      ...key('fingerprint'),
+      valType: VAL_TYPE_OPAQUE,
+      len: 4,
+      value: fill([0xde, 0xad, 0xbe, 0xef]),
+    },
+    // ---- MIP section 5.3 / Appendix A: projection fails, event applied ----
+    {
+      why: 'the well-known key `decimals` carried as a UTF-8 string ("6") instead of Appendix A’s integer: APPLIED as a trait, projection fails, decimals column untouched',
+      mip: '5.3',
+      expect: 'applied',
+      projectionFails: true,
+      kind: 1,
+      ...key('decimals'),
+      valType: VAL_TYPE_STRING,
+      len: 1,
+      value: value189('6').bytes,
+    },
+    {
+      why: 'the well-known key `name` carried as JSON instead of a string: applied as a trait, projection fails',
+      mip: '5.3',
+      expect: 'applied',
+      projectionFails: true,
+      kind: 1,
+      ...key('name'),
+      valType: VAL_TYPE_JSON,
+      len: 15,
+      value: value189('{"name":"json"}').bytes,
+    },
+    {
+      why: 'decimals 99: the right type, but above Appendix A’s 36 — applied, projection fails',
+      mip: 'A',
+      expect: 'applied',
+      projectionFails: true,
+      kind: 1,
+      ...key('decimals'),
+      valType: VAL_TYPE_INTEGER,
+      len: 1,
+      value: fill([99]),
+    },
+    {
+      why: 'a 40-byte symbol: valid transport, above Appendix A’s 32 — applied, projection fails',
+      mip: 'A',
+      expect: 'applied',
+      projectionFails: true,
+      kind: 1,
+      ...key('symbol'),
+      valType: VAL_TYPE_STRING,
+      len: 40,
+      value: value189('A'.repeat(40)).bytes,
+    },
+    {
+      why: 'an empty name (val-len 0): "present, empty" at transport, but Appendix A wants 1..189 — applied, projection fails',
+      mip: 'A',
+      expect: 'applied',
+      projectionFails: true,
+      kind: 1,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 0,
+      value: empty,
+    },
+    {
+      why: 'a tokenUri that is an absolute non-http URI (ftp): passes MIP 2.1, fails Appendix A’s http(s) rule — applied, projection fails',
+      mip: 'A',
+      expect: 'applied',
+      projectionFails: true,
+      kind: 1,
+      ...key('tokenUri'),
+      valType: VAL_TYPE_URI,
+      len: 26,
+      value: value189('ftp://example.invalid/x.png').bytes,
+    },
   ];
 
   const out: Record<string, unknown>[] = [];
   for (const c of cases) {
     const { events: emitted } = await probe.call(
-      'publishRaw',
+      c.legacyName ? 'publishLegacyName' : 'publishRaw',
       pad(32, 'umbra:probe'),
       BigInt(c.kind),
-      pad(32, c.key),
+      c.key,
+      BigInt(c.valType),
       BigInt(c.len),
       c.value,
     );
+    const event = emitted[0];
+    const verdict = validateTokenMetadataEvent(event);
+
+    // The corpus states what a consumer must do; the reference decoder has to
+    // agree with it here, or the fixture would teach the wrong lesson.
+    const expectedOutcome = c.expect === 'applied' ? 'accepted' : c.expect;
+    if (verdict.outcome !== expectedOutcome) {
+      throw new Error(`negative "${c.why}": decoder says ${JSON.stringify(verdict)}, corpus says ${c.expect}`);
+    }
+    if (c.reason && (verdict as { reason?: string }).reason !== c.reason) {
+      throw new Error(`negative "${c.why}": decoder reason ${JSON.stringify(verdict)} != ${c.reason}`);
+    }
+
     out.push({
       why: c.why,
+      mipSection: c.mip,
+      expect: c.expect,
+      ...(c.reason ? { reason: c.reason } : {}),
+      ...(c.projectionFails ? { projectionFails: true } : {}),
       contractAddress: address,
-      eventName: emitted[0].eventName,
-      payloadHex: hex(emitted[0].payload),
-      kind: emitted[0].kind,
-      keyText: emitted[0].keyText,
-      len: emitted[0].len,
+      eventName: event.eventName,
+      payloadHex: hex(event.payload),
+      kind: event.kind,
+      keyHex: hex(event.key),
+      keyText: c.keyLabel,
+      valType: event.valType,
+      len: event.len,
     });
   }
   return out;
@@ -449,19 +834,50 @@ const negatives = await runNegatives();
 
 mkdirSync(OUT, { recursive: true });
 const provenance = {
+  standard: `MIP PR #315, mips/mip-xxxx-on-chain-token-metadata.md @ f433056; event name "${EVENT_NAME}" (the pre-MIP "${LEGACY_EVENT_NAME}" is ignored, MIP section 1)`,
   source: 'Compact simulator (@midnight-ntwrk/compact-runtime 0.19.0), compactc 0.34.0',
   producedBy: 'scripts/export-simulator-fixtures.ts',
-  note: 'Real compiled-contract output, executed in process. Contract addresses are sha256("umbra:00020:<row id>") so everything here is reproducible; there are no block heights, transaction hashes or indexer event ids, and `eventId` is simply the emission order across the whole corpus.',
+  note: 'Real compiled-contract output, executed in process. Contract addresses are sha256("umbra:00020:<row id>") so everything here is reproducible; there are no block heights, transaction hashes or indexer event ids, and `eventId` is simply the emission order across the whole corpus. Token rows are keyed by the MIP\'s identity `(contractAddress, domainSep, kind 0..3)`; `privacy` and `storage` are derived from the kind byte and `status` is one of observed | declared | described (MIP section 7.2).',
 };
 const write = (file: string, body: unknown) =>
   writeFileSync(join(OUT, file), `${JSON.stringify({ ...provenance, ...(body as object) }, null, 2)}\n`);
 
+const statusCounts = expectedTokens.reduce<Record<string, number>>((acc, token) => {
+  const status = String(token.status);
+  acc[status] = (acc[status] ?? 0) + 1;
+  return acc;
+}, {});
+const identities = new Set(
+  expectedTokens.map((t) => `${t.contractAddress}:${t.domainSepHex}:${t.kind}`),
+);
+const addressDomainPairs = new Set(
+  expectedTokens.map((t) => `${t.contractAddress}:${t.domainSepHex}`),
+);
+
 write('events.json', { count: events.length, events });
 write('mints.json', { count: mints.length, mints });
 write('color-vectors.json', { count: colorVectors.length, vectors: colorVectors });
-write('expected-tokens.json', { count: expectedTokens.length, tokens: expectedTokens });
-write('negative-payloads.json', { count: negatives.length, payloads: negatives });
+write('expected-tokens.json', {
+  count: expectedTokens.length,
+  identities: identities.size,
+  addressDomainPairs: addressDomainPairs.size,
+  statusCounts,
+  tokens: expectedTokens,
+});
+write('negative-payloads.json', {
+  count: negatives.length,
+  outcomes: negatives.reduce<Record<string, number>>((acc, payload) => {
+    const outcome = String(payload.expect);
+    acc[outcome] = (acc[outcome] ?? 0) + 1;
+    return acc;
+  }, {}),
+  payloads: negatives,
+});
 
 process.stdout.write(
-  `\nwrote ${events.length} events, ${mints.length} mints, ${colorVectors.length} colour vectors, ${expectedTokens.length} expected token rows and ${negatives.length} negative payloads to fixtures/simulator/\n`,
+  `\nwrote ${events.length} events, ${mints.length} mints, ${colorVectors.length} colour vectors, ` +
+    `${expectedTokens.length} expected token rows over ${identities.size} identities ` +
+    `(${Object.entries(statusCounts)
+      .map(([status, n]) => `${n} ${status}`)
+      .join(', ')}) and ${negatives.length} negative/edge payloads to fixtures/simulator/\n`,
 );

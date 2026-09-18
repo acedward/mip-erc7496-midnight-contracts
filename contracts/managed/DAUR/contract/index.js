@@ -7,6 +7,22 @@ const _descriptor_1 = __compactRuntime.CompactTypeBoolean;
 
 const _descriptor_2 = new __compactRuntime.CompactTypeBytes(32);
 
+class _ZswapCoinPublicKey_0 {
+  alignment() {
+    return _descriptor_2.alignment();
+  }
+  fromValue(value_0) {
+    return {
+      bytes: _descriptor_2.fromValue(value_0)
+    }
+  }
+  toValue(value_0) {
+    return _descriptor_2.toValue(value_0.bytes);
+  }
+}
+
+const _descriptor_3 = new _ZswapCoinPublicKey_0();
+
 class _ContractAddress_0 {
   alignment() {
     return _descriptor_2.alignment();
@@ -21,23 +37,7 @@ class _ContractAddress_0 {
   }
 }
 
-const _descriptor_3 = new _ContractAddress_0();
-
-class _UserAddress_0 {
-  alignment() {
-    return _descriptor_2.alignment();
-  }
-  fromValue(value_0) {
-    return {
-      bytes: _descriptor_2.fromValue(value_0)
-    }
-  }
-  toValue(value_0) {
-    return _descriptor_2.toValue(value_0.bytes);
-  }
-}
-
-const _descriptor_4 = new _UserAddress_0();
+const _descriptor_4 = new _ContractAddress_0();
 
 class _Either_0 {
   alignment() {
@@ -59,7 +59,27 @@ const _descriptor_5 = new _Either_0();
 
 const _descriptor_6 = new __compactRuntime.CompactTypeUnsignedInteger(18446744073709551615n, 8);
 
-class _ZswapCoinPublicKey_0 {
+const _descriptor_7 = new __compactRuntime.CompactTypeUnsignedInteger(340282366920938463463374607431768211455n, 16);
+
+class _ShieldedCoinInfo_0 {
+  alignment() {
+    return _descriptor_2.alignment().concat(_descriptor_2.alignment().concat(_descriptor_7.alignment()));
+  }
+  fromValue(value_0) {
+    return {
+      nonce: _descriptor_2.fromValue(value_0),
+      color: _descriptor_2.fromValue(value_0),
+      value: _descriptor_7.fromValue(value_0)
+    }
+  }
+  toValue(value_0) {
+    return _descriptor_2.toValue(value_0.nonce).concat(_descriptor_2.toValue(value_0.color).concat(_descriptor_7.toValue(value_0.value)));
+  }
+}
+
+const _descriptor_8 = new _ShieldedCoinInfo_0();
+
+class _UserAddress_0 {
   alignment() {
     return _descriptor_2.alignment();
   }
@@ -73,51 +93,31 @@ class _ZswapCoinPublicKey_0 {
   }
 }
 
-const _descriptor_7 = new _ZswapCoinPublicKey_0();
+const _descriptor_9 = new _UserAddress_0();
 
 class _Either_1 {
   alignment() {
-    return _descriptor_1.alignment().concat(_descriptor_7.alignment().concat(_descriptor_3.alignment()));
+    return _descriptor_1.alignment().concat(_descriptor_4.alignment().concat(_descriptor_9.alignment()));
   }
   fromValue(value_0) {
     return {
       is_left: _descriptor_1.fromValue(value_0),
-      left: _descriptor_7.fromValue(value_0),
-      right: _descriptor_3.fromValue(value_0)
+      left: _descriptor_4.fromValue(value_0),
+      right: _descriptor_9.fromValue(value_0)
     }
   }
   toValue(value_0) {
-    return _descriptor_1.toValue(value_0.is_left).concat(_descriptor_7.toValue(value_0.left).concat(_descriptor_3.toValue(value_0.right)));
+    return _descriptor_1.toValue(value_0.is_left).concat(_descriptor_4.toValue(value_0.left).concat(_descriptor_9.toValue(value_0.right)));
   }
 }
 
-const _descriptor_8 = new _Either_1();
-
-const _descriptor_9 = new __compactRuntime.CompactTypeUnsignedInteger(340282366920938463463374607431768211455n, 16);
-
-class _ShieldedCoinInfo_0 {
-  alignment() {
-    return _descriptor_2.alignment().concat(_descriptor_2.alignment().concat(_descriptor_9.alignment()));
-  }
-  fromValue(value_0) {
-    return {
-      nonce: _descriptor_2.fromValue(value_0),
-      color: _descriptor_2.fromValue(value_0),
-      value: _descriptor_9.fromValue(value_0)
-    }
-  }
-  toValue(value_0) {
-    return _descriptor_2.toValue(value_0.nonce).concat(_descriptor_2.toValue(value_0.color).concat(_descriptor_9.toValue(value_0.value)));
-  }
-}
-
-const _descriptor_10 = new _ShieldedCoinInfo_0();
+const _descriptor_10 = new _Either_1();
 
 const _descriptor_11 = new __compactRuntime.CompactTypeUnsignedInteger(255n, 1);
 
 const _descriptor_12 = new __compactRuntime.CompactTypeBytes(288);
 
-const _descriptor_13 = new __compactRuntime.CompactTypeBytes(190);
+const _descriptor_13 = new __compactRuntime.CompactTypeBytes(189);
 
 const _descriptor_14 = new __compactRuntime.CompactTypeVector(2, _descriptor_2);
 
@@ -143,18 +143,18 @@ const _descriptor_16 = new __compactRuntime.CompactTypeBytes(21);
 
 class _CoinPreimage_0 {
   alignment() {
-    return _descriptor_16.alignment().concat(_descriptor_10.alignment().concat(_descriptor_1.alignment().concat(_descriptor_2.alignment())));
+    return _descriptor_16.alignment().concat(_descriptor_8.alignment().concat(_descriptor_1.alignment().concat(_descriptor_2.alignment())));
   }
   fromValue(value_0) {
     return {
       domain_sep: _descriptor_16.fromValue(value_0),
-      info: _descriptor_10.fromValue(value_0),
+      info: _descriptor_8.fromValue(value_0),
       dataType: _descriptor_1.fromValue(value_0),
       data: _descriptor_2.fromValue(value_0)
     }
   }
   toValue(value_0) {
-    return _descriptor_16.toValue(value_0.domain_sep).concat(_descriptor_10.toValue(value_0.info).concat(_descriptor_1.toValue(value_0.dataType).concat(_descriptor_2.toValue(value_0.data))));
+    return _descriptor_16.toValue(value_0.domain_sep).concat(_descriptor_8.toValue(value_0.info).concat(_descriptor_1.toValue(value_0.dataType).concat(_descriptor_2.toValue(value_0.data))));
   }
 }
 
@@ -185,7 +185,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('tokenColor',
                                      'argument 1 (as invoked from Typescript)',
-                                     'DAUR.compact line 36 char 1',
+                                     'DAUR.compact line 37 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -212,7 +212,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('mints',
                                      'argument 1 (as invoked from Typescript)',
-                                     'DAUR.compact line 44 char 1',
+                                     'DAUR.compact line 45 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -236,7 +236,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('publishUnshielded',
                                      'argument 1 (as invoked from Typescript)',
-                                     'DAUR.compact line 51 char 1',
+                                     'DAUR.compact line 52 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -261,7 +261,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('publishShielded',
                                      'argument 1 (as invoked from Typescript)',
-                                     'DAUR.compact line 65 char 1',
+                                     'DAUR.compact line 66 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -288,36 +288,36 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('mintShielded',
                                      'argument 1 (as invoked from Typescript)',
-                                     'DAUR.compact line 77 char 1',
+                                     'DAUR.compact line 78 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(typeof(recipient_0) === 'object' && typeof(recipient_0.is_left) === 'boolean' && typeof(recipient_0.left) === 'object' && recipient_0.left.bytes.buffer instanceof ArrayBuffer && recipient_0.left.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.left.bytes.length === 32 && typeof(recipient_0.right) === 'object' && recipient_0.right.bytes.buffer instanceof ArrayBuffer && recipient_0.right.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.right.bytes.length === 32)) {
           __compactRuntime.typeError('mintShielded',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'DAUR.compact line 77 char 1',
+                                     'DAUR.compact line 78 char 1',
                                      'struct Either<is_left: Boolean, left: struct ZswapCoinPublicKey<bytes: Bytes<32>>, right: struct ContractAddress<bytes: Bytes<32>>>',
                                      recipient_0)
         }
         if (!(typeof(amount_0) === 'bigint' && amount_0 >= 0n && amount_0 <= 18446744073709551615n)) {
           __compactRuntime.typeError('mintShielded',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'DAUR.compact line 77 char 1',
+                                     'DAUR.compact line 78 char 1',
                                      'Uint<0..18446744073709551616>',
                                      amount_0)
         }
         if (!(nonce_0.buffer instanceof ArrayBuffer && nonce_0.BYTES_PER_ELEMENT === 1 && nonce_0.length === 32)) {
           __compactRuntime.typeError('mintShielded',
                                      'argument 3 (argument 4 as invoked from Typescript)',
-                                     'DAUR.compact line 77 char 1',
+                                     'DAUR.compact line 78 char 1',
                                      'Bytes<32>',
                                      nonce_0)
         }
         const context = __compactRuntime.copyCircuitContext(contextOrig_0);
         const partialProofData = {
           input: {
-            value: _descriptor_8.toValue(recipient_0).concat(_descriptor_6.toValue(amount_0).concat(_descriptor_2.toValue(nonce_0))),
-            alignment: _descriptor_8.alignment().concat(_descriptor_6.alignment().concat(_descriptor_2.alignment()))
+            value: _descriptor_5.toValue(recipient_0).concat(_descriptor_6.toValue(amount_0).concat(_descriptor_2.toValue(nonce_0))),
+            alignment: _descriptor_5.alignment().concat(_descriptor_6.alignment().concat(_descriptor_2.alignment()))
           },
           output: undefined,
           publicTranscript: [],
@@ -328,7 +328,7 @@ export class Contract {
                                                     recipient_0,
                                                     amount_0,
                                                     nonce_0);
-        partialProofData.output = { value: _descriptor_10.toValue(result_0), alignment: _descriptor_10.alignment() };
+        partialProofData.output = { value: _descriptor_8.toValue(result_0), alignment: _descriptor_8.alignment() };
         __compactRuntime.finalizeCallProofData(context, partialProofData);
         return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
       },
@@ -342,29 +342,29 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('mintUnshielded',
                                      'argument 1 (as invoked from Typescript)',
-                                     'DAUR.compact line 88 char 1',
+                                     'DAUR.compact line 89 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(typeof(recipient_0) === 'object' && typeof(recipient_0.is_left) === 'boolean' && typeof(recipient_0.left) === 'object' && recipient_0.left.bytes.buffer instanceof ArrayBuffer && recipient_0.left.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.left.bytes.length === 32 && typeof(recipient_0.right) === 'object' && recipient_0.right.bytes.buffer instanceof ArrayBuffer && recipient_0.right.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.right.bytes.length === 32)) {
           __compactRuntime.typeError('mintUnshielded',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'DAUR.compact line 88 char 1',
+                                     'DAUR.compact line 89 char 1',
                                      'struct Either<is_left: Boolean, left: struct ContractAddress<bytes: Bytes<32>>, right: struct UserAddress<bytes: Bytes<32>>>',
                                      recipient_0)
         }
         if (!(typeof(amount_0) === 'bigint' && amount_0 >= 0n && amount_0 <= 18446744073709551615n)) {
           __compactRuntime.typeError('mintUnshielded',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'DAUR.compact line 88 char 1',
+                                     'DAUR.compact line 89 char 1',
                                      'Uint<0..18446744073709551616>',
                                      amount_0)
         }
         const context = __compactRuntime.copyCircuitContext(contextOrig_0);
         const partialProofData = {
           input: {
-            value: _descriptor_5.toValue(recipient_0).concat(_descriptor_6.toValue(amount_0)),
-            alignment: _descriptor_5.alignment().concat(_descriptor_6.alignment())
+            value: _descriptor_10.toValue(recipient_0).concat(_descriptor_6.toValue(amount_0)),
+            alignment: _descriptor_10.alignment().concat(_descriptor_6.alignment())
           },
           output: undefined,
           publicTranscript: [],
@@ -483,7 +483,7 @@ export class Contract {
     const coin_0 = { nonce: nonce_0,
                      color:
                        this._tokenType_0(domain_sep_0,
-                                         _descriptor_3.fromValue(__compactRuntime.queryLedgerState(context,
+                                         _descriptor_4.fromValue(__compactRuntime.queryLedgerState(context,
                                                                                                    partialProofData,
                                                                                                    [
                                                                                                     { dup: { n: 2 } },
@@ -548,7 +548,7 @@ export class Contract {
     if (!recipient_0.is_left
         &&
         this._equal_0(recipient_0.right.bytes,
-                      _descriptor_3.fromValue(__compactRuntime.queryLedgerState(context,
+                      _descriptor_4.fromValue(__compactRuntime.queryLedgerState(context,
                                                                                 partialProofData,
                                                                                 [
                                                                                  { dup: { n: 2 } },
@@ -628,7 +628,7 @@ export class Contract {
                                        { ins: { cached: true, n: 2 } },
                                        { swap: { n: 0 } }]);
     const color_0 = this._tokenType_0(domainSep_0,
-                                      _descriptor_3.fromValue(__compactRuntime.queryLedgerState(context,
+                                      _descriptor_4.fromValue(__compactRuntime.queryLedgerState(context,
                                                                                                 partialProofData,
                                                                                                 [
                                                                                                  { dup: { n: 2 } },
@@ -656,15 +656,15 @@ export class Contract {
                                                  value: __compactRuntime.StateValue.newCell(__compactRuntime.alignedConcat(
                                                                                               { value: _descriptor_15.toValue(tmp_0),
                                                                                                 alignment: _descriptor_15.alignment() },
-                                                                                              { value: _descriptor_5.toValue(recipient_0),
-                                                                                                alignment: _descriptor_5.alignment() }
+                                                                                              { value: _descriptor_10.toValue(recipient_0),
+                                                                                                alignment: _descriptor_10.alignment() }
                                                                                             )).encode() } },
                                        { dup: { n: 1 } },
                                        { dup: { n: 1 } },
                                        'member',
                                        { push: { storage: false,
-                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_9.toValue(tmp_1),
-                                                                                              alignment: _descriptor_9.alignment() }).encode() } },
+                                                 value: __compactRuntime.StateValue.newCell({ value: _descriptor_7.toValue(tmp_1),
+                                                                                              alignment: _descriptor_7.alignment() }).encode() } },
                                        { swap: { n: 0 } },
                                        'neg',
                                        { branch: { skip: 4 } },
@@ -679,7 +679,7 @@ export class Contract {
     if (recipient_0.is_left
         &&
         this._equal_1(recipient_0.left.bytes,
-                      _descriptor_3.fromValue(__compactRuntime.queryLedgerState(context,
+                      _descriptor_4.fromValue(__compactRuntime.queryLedgerState(context,
                                                                                 partialProofData,
                                                                                 [
                                                                                  { dup: { n: 2 } },
@@ -711,8 +711,8 @@ export class Contract {
                                          { dup: { n: 1 } },
                                          'member',
                                          { push: { storage: false,
-                                                   value: __compactRuntime.StateValue.newCell({ value: _descriptor_9.toValue(tmp_3),
-                                                                                                alignment: _descriptor_9.alignment() }).encode() } },
+                                                   value: __compactRuntime.StateValue.newCell({ value: _descriptor_7.toValue(tmp_3),
+                                                                                                alignment: _descriptor_7.alignment() }).encode() } },
                                          { swap: { n: 0 } },
                                          'neg',
                                          { branch: { skip: 4 } },
@@ -747,12 +747,16 @@ export class Contract {
     });
     return result_0;
   }
+  _EVENT_NAME_0() {
+    return new Uint8Array([109, 105, 112, 45, 120, 120, 120, 120, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
+  }
   async _emitTokenMetadata_0(context,
                              partialProofData,
                              domainSep_0,
                              kind_0,
                              key_0,
-                             len_0,
+                             valType_0,
+                             valLen_0,
                              value_0)
   {
     let t_0;
@@ -764,14 +768,15 @@ export class Contract {
                                                           .arrayPush(__compactRuntime.StateValue.newCell({ value: _descriptor_18.toValue(1n),
                                                                                                            alignment: _descriptor_18.alignment() })).arrayPush(__compactRuntime.StateValue.newCell({ value: _descriptor_11.toValue(10n),
                                                                                                                                                                                                      alignment: _descriptor_11.alignment() })).arrayPush(__compactRuntime.StateValue.newCell({ value: _descriptor_12.toValue((t_0 = { name:
-                                                                                                                                                                                                                                                                                                                                        new Uint8Array([84, 111, 107, 101, 110, 77, 101, 116, 97, 100, 97, 116, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                                                                                                                                                                                                                                                                                                                        this._EVENT_NAME_0(),
                                                                                                                                                                                                                                                                                                                                       payload:
                                                                                                                                                                                                                                                                                                                                         Uint8Array.from([...Array.from(domainSep_0,
                                                                                                                                                                                                                                                                                                                                                                        BigInt),
                                                                                                                                                                                                                                                                                                                                                          kind_0,
                                                                                                                                                                                                                                                                                                                                                          ...Array.from(key_0,
                                                                                                                                                                                                                                                                                                                                                                        BigInt),
-                                                                                                                                                                                                                                                                                                                                                         len_0,
+                                                                                                                                                                                                                                                                                                                                                         valType_0,
+                                                                                                                                                                                                                                                                                                                                                         valLen_0,
                                                                                                                                                                                                                                                                                                                                                          ...Array.from(value_0,
                                                                                                                                                                                                                                                                                                                                                                        BigInt)],
                                                                                                                                                                                                                                                                                                                                                         Number) },
@@ -790,7 +795,7 @@ export class Contract {
   }
   async _tokenColor_0(context, partialProofData) {
     return this._tokenType_0(new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                             _descriptor_3.fromValue(__compactRuntime.queryLedgerState(context,
+                             _descriptor_4.fromValue(__compactRuntime.queryLedgerState(context,
                                                                                        partialProofData,
                                                                                        [
                                                                                         { dup: { n: 2 } },
@@ -847,23 +852,26 @@ export class Contract {
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     0n,
                                     new Uint8Array([110, 97, 109, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    1n,
                                     11n,
-                                    new Uint8Array([68, 117, 97, 108, 32, 65, 117, 114, 111, 114, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+                                    new Uint8Array([68, 117, 97, 108, 32, 65, 117, 114, 111, 114, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     0n,
                                     new Uint8Array([115, 121, 109, 98, 111, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    1n,
                                     4n,
-                                    new Uint8Array([68, 65, 85, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+                                    new Uint8Array([68, 65, 85, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     0n,
                                     new Uint8Array([100, 101, 99, 105, 109, 97, 108, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    2n,
                                     1n,
                                     Uint8Array.from([6n,
-                                                     ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                                     ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                                                    BigInt)],
                                                     Number));
     return [];
@@ -897,23 +905,26 @@ export class Contract {
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     1n,
                                     new Uint8Array([110, 97, 109, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    1n,
                                     11n,
-                                    new Uint8Array([68, 117, 97, 108, 32, 65, 117, 114, 111, 114, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+                                    new Uint8Array([68, 117, 97, 108, 32, 65, 117, 114, 111, 114, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     1n,
                                     new Uint8Array([115, 121, 109, 98, 111, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    1n,
                                     4n,
-                                    new Uint8Array([68, 65, 85, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+                                    new Uint8Array([68, 65, 85, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     await this._emitTokenMetadata_0(context,
                                     partialProofData,
                                     new Uint8Array([117, 109, 98, 114, 97, 58, 100, 97, 117, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     1n,
                                     new Uint8Array([100, 101, 99, 105, 109, 97, 108, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    2n,
                                     1n,
                                     Uint8Array.from([6n,
-                                                     ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                                     ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                                                    BigInt)],
                                                     Number));
     return [];
@@ -1063,8 +1074,8 @@ export const expectedVk = {
   'mintShielded': 'bd34d3d2393d058335dc68b2b480b2e427b0018f79285c812e5f58c84f34f6b0',
   'mintUnshielded': '21e4e4ffe3ce87c797e8a2a04fbab8c4f635bb1064485454df60e23e63023c5d',
   'mints': '3af991746814eb19ccd3006cf52f0155e8b5a26d39821497c3673f6144b71132',
-  'publishShielded': '31c362a5f02788839fdd4f26d6e63cfdb66e0a8d63a129d240d4e3107d2ac143',
-  'publishUnshielded': 'd353e7b0dad140b44636df6bac9abe66df06c1499016ff27d4cdd924de0fa4b4',
+  'publishShielded': '645fc9e0bafd0334ec3bbd8015a71de2aa301dc545354c22749b47a243c6165e',
+  'publishUnshielded': '432cc40ff2375dec6509447d511ed7e1b57caa26fce2ee75624fd411a218f9da',
   'tokenColor': 'd748e8ef83bd63bee9a5c303c292b039aa6097c4798b486e218e26e9365eb6b7',
 };
 

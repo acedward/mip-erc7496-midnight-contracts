@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { deploy, hex, pad, PAYLOAD_SIZE } from './token-metadata.js';
+import { EVENT_NAME, MAX_VALUE_LEN, deploy, hex, pad, PAYLOAD_SIZE, validateTokenMetadataEvent } from './token-metadata.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -25,6 +25,7 @@ interface MatrixEvent {
   domainSep: string;
   kind: number;
   key: string;
+  valType: number;
   len: number;
   value: string;
   text: string | null;
@@ -59,12 +60,36 @@ describe('generated-matrix.json', () => {
     expect(matrix.rows.map((row) => row.id)).toEqual(referenceSet.rows.map((row) => row.id));
   });
 
-  it('never exceeds the standard’s 190-byte value field', () => {
+  it('never exceeds the MIP’s 189-byte value field and always declares a val-type', () => {
     for (const row of matrix.rows) {
       for (const step of row.steps) {
         for (const event of step.events ?? []) {
-          expect(event.len, `${row.id}/${step.circuit}/${event.key}`).toBeLessThanOrEqual(190);
-          expect(event.value.length, `${row.id}/${step.circuit}/${event.key}`).toBe(190 * 2);
+          const where = `${row.id}/${step.circuit}/${event.key}`;
+          expect(event.len, where).toBeLessThanOrEqual(MAX_VALUE_LEN);
+          expect(event.value.length, where).toBe(MAX_VALUE_LEN * 2);
+          // MIP section 2.1: 0..4 are defined, 5..255 are reserved.
+          expect(event.valType, where).toBeGreaterThanOrEqual(0);
+          expect(event.valType, where).toBeLessThanOrEqual(4);
+        }
+      }
+    }
+  });
+
+  it('gives MIP Appendix A’s val-type to every well-known key it uses', () => {
+    const expected: Record<string, number> = {
+      name: 1,
+      symbol: 1,
+      decimals: 2,
+      metadata: 3,
+      tokenUri: 4,
+    };
+    for (const row of matrix.rows) {
+      for (const step of row.steps) {
+        for (const event of step.events ?? []) {
+          const want = /^metadata\/\d+$/.test(event.key) ? 3 : expected[event.key];
+          if (want !== undefined) {
+            expect(event.valType, `${row.id}/${step.circuit}/${event.key}`).toBe(want);
+          }
         }
       }
     }
@@ -90,13 +115,16 @@ for (const row of matrix.rows) {
         for (const [index, expected] of expectedEvents.entries()) {
           const actual = call.events[index]!;
           const where = `${row.id}.${step.circuit}[${index}] (${expected.key})`;
-          expect(actual.eventName, where).toBe('TokenMetadata');
+          expect(actual.eventName, where).toBe(EVENT_NAME);
           expect(actual.payload.length, where).toBe(PAYLOAD_SIZE);
           expect(hex(actual.domainSep), where).toBe(expected.domainSep);
           expect(actual.kind, where).toBe(expected.kind);
           expect(actual.keyText, where).toBe(expected.key);
+          expect(actual.valType, where).toBe(expected.valType);
           expect(actual.len, where).toBe(expected.len);
           expect(hex(actual.value), where).toBe(expected.value);
+          // Every event the reference set emits must survive transport validation.
+          expect(validateTokenMetadataEvent(actual), where).toEqual({ outcome: 'accepted' });
           if (expected.text !== null && expected.key !== 'decimals') {
             expect(actual.valueText, where).toBe(expected.text);
           }
@@ -154,7 +182,7 @@ describe('a literal payload is byte-identical to the parameterised template’s'
         pad(32, 'Shielded Star'),
         13n,
         'SSTAR',
-        pad(16, 'SSTAR'),
+        pad(32, 'SSTAR'),
         5n,
         6n,
       ],

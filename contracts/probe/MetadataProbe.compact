@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 //
-// MetadataProbe — the compile-and-byte-layout proof for the TokenMetadata
-// payload. It is not a token: it exists so a test can call the module directly
-// and assert that `Bytes[...spread]` really produces the 256 bytes of
-// ../../TOKEN-METADATA.md section 2, at the documented offsets.
+// MetadataProbe — the compile-and-byte-layout proof for the MIP's payload. It
+// is not a token: it exists so a test can call the module directly and assert
+// that `Bytes[...spread]` really produces the 256 bytes of MIP section 2, at
+// the documented offsets (domainSep 0, kind 32, key 33, val-type 65, val-len
+// 66, value 67..255).
 //
-// Deployed once on the test network it also proves that a `Misc` event named
-// `TokenMetadata` with a 256-byte payload survives the round trip through the
-// node and the public indexer.
+// It is also the source of the negative corpus: every field is a parameter, so
+// the probe can emit payloads a conforming consumer MUST reject (a reserved
+// val-type, a val-len above 189, an empty key, an unknown kind byte) and the
+// one event a consumer MUST ignore rather than reject — a `Misc` event under
+// the pre-MIP name `TokenMetadata` (MIP section 1: "Any other event MUST be
+// ignored").
 
 pragma language_version >= 0.26.0;
 
@@ -20,31 +24,33 @@ export ledger _calls: Counter;
 /**
  * @description Emits one arbitrary TokenMetadata event. Everything is a
  * parameter so a test can drive every field, including deliberately invalid
- * ones (a `len` above 190, a reserved kind bit) for the indexer's negative
- * fixtures.
+ * ones (a `valLen` above 189, a reserved `valType`, an unknown `kind`) for the
+ * indexer's negative fixtures.
  */
 export circuit publishRaw(
   domainSep: Bytes<32>,
   kind: Uint<8>,
   key: Bytes<32>,
-  len: Uint<8>,
-  value: Bytes<190>
+  valType: Uint<8>,
+  valLen: Uint<8>,
+  value: Bytes<189>
 ): [] {
   _calls.increment(1);
   TM_emitTokenMetadata(disclose(domainSep), disclose(kind), disclose(key),
-                       disclose(len), disclose(value));
+                       disclose(valType), disclose(valLen), disclose(value));
 }
 
 /**
- * @description Emits the three standard fields (name, symbol, decimals) for one
- * token: the exact shape a conforming contract's `publishMetadata()` produces.
+ * @description Emits the three core well-known fields (name, symbol, decimals)
+ * for one token: the exact shape a conforming contract's `publishMetadata()`
+ * produces.
  */
 export circuit publishStandard(
   domainSep: Bytes<32>,
   kind: Uint<8>,
   name_: Bytes<32>,
   nameLen: Uint<8>,
-  symbol_: Bytes<16>,
+  symbol_: Bytes<32>,
   symbolLen: Uint<8>,
   decimals_: Uint<8>
 ): [] {
@@ -64,9 +70,33 @@ export circuit publishFixture(): [] {
     pad(32, "umbra:probe"),
     TM_KIND_SHIELDED(),
     pad(32, "Umbra Probe"), 11,
-    pad(16, "UPROBE"), 6,
+    pad(32, "UPROBE"), 6,
     6
   );
+}
+
+/**
+ * @description Emits a well-formed MIP payload under the PRE-MIP event name
+ * `TokenMetadata` (what this repository's 00020 contracts emitted). A MIP
+ * consumer must IGNORE it — not store it, not reject it — because the name is
+ * not `mip-xxxx:token-metadata[v1]` (MIP section 1). The name is written here
+ * rather than taken from the module on purpose: the module has exactly one
+ * event name and it is the current one.
+ */
+export circuit publishLegacyName(
+  domainSep: Bytes<32>,
+  kind: Uint<8>,
+  key: Bytes<32>,
+  valType: Uint<8>,
+  valLen: Uint<8>,
+  value: Bytes<189>
+): [] {
+  _calls.increment(1);
+  emit(Misc {
+    name: pad(32, "TokenMetadata"),
+    payload: Bytes[...disclose(domainSep), disclose(kind), ...disclose(key),
+                   disclose(valType), disclose(valLen), ...disclose(value)]
+  });
 }
 
 /** The number of publish calls seen so far. */

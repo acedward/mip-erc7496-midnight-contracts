@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // A native shielded token with one static domain separator that describes
-// itself on chain per ../TOKEN-METADATA.md.
+// itself on chain per MIP PR #315 (`mips/mip-xxxx-on-chain-token-metadata.md`
+// @ `f433056`), the normative text; ../TOKEN-METADATA.md points at it.
 //
 // Composition:
 //   OpenZeppelin `NativeShieldedToken`  the domain, the colour, the mint, and
@@ -32,7 +33,7 @@ export { ContractAddress, Either, Maybe, ShieldedCoinInfo, ZswapCoinPublicKey };
 export sealed ledger _nameBytes: Bytes<32>;
 export sealed ledger _nameLen: Uint<8>;
 /** The token symbol in the byte form the metadata events carry. */
-export sealed ledger _symbolBytes: Bytes<16>;
+export sealed ledger _symbolBytes: Bytes<32>;
 export sealed ledger _symbolLen: Uint<8>;
 /** True once `publishMetadata` has run; it may run only once. */
 export ledger _published: Boolean;
@@ -44,7 +45,7 @@ constructor(
   nameBytes_: Bytes<32>,
   nameLen_: Uint<8>,
   symbol_: Opaque<"string">,
-  symbolBytes_: Bytes<16>,
+  symbolBytes_: Bytes<32>,
   symbolLen_: Uint<8>,
   decimals_: Uint<8>
 ) {
@@ -101,13 +102,14 @@ export circuit publishMetadata(): [] {
  * @description Sets or replaces one metadata key (EIP-7496's dynamic trait
  * update). Owner only. Last write wins for the consumer.
  */
-export circuit setMetadata(key: Bytes<32>, len: Uint<8>, value: Bytes<190>): [] {
+export circuit setMetadata(key: Bytes<32>, valType: Uint<8>, valLen: Uint<8>, value: Bytes<189>): [] {
   Ownable_assertOnlyOwner();
   TM_emitTokenMetadata(
     Token__domain,
     TM_KIND_SHIELDED(),
     disclose(key),
-    disclose(len),
+    disclose(valType),
+    disclose(valLen),
     disclose(value)
   );
 }
