@@ -1,32 +1,58 @@
 // SPDX-License-Identifier: Apache-2.0
-// The TokenMetadata standard, version 1 — see ../TOKEN-METADATA.md (normative).
+//
+// The reference module of MIP PR #315, "On-Chain Token Metadata Emission"
+// (`mips/mip-xxxx-on-chain-token-metadata.md` @ `f433056`). The MIP is the
+// normative text; ../TOKEN-METADATA.md only points at it and records how this
+// repository implements it.
 //
 // One event per (domainSep, kind, key, value) tuple, emitted as the standard
-// library's `Misc` event named `TokenMetadata` with a 256-byte payload:
+// library's `Misc` event named `mip-xxxx:token-metadata[v1]` with a fixed
+// 256-byte payload (MIP section 2):
 //
 //   offset  0  32  domainSep   the token within this contract (ERC-1155 `id`)
-//   offset 32   1  kind        bit 0: 0 unshielded / 1 shielded
-//                              bit 1: 0 native UTxO / 1 ledger balances
-//                              bits 2-7 reserved, MUST be zero
+//   offset 32   1  kind        0 unshielded native, 1 shielded native,
+//                              2 unshielded ledger, 3 shielded ledger
 //   offset 33  32  key         UTF-8 key name, NUL-padded
-//   offset 65   1  len         meaningful bytes of `value`, 0..190
-//   offset 66 190  value       the value bytes, NUL-padded after `len`
+//   offset 65   1  val-type    0 opaque, 1 UTF-8 string, 2 unsigned big-endian
+//                              integer, 3 UTF-8 JSON, 4 UTF-8 absolute URI;
+//                              5..255 reserved (a consumer rejects the event)
+//   offset 66   1  val-len     meaningful bytes of `value`, 0..189
+//   offset 67 189  value       the value bytes, NUL-padded after `val-len`
+//
+//   32 + 1 + 32 + 1 + 1 + 189 = 256
 //
 // A constructor cannot emit, so contracts expose a `publishMetadata()` circuit
-// that the deployer calls right after deployment.
+// that the deployer calls right after deployment (MIP section 6.7).
 
 pragma language_version >= 0.26.0;
 
 module TokenMetadata {
   import CompactStandardLibrary;
 
-  /** The `kind` byte of a native unshielded token. */
+  /**
+   * @description The event name of MIP section 1, `pad(32, "mip-xxxx:token-metadata[v1]")`:
+   * the 27 bytes `6d69702d787878783a746f6b656e2d6d657461646174615b76315d` followed by five
+   * NULs. A consumer accepts a `Misc` event as a TokenMetadata event if and only if its
+   * name is exactly these 32 bytes.
+   *
+   * @dev PLACEHOLDER NUMBER. `xxxx` stands for the four-digit MIP number assigned when the
+   * proposal is merged; the MIP fixes the final string at that point. Changing it changes
+   * these 32 bytes, so every contract deployed under the placeholder has to be redeployed
+   * (or have a new circuit inserted by its maintenance authority) once the number is known.
+   * This literal is the ONLY place the name is written in this module, and the only place
+   * that has to change.
+   */
+  export circuit EVENT_NAME(): Bytes<32> {
+    return pad(32, "mip-xxxx:token-metadata[v1]");
+  }
+
+  /** The `kind` byte of a native unshielded token (MIP section 3). */
   export circuit KIND_UNSHIELDED(): Uint<8> { return 0; }
 
-  /** The `kind` byte of a native shielded token. */
+  /** The `kind` byte of a native shielded token (MIP section 3). */
   export circuit KIND_SHIELDED(): Uint<8> { return 1; }
 
-  /** Bit 1 of the `kind` byte: balances live in contract state, not in UTxOs. */
+  /** Added to a privacy bit: balances live in contract state, not in UTxOs. */
   export circuit KIND_LEDGER_FLAG(): Uint<8> { return 2; }
 
   /**
@@ -34,54 +60,62 @@ module TokenMetadata {
    * the token `(this contract, domainSep, kind)`.
    *
    * Everything reaching `emit` is public: callers pass `disclose(...)` for any
-   * witness-derived value.
+   * witness-derived value (MIP section 6.6).
    *
    * @param {Bytes<32>} domainSep - The token's domain separator.
-   * @param {Uint<8>} kind - The kind byte (see the module header).
+   * @param {Uint<8>} kind - The kind byte 0..3 (MIP section 3).
    * @param {Bytes<32>} key - The key name, NUL-padded to 32 bytes.
-   * @param {Uint<8>} len - The number of meaningful bytes in `value`, 0..190.
-   * @param {Bytes<190>} value - The value bytes, NUL-padded after `len`.
+   * @param {Uint<8>} valType - How to read `value` (MIP section 2.1).
+   * @param {Uint<8>} valLen - The number of meaningful bytes in `value`, 0..189.
+   * @param {Bytes<189>} value - The value bytes, NUL-padded after `valLen`.
    */
   export circuit emitTokenMetadata(
     domainSep: Bytes<32>,
     kind: Uint<8>,
     key: Bytes<32>,
-    len: Uint<8>,
-    value: Bytes<190>
+    valType: Uint<8>,
+    valLen: Uint<8>,
+    value: Bytes<189>
   ): [] {
     emit(Misc {
-      name: pad(32, "TokenMetadata"),
-      // 32 + 1 + 32 + 1 + 190 = 256
-      payload: Bytes[...domainSep, kind, ...key, len, ...value]
+      name: EVENT_NAME(),
+      // 32 + 1 + 32 + 1 + 1 + 189 = 256
+      payload: Bytes[...domainSep, kind, ...key, valType, valLen, ...value]
     });
   }
 
   /**
-   * @description Emits the three well-known display fields of one token:
-   * `name`, `symbol` and `decimals`. Three events, in that order.
+   * @description Emits the three core well-known fields of one token —
+   * `name` (val-type 1), `symbol` (val-type 1) and `decimals` (val-type 2, one
+   * byte) — in that order, as MIP Appendix A encodes them.
    *
    * @param {Bytes<32>} domainSep - The token's domain separator.
    * @param {Uint<8>} kind - The kind byte.
    * @param {Bytes<32>} name_ - The name, NUL-padded to 32 bytes.
-   * @param {Uint<8>} nameLen - The meaningful length of `name_`.
-   * @param {Bytes<16>} symbol_ - The symbol, NUL-padded to 16 bytes.
+   * @param {Uint<8>} nameLen - The meaningful length of `name_` (1..32 here; the
+   *   transport allows up to 189 through `emitTokenMetadata`).
+   * @param {Bytes<32>} symbol_ - The symbol, NUL-padded to 32 bytes (Appendix A
+   *   caps `symbol` at 32).
    * @param {Uint<8>} symbolLen - The meaningful length of `symbol_`.
-   * @param {Uint<8>} decimals_ - The number of decimals (0..36).
+   * @param {Uint<8>} decimals_ - The number of decimals (Appendix A: 0..36).
    */
   export circuit emitStandardFields(
     domainSep: Bytes<32>,
     kind: Uint<8>,
     name_: Bytes<32>,
     nameLen: Uint<8>,
-    symbol_: Bytes<16>,
+    symbol_: Bytes<32>,
     symbolLen: Uint<8>,
     decimals_: Uint<8>
   ): [] {
-    emitTokenMetadata(domainSep, kind, pad(32, "name"), nameLen,
-                      Bytes[...name_, ...pad(158, "")]);
-    emitTokenMetadata(domainSep, kind, pad(32, "symbol"), symbolLen,
-                      Bytes[...symbol_, ...pad(174, "")]);
-    emitTokenMetadata(domainSep, kind, pad(32, "decimals"), 1,
-                      Bytes[decimals_, ...pad(189, "")]);
+    // name: UTF-8 string (val-type 1)
+    emitTokenMetadata(domainSep, kind, pad(32, "name"), 1, nameLen,
+                      Bytes[...name_, ...pad(157, "")]);
+    // symbol: UTF-8 string (val-type 1)
+    emitTokenMetadata(domainSep, kind, pad(32, "symbol"), 1, symbolLen,
+                      Bytes[...symbol_, ...pad(157, "")]);
+    // decimals: unsigned big-endian integer (val-type 2) in exactly one byte
+    emitTokenMetadata(domainSep, kind, pad(32, "decimals"), 2, 1,
+                      Bytes[decimals_, ...pad(188, "")]);
   }
 }

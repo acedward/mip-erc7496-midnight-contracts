@@ -7,26 +7,26 @@
     "type": "directory",
     "contract-info.json": {
       "type": "file",
-      "size": 9462,
-      "hash": "e88879bcaad0cf602701f002ed6809a3c0ef21e4ac93e533a391c7fe2d58d967"
+      "size": 9606,
+      "hash": "3b2ef031cd25182c9ea0022453df85a1393c189358e7f4a0acbef03e25cb05e7"
     }
   },
   "contract": {
     "type": "directory",
     "index.d.ts": {
       "type": "file",
-      "size": 6758,
-      "hash": "dc0ec2962154c13707b110ccdc88c7ed928906742e8e8e47a5c85e5b5a8d907a"
+      "size": 6866,
+      "hash": "f56c4452656f138270208565e43772c41d026bb29aaf39d5615f05740fc8d06b"
     },
     "index.js": {
       "type": "file",
-      "size": 139520,
-      "hash": "acc4084616285672f9aa5f2667ebbf12498ece5514c0d4b3d068ed35e0b9a671"
+      "size": 141057,
+      "hash": "8ccea2ba0398b569623aec162b83761464f80d0dc96d683c9aaef372f423d006"
     },
     "index.js.map": {
       "type": "file",
-      "size": 5670,
-      "hash": "817c425f28a4ed691b7361a721dc98c82d7280e48773de181239c53743cfa3bf"
+      "size": 5787,
+      "hash": "1b48d2551c223de6dbc7753377ad68b3f71f15c6bbb90eddbd8459afe2eecba4"
     }
   },
   "zkir": {
@@ -58,18 +58,18 @@
     },
     "publishShielded.zkir": {
       "type": "file",
-      "size": 100189,
-      "hash": "609a4821e6543b42341b725759b0f24ec56ab2833d58fce199890d736e5805fe"
+      "size": 111365,
+      "hash": "67e32b60c0b876c0237b62b093389977dc7e83080ca99661fc7c82c8f6ba104f"
     },
     "publishUnshielded.zkir": {
       "type": "file",
-      "size": 100235,
-      "hash": "21691f674c9ded56f1fa73ac03e9d5bd0166a2954c0409cb9b34a897f5129123"
+      "size": 111411,
+      "hash": "28b75a5c333864d9d15721191e5fcc9fde645a4184a00eaa67cbf9ad3689183d"
     },
     "setMetadata.zkir": {
       "type": "file",
-      "size": 76721,
-      "hash": "6e7b5aa16ecc8f5292a21ae66fb327b058ab37f22ae65c15cb48029eb8ecd285"
+      "size": 76741,
+      "hash": "b6d4ed1c0443ed8cd05ba45e639ecf7a311c5bbea026afa798d5ec936e3c22a8"
     },
     "tokenColor.zkir": {
       "type": "file",

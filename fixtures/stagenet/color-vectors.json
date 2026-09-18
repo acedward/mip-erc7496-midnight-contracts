@@ -2,126 +2,126 @@
   "$comment": "Recorded from the PUBLIC Midnight Stagenet indexer for the contracts in out/deployment.json. Every byte here came off the chain; fixtures/simulator/ is the offline counterpart.",
   "network": "stagenet",
   "indexer": "https://indexer.stagenet.shielded.tools/api/v4/graphql",
-  "recordedAt": "2026-09-17T06:20:14.133Z",
+  "recordedAt": "2026-09-18T00:45:29.268Z",
   "vectors": [
-    {
-      "row": "SSTAR",
-      "piece": null,
-      "address": "7d0bbc9546e0976f27a069e43490deb670ec0d51514c2da634b062e65b2938c7",
-      "domainSep": "756d6272613a7373746172000000000000000000000000000000000000000000",
-      "color": "a988a5eccbc9ba6faa93c72aa344db0776dae4962a6c67dbe1b1633a883df997",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "UCOM",
-      "piece": null,
-      "address": "40918a6666a2390010f189cdb535b5b17cdd9479f502241e02ec4a76a69eebf2",
-      "domainSep": "756d6272613a75636f6d00000000000000000000000000000000000000000000",
-      "color": "b92eb7e767009c202a9419a7f8952002959d42c2a1672efc7171a8af1e0c7fa4",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
     {
       "row": "LSUN",
       "piece": null,
-      "address": "76c2fd63ad1a637dc5900e2bbfac47c2a30405eb3b8b2c0c32d675846c100058",
+      "address": "152827bc1d9ea7ecec0d13879e87a21ecf8f283804dfef16c9b805612acfea90",
       "domainSep": "756d6272613a6c73756e00000000000000000000000000000000000000000000",
-      "color": "231ccd99aacff5ac2ad9527b261f1a5c803d1ec0bd448ac7cb33f29600976f90",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "DAUR",
-      "piece": null,
-      "address": "57244319c3660e539b6f7f66248e46642c0d31d862986bedb2c1d4186061d685",
-      "domainSep": "756d6272613a6461757200000000000000000000000000000000000000000000",
-      "color": "0cc414ba41fbfcc579fcc23abc40d15686ba0256e366e53e8145683a97fef136",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "CNST",
-      "piece": "orion",
-      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
-      "domainSep": "636e73743a6f72696f6e00000000000000000000000000000000000000000000",
-      "color": "00a3eb500a600b975ff35b9ac624513e0c1c4277f794a3df4d5dfd3e0b487b93",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "CNST",
-      "piece": "lyra",
-      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
-      "domainSep": "636e73743a6c7972610000000000000000000000000000000000000000000000",
-      "color": "cd99dea3f3a4e691f045d76e4b98747b68e3fa4f90b9c8414337a5b3e6758081",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "CNST",
-      "piece": "cygnus",
-      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
-      "domainSep": "636e73743a6379676e7573000000000000000000000000000000000000000000",
-      "color": "4d04dab56afbb37ce2b135937f6efeac132b7a7e79139daec9854fc908da2868",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "CNST",
-      "piece": "vega",
-      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
-      "domainSep": "636e73743a766567610000000000000000000000000000000000000000000000",
-      "color": "3d9180f0b7b00dd52c8a35c0ee1558d901e11619bcea9e2e4aaef1a0722bf64f",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "CNST",
-      "piece": "altair",
-      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
-      "domainSep": "636e73743a616c74616972000000000000000000000000000000000000000000",
-      "color": "9e7032f27cb031d4a3518d970391c0d775485b8f15f41cbf18d4142c7e1f15b1",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "SNEB",
-      "piece": null,
-      "address": "e7597c0205132b33c76d1df7f062ed022616807bd868d0fc101a65a89fee6fce",
-      "domainSep": "756d6272613a736e656200000000000000000000000000000000000000000000",
-      "color": "b147dc1b324117e5c5f8d06cf8b2277b4067b1feeb285f00b76e692e1f760566",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "SGHOST",
-      "piece": null,
-      "address": "520b8ecf3517a9fa797352bb97f438ccab0aa8f3cc452d3b3ef57df519a77298",
-      "domainSep": "756d6272613a7367686f73740000000000000000000000000000000000000000",
-      "color": "14422c1082c4af5037779011e96926fd13f59786fa36e6df61a45c41d75e7f11",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "UMET",
-      "piece": null,
-      "address": "f184f92ffe9f015d1a2cdb76d7b5621fe50714175360310b046c9a7fe8fee43e",
-      "domainSep": "756d6272613a756d657400000000000000000000000000000000000000000000",
-      "color": "1677a42ad8a035718b84662852e9be4961870b1d601c2b35a709be68ebee0438",
-      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
-    },
-    {
-      "row": "UPROM",
-      "piece": null,
-      "address": "64f7b33d55c2647b6ce11a8a6c631f9558da6a6354f0ffa9a852cccc4c547da2",
-      "domainSep": "756d6272613a7570726f6d000000000000000000000000000000000000000000",
-      "color": "19e18ca3ee12f6e93e24ec53ca5dfe3f3904509767e3ffd8e5fd02498b471cf9",
+      "color": "b0868c145e6959e538d17ae0f880e1481d9aa325888102a5502bdf931a2544c4",
       "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
     },
     {
       "row": "LMOON",
       "piece": null,
-      "address": "9fe4724d67cb395791ad69ba040f8c7dae872b9e961bd766a390db3954694932",
+      "address": "fef951c605d33514bd9c54b56772e23e9abaad07982457fd918dc68984cc433a",
       "domainSep": "756d6272613a6c6d6f6f6e000000000000000000000000000000000000000000",
-      "color": "60a4aef306f0c87a9fce9d5deddf6dd12d4dae8eac088fd2f4de4b6120fb3400",
+      "color": "18146aa4ac2dd90e665d1dc71c4370cc0408d9abd3ee8f4e3d6dc6a5f4819612",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "SSTAR",
+      "piece": null,
+      "address": "171ac372bb73fb9fee495cf578fe8e99ddc622f2ee18fd327e1a90d01cb3cc95",
+      "domainSep": "756d6272613a7373746172000000000000000000000000000000000000000000",
+      "color": "3248c456d02ce8a8c2b42541488add504152f745e168d139934c637339c55553",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "SNEB",
+      "piece": null,
+      "address": "19036e0277d378ff8356b32e74bbd6aa03d4531bc9094031e785fb48c151b538",
+      "domainSep": "756d6272613a736e656200000000000000000000000000000000000000000000",
+      "color": "e51a1df69e7bdac483b1ef3a418ab993145e075c946aa90b57a5200328a60e01",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "SGHOST",
+      "piece": null,
+      "address": "165e623bc4e5e0fc99607011fcb8cbe436e001071f52130435b2ae11bbfdcf34",
+      "domainSep": "756d6272613a7367686f73740000000000000000000000000000000000000000",
+      "color": "1be172b1e46d0ceacc3200aded4f681eafabe42611ee2b962200802573675bb3",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "UCOM",
+      "piece": null,
+      "address": "de76f303d319aa7427cfac5eb671c1d693259e9ba59086c251c495708fc88acb",
+      "domainSep": "756d6272613a75636f6d00000000000000000000000000000000000000000000",
+      "color": "10dbdaf2b0b0aee765b3a83517f63a0371088565aa1d4cf89ccdc1c70b298269",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "UMET",
+      "piece": null,
+      "address": "e17be6733ec82a884927041bdcf2e954265a0cd07864df8922064bc218e8198a",
+      "domainSep": "756d6272613a756d657400000000000000000000000000000000000000000000",
+      "color": "ab2fed68e75cd202f09dc7dc224fdb9c7a77c078a073596d39f574598f19d6ee",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "UPROM",
+      "piece": null,
+      "address": "2af4685bc8328a1a18ae86e428a9ecacc7c2f3bf12c293e18b2fd9cf4092bdf3",
+      "domainSep": "756d6272613a7570726f6d000000000000000000000000000000000000000000",
+      "color": "a166e633b53e590c2d8fd9c7d6bcd655867b4c03b3f0cdd53be11adb99d80ac3",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "DAUR",
+      "piece": null,
+      "address": "3ad541b2dbbaeb69b2381bec19b0d9211925726f8784b8bff1b87b92d6a09256",
+      "domainSep": "756d6272613a6461757200000000000000000000000000000000000000000000",
+      "color": "00b357a6d3d7a08be132a3ff81c48a54c9a566b4e73eedc285a34c6d2c51d325",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "orion",
+      "address": "9f0d030eb2716e593a3872d569664d6ff680cdfd81ed40e86d60de39557511d7",
+      "domainSep": "636e73743a6f72696f6e00000000000000000000000000000000000000000000",
+      "color": "e53dea555436716ce8a774fcfe0a71a3076725f6723930d82a0134e02730ccdc",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "lyra",
+      "address": "9f0d030eb2716e593a3872d569664d6ff680cdfd81ed40e86d60de39557511d7",
+      "domainSep": "636e73743a6c7972610000000000000000000000000000000000000000000000",
+      "color": "ffe655921c01f3a091fc2f935c71e72ac41669609bfd0c97ac9a84b4546097dd",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "cygnus",
+      "address": "9f0d030eb2716e593a3872d569664d6ff680cdfd81ed40e86d60de39557511d7",
+      "domainSep": "636e73743a6379676e7573000000000000000000000000000000000000000000",
+      "color": "d33a7c573e3272dfc2a52620327e682d178fb9df5d391cb9b5da966587ec5934",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "vega",
+      "address": "9f0d030eb2716e593a3872d569664d6ff680cdfd81ed40e86d60de39557511d7",
+      "domainSep": "636e73743a766567610000000000000000000000000000000000000000000000",
+      "color": "6f6d0047200c30d3bf0b6bdd9c6beaf4946255e7eadc1ceb15192f8c6d71a5cf",
+      "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
+    },
+    {
+      "row": "CNST",
+      "piece": "altair",
+      "address": "9f0d030eb2716e593a3872d569664d6ff680cdfd81ed40e86d60de39557511d7",
+      "domainSep": "636e73743a616c74616972000000000000000000000000000000000000000000",
+      "color": "43a69ea323b809fa5ece303c1b7d8bb6c9f7835e67ca5b8a205074e2840e1032",
       "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
     },
     {
       "row": "LLIAR",
       "piece": null,
-      "address": "b006a6647c26829987ec1bd59de1d4107019d7f54c097d3fdc25a4dddcf1231e",
+      "address": "af0330b143e2ea01071a1435495f8be82cd689e8c5af8a05c5dd0df652f20a95",
       "domainSep": "756d6272613a6c6c696172000000000000000000000000000000000000000000",
-      "color": "322445b1187ef7c276c68740958ed158f32b7582b2ad8b4d67ef05c9b5de988d",
+      "color": "3b420f37be1c6c175a2f3766e74ab4308aba79a33c7037acdc9a1c7118fd4dc1",
       "source": "persistentCommit([domainSep, address], pad(32, \"midnight:derive_token\"))"
     }
   ]

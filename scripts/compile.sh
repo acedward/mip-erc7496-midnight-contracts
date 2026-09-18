@@ -24,6 +24,10 @@ OUT_DIR="$SRC_DIR/managed"
 
 # The contracts to build, in order. TokenMetadata.compact is a module: it has no
 # contract of its own and is compiled transitively by every importer.
+#
+# The generated/ half is the reference set as literal-payload contracts (see
+# scripts/generate-literal-contracts.ts); it is listed here so that `--check`
+# covers what actually gets deployed, not only the parameterised templates.
 CONTRACTS=(
   "probe/MetadataProbe"
   "NativeShieldedToken"
@@ -31,6 +35,17 @@ CONTRACTS=(
   "NativeDualToken"
   "ShieldedCollection"
   "LedgerToken"
+  "generated/LSUN"
+  "generated/LMOON"
+  "generated/SSTAR"
+  "generated/SNEB"
+  "generated/SGHOST"
+  "generated/UCOM"
+  "generated/UMET"
+  "generated/UPROM"
+  "generated/DAUR"
+  "generated/CNST"
+  "generated/LLIAR"
 )
 
 CHECK=0
@@ -105,7 +120,11 @@ if [ "$CHECK" = "1" ]; then
     base="$(basename "$name")"
     # keys/ is not committed (a k=19 .prover is ~134 MB and is a pure function
     # of the ZKIR); compare the generated TypeScript, the ZKIR and the metadata.
-    if diff -r -q -x keys "$OUT_DIR/$base" "$TARGET_ROOT/$base"; then
+    # *.bzkir is excluded for the same reason: it is a byproduct that `zkir`
+    # writes beside a .zkir during key generation or ./scripts/circuit-cost.sh,
+    # it is gitignored, and a --check run (which implies SKIP_ZK) never produces
+    # one — so without this, measuring a circuit's cost would "break" --check.
+    if diff -r -q -x keys -x '*.bzkir' "$OUT_DIR/$base" "$TARGET_ROOT/$base"; then
       echo "== $base: managed/ matches the sources"
     else
       echo "== $base: managed/ DIFFERS from a fresh compile" >&2

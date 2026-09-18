@@ -1,6 +1,8 @@
-# MinoCrab token-metadata costs by publication shape
+# Historical MinoCrab token-metadata costs by publication shape
 
-This report measures five MinoCrab-v3 artifacts that answer four token-metadata design questions. The format is a benchmark-local, user-requested typed variant. It is not the five-field format in the current reference contracts, is not an upstream standard, and was not deployed to Stagenet. The existing deployments and addresses remain recorded in the [Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/main/stagenet-token-metadata-deployments.md).
+This report measures five MinoCrab-v3 artifacts that answer four token-metadata design questions. The format is a benchmark-local, user-requested typed variant built from historical contracts pinned at `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6`. It was not deployed to Stagenet. Historical deployments for the separate five-field fixtures remain in the [pinned Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/8eda51c0448c77bb1e1326f738f8ebc6c83f4eaf/stagenet-token-metadata-deployments.md).
+
+The typed payload happens to use the current MIP's 189-byte value width, but the fixture still emits the legacy name `TokenMetadata`, uses benchmark-local value-type tags, and retains the historical `Bytes<16>` symbol shape. It is not equivalent to, and does not measure, the current `mip-xxxx:token-metadata[v1]` contracts, whose standard fields use `Bytes<32>` symbols.
 
 ## Results
 
@@ -13,7 +15,7 @@ Every value below comes from Compact 0.34.0's bundled `/opt/compactc/zkir-v3 moc
 | Fully runtime typed event | Six circuit arguments | 1 | None | **k11 / 1,914 rows** |
 | Independent runtime event scaling | Six arguments per event | 1 / 2 / 3 | None | See measured ladder below |
 
-The ledger-backed row is a representative fixed-kind extraction of the publisher shape in `NativeShieldedToken` and `LedgerToken`. It reads domain, name, name length, symbol, symbol length, and decimals from six ledger cells and uses a literal kind. The publication guard is a seventh cell read. Its public input has nine field limbs because each 32-byte field occupies two limbs. `NativeUnshieldedToken`, whose kind also comes from the ledger, has a different shape and is not represented by the 3,715-row result.
+The ledger-backed row is a representative fixed-kind extraction of the historical publisher shape in pinned `NativeShieldedToken` and `LedgerToken`. It reads domain, name, name length, symbol, symbol length, and decimals from six ledger cells and uses a literal kind. The publication guard is a seventh cell read. Its public input has nine field limbs because each 32-byte field occupies two limbs. The pinned `NativeUnshieldedToken`, whose kind also comes from the ledger, has a different shape and is not represented by the 3,715-row result.
 
 Ledger reads remain runtime work even when application logic prevents later metadata updates. MinoCrab's `LedgerCell::read` witnesses each value and ties it to the ledger transcript with `popeq`; the compiler cannot replace those reads with constructor literals.
 
@@ -57,6 +59,7 @@ The eleven historical tests from the [earlier K-size comparison](token-metadata-
 | Component | Pin |
 |---|---|
 | Benchmark base | [`effectstream/staging-tokens-addresses` @ `fc1f4f4630694ffa682b3b0520020437b9c5b839`](https://github.com/effectstream/staging-tokens-addresses/tree/fc1f4f4630694ffa682b3b0520020437b9c5b839) |
+| Audited migration source | [`effectstream/staging-tokens-addresses` @ `8eda51c0448c77bb1e1326f738f8ebc6c83f4eaf`](https://github.com/effectstream/staging-tokens-addresses/tree/8eda51c0448c77bb1e1326f738f8ebc6c83f4eaf) |
 | Original token reference | [`acedward/mip-erc7496-midnight-contracts` @ `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6`](https://github.com/acedward/mip-erc7496-midnight-contracts/tree/71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6) |
 | MinoCrab | [`sig-net/minocrab` @ `99504f0df6633c2ef8720d060ccb9f141f6d06b7`](https://github.com/sig-net/minocrab/tree/99504f0df6633c2ef8720d060ccb9f141f6d06b7) |
 | Midnight ledger crates | [`midnightntwrk/midnight-ledger` @ `04c9c5d9bcebb8d4427d8589fb54d58a55599c14`](https://github.com/midnightntwrk/midnight-ledger/tree/04c9c5d9bcebb8d4427d8589fb54d58a55599c14) |

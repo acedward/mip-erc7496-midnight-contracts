@@ -7,7 +7,8 @@
 // NativeShieldedToken. Every TokenMetadata payload below is a compile-time literal, so each
 // emitting circuit costs about eight rows per event (k=7) instead of the ~120 000 rows per
 // runtime event the parameterised templates in contracts/ pay — see TOKEN-METADATA.md
-// "Circuit cost" and question Q13. The bytes emitted are exactly the standard's bytes.
+// "Circuit cost" and question Q13. The bytes emitted are exactly the bytes MIP
+// section 2 fixes, val-type byte included.
 //
 // Circuits the deployment calls, in order:
 //   publishMetadata (9 events)
@@ -36,7 +37,7 @@ export circuit tokenColor(): Bytes<32> {
   return tokenType(pad(32, "umbra:sneb"), kernel.self());
 }
 
-/** The kind byte this contract declares (see ../../TOKEN-METADATA.md section 3). */
+/** The kind byte this contract declares (see MIP section 3). */
 export circuit kind(): Uint<8> {
   return 1;
 }
@@ -55,48 +56,48 @@ export circuit mints(): Uint<64> {
 export circuit publishMetadata(): [] {
   assert(!_published, "TokenMetadata: already published");
   _published = true;
-  // name = "Shielded Nebula" (len 15)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "name"), 15, pad(190, "Shielded Nebula"));
-  // symbol = "SNEB" (len 4)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "symbol"), 4, pad(190, "SNEB"));
-  // decimals = "0" (len 1)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
-  // metadata/0 = "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" (len 74)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/0"), 74, Bytes[
+  // name = "Shielded Nebula" (val-type 1 string, val-len 15)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "name"), 1, 15, pad(189, "Shielded Nebula"));
+  // symbol = "SNEB" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "symbol"), 1, 4, pad(189, "SNEB"));
+  // decimals = "0" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // metadata/0 = "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" (val-type 3 JSON, val-len 74)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/0"), 3, 74, Bytes[
     0x7b, 0x22, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f,
     0x6e, 0x22, 0x3a, 0x22, 0x41, 0x20, 0x6e, 0x65, 0x62, 0x75, 0x6c, 0x61,
     0x20, 0x70, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x65, 0x64, 0x20, 0x69,
     0x6e, 0x20, 0x70, 0x61, 0x72, 0x74, 0x73, 0x2c, 0x20, 0x62, 0x65, 0x63,
     0x61, 0x75, 0x73, 0x65, 0x20, 0x6f, 0x6e, 0x65, 0x20, 0x54, 0x6f, 0x6b,
     0x65, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x20, 0x65,
-    0x76, 0x65, ...pad(116, "")
+    0x76, 0x65, ...pad(115, "")
   ]);
-  // metadata/1 = "nt carries at most 190 bytes of value and this JSON does not fit in one." (len 72)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/1"), 72, pad(190, "nt carries at most 190 bytes of value and this JSON does not fit in one."));
-  // metadata/2 = "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" (len 72)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/2"), 72, Bytes[
+  // metadata/1 = "nt carries at most 189 bytes of value and this JSON does not fit in one." (val-type 3 JSON, val-len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/1"), 3, 72, pad(189, "nt carries at most 189 bytes of value and this JSON does not fit in one."));
+  // metadata/2 = "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" (val-type 3 JSON, val-len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/2"), 3, 72, Bytes[
     0x22, 0x2c, 0x22, 0x77, 0x65, 0x62, 0x73, 0x69, 0x74, 0x65, 0x22, 0x3a,
     0x22, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x65, 0x78, 0x61,
     0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x69, 0x6e, 0x76, 0x61, 0x6c, 0x69, 0x64,
     0x2f, 0x6e, 0x65, 0x62, 0x75, 0x6c, 0x61, 0x22, 0x2c, 0x22, 0x69, 0x6d,
     0x61, 0x67, 0x65, 0x22, 0x3a, 0x22, 0x64, 0x61, 0x74, 0x61, 0x3a, 0x69,
     0x6d, 0x61, 0x67, 0x65, 0x2f, 0x73, 0x76, 0x67, 0x2b, 0x78, 0x6d, 0x6c,
-    ...pad(118, "")
+    ...pad(117, "")
   ]);
-  // metadata/3 = ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " (len 72)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/3"), 72, pad(190, ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle "));
-  // metadata/4 = "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" (len 72)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/4"), 72, Bytes[
+  // metadata/3 = ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " (val-type 3 JSON, val-len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/3"), 3, 72, pad(189, ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle "));
+  // metadata/4 = "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" (val-type 3 JSON, val-len 72)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/4"), 3, 72, Bytes[
     0x63, 0x78, 0x3d, 0x27, 0x34, 0x27, 0x20, 0x63, 0x79, 0x3d, 0x27, 0x34,
     0x27, 0x20, 0x72, 0x3d, 0x27, 0x33, 0x27, 0x20, 0x66, 0x69, 0x6c, 0x6c,
     0x3d, 0x27, 0x25, 0x32, 0x33, 0x36, 0x62, 0x34, 0x66, 0x61, 0x30, 0x27,
     0x2f, 0x3e, 0x3c, 0x2f, 0x73, 0x76, 0x67, 0x3e, 0x22, 0x2c, 0x22, 0x63,
     0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3a, 0x22,
     0x55, 0x6d, 0x62, 0x72, 0x61, 0x20, 0x72, 0x65, 0x66, 0x65, 0x72, 0x65,
-    ...pad(118, "")
+    ...pad(117, "")
   ]);
-  // metadata/5 = "nce set\"}" (len 9)
-  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/5"), 9, Bytes[0x6e, 0x63, 0x65, 0x20, 0x73, 0x65, 0x74, 0x22, 0x7d, ...pad(181, "")]);
+  // metadata/5 = "nce set\"}" (val-type 3 JSON, val-len 9)
+  TM_emitTokenMetadata(pad(32, "umbra:sneb"), 1, pad(32, "metadata/5"), 3, 9, Bytes[0x6e, 0x63, 0x65, 0x20, 0x73, 0x65, 0x74, 0x22, 0x7d, ...pad(180, "")]);
 }
 
 /**

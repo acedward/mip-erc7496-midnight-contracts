@@ -7,7 +7,8 @@
 // NativeShieldedToken. Every TokenMetadata payload below is a compile-time literal, so each
 // emitting circuit costs about eight rows per event (k=7) instead of the ~120 000 rows per
 // runtime event the parameterised templates in contracts/ pay — see TOKEN-METADATA.md
-// "Circuit cost" and question Q13. The bytes emitted are exactly the standard's bytes.
+// "Circuit cost" and question Q13. The bytes emitted are exactly the bytes MIP
+// section 2 fixes, val-type byte included.
 //
 // Circuits the deployment calls, in order:
 //   mint
@@ -32,7 +33,7 @@ export circuit tokenColor(): Bytes<32> {
   return tokenType(pad(32, "umbra:sghost"), kernel.self());
 }
 
-/** The kind byte this contract declares (see ../../TOKEN-METADATA.md section 3). */
+/** The kind byte this contract declares (see MIP section 3). */
 export circuit kind(): Uint<8> {
   return 1;
 }

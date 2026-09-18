@@ -5,8 +5,8 @@
   "instructions": [
     { "op": "load_imm", "imm": "01" },
     { "op": "load_imm", "imm": "00636E73743A6F72696F6E" },
-    { "op": "load_imm", "imm": "546F6B656E4D65746164617461" },
-    { "op": "load_imm", "imm": "0000000004302E3432" },
+    { "op": "load_imm", "imm": "6D69702D787878783A746F6B656E2D6D657461646174615B76315D" },
+    { "op": "load_imm", "imm": "000000000104302E3432" },
     { "op": "load_imm", "imm": "0000016D61676E6974756465" },
     { "op": "load_imm", "imm": "00" },
     { "op": "load_imm", "imm": "10" },

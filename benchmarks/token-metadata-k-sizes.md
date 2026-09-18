@@ -1,6 +1,8 @@
-# Token metadata circuit K sizes: Compact and MinoCrab
+# Historical token metadata circuit K sizes: Compact and MinoCrab
 
-This is a measured comparison of five equivalent token-metadata circuits. It targets the byte-heavy paths in `MetadataProbe` and uses generated `SSTAR.publishMetadata` as the deployed fixed-literal control. It does not replace any Stagenet artifact, address, verifier, or transaction recorded in the [Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/main/stagenet-token-metadata-deployments.md).
+This is a measured comparison of five equivalent **historical pre-MIP** token-metadata circuits pinned to contract revision `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6`. It targets the byte-heavy paths in that revision's `MetadataProbe` and uses generated `SSTAR.publishMetadata` as its deployed fixed-literal control. The matching addresses and transactions are preserved in the [pinned Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/8eda51c0448c77bb1e1326f738f8ebc6c83f4eaf/stagenet-token-metadata-deployments.md).
+
+These fixtures emit `TokenMetadata` with the earlier five-field payload and use `Bytes<16>` symbols. They do not measure the current MIP implementation, which emits `mip-xxxx:token-metadata[v1]`, adds normative value-type semantics, and uses `Bytes<32>` symbols for the standard fields.
 
 The follow-up [metadata-shape measurements](token-metadata-shapes.md) cover a user-requested typed format, a ledger-backed publisher, and independent one/two/three-event runtime scaling.
 
@@ -28,7 +30,7 @@ The Rust port preserves the original input order and widths, disclosures, ledger
 - `publishStandard` keeps kind, both lengths, and decimals as unrestricted circuit-level `Uint<8>` values. Consumer-level limits in comments were not added as circuit checks.
 - `MetadataProbe._calls` remains Counter field 0.
 - `SSTAR._published` remains Boolean cell 0, `_mints` remains Counter field 1, and publication changes only `_published`.
-- Every event is the 32-byte NUL-padded name `TokenMetadata` followed by the exact 256-byte standard payload. Trailing NUL bytes are part of the checked envelope.
+- Every event is the 32-byte NUL-padded legacy name `TokenMetadata` followed by the exact historical 256-byte payload. Trailing NUL bytes are part of the checked envelope.
 
 The focused Docker suite has 11 test functions. Shared preimages cover four raw cases and three standard cases, including 0/255 bytes, 31-byte limb boundaries, lengths 0/190/191/255, reserved and maximum kind bytes, and full name/symbol widths. Positive cases also cover the fixed fixture, counter getter, and SSTAR publisher. `assert_call_compatible` compares typed input/output schemas and public-input vectors and requires both MinoCrab's simulator and Midnight's upstream `IrSource::check` to accept both artifacts.
 

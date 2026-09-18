@@ -7,7 +7,8 @@
 // ShieldedCollection. Every TokenMetadata payload below is a compile-time literal, so each
 // emitting circuit costs about eight rows per event (k=7) instead of the ~120 000 rows per
 // runtime event the parameterised templates in contracts/ pay — see TOKEN-METADATA.md
-// "Circuit cost" and question Q13. The bytes emitted are exactly the standard's bytes.
+// "Circuit cost" and question Q13. The bytes emitted are exactly the bytes MIP
+// section 2 fixes, val-type byte included.
 //
 // Circuits the deployment calls, in order:
 //   mintPiece
@@ -68,39 +69,39 @@ export circuit mintPiece(
  * @description publishPiece + setPieceTrait + setPieceTrait + setPieceTrait — 6 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit publishOrion(): [] {
-  // orion: name = "Constellations · Orion" (len 23)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "name"), 23, Bytes[
+  // orion: name = "Constellations · Orion" (val-type 1 string, val-len 23)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "name"), 1, 23, Bytes[
     0x43, 0x6f, 0x6e, 0x73, 0x74, 0x65, 0x6c, 0x6c, 0x61, 0x74, 0x69, 0x6f,
-    0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x4f, 0x72, 0x69, 0x6f, 0x6e, ...pad(167, "")
+    0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x4f, 0x72, 0x69, 0x6f, 0x6e, ...pad(166, "")
   ]);
-  // orion: symbol = "CNST" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "symbol"), 4, pad(190, "CNST"));
-  // orion: decimals = "0" (len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
-  // orion: tokenUri = "http://localhost:10020/constellations/orion" (len 43)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "tokenUri"), 43, pad(190, "http://localhost:10020/constellations/orion"));
-  // orion: hemisphere = "equatorial" (len 10)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "hemisphere"), 10, pad(190, "equatorial"));
-  // orion: magnitude = "0.18" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "magnitude"), 4, pad(190, "0.18"));
+  // orion: symbol = "CNST" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
+  // orion: decimals = "0" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // orion: tokenUri = "http://localhost:10020/constellations/orion" (val-type 4 URI, val-len 43)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "tokenUri"), 4, 43, pad(189, "http://localhost:10020/constellations/orion"));
+  // orion: hemisphere = "equatorial" (val-type 1 string, val-len 10)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "hemisphere"), 1, 10, pad(189, "equatorial"));
+  // orion: magnitude = "0.18" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "magnitude"), 1, 4, pad(189, "0.18"));
 }
 
 /**
  * @description setPieceTrait — 1 TokenMetadata event, every byte a compile-time literal.
  */
 export circuit updateOrion1(): [] {
-  // orion: magnitude = "0.42" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "magnitude"), 4, pad(190, "0.42"));
+  // orion: magnitude = "0.42" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "magnitude"), 1, 4, pad(189, "0.42"));
 }
 
 /**
  * @description setPieceTrait + setPieceTrait — 2 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit updateOrion2(): [] {
-  // orion: magnitude = "1.25" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "magnitude"), 4, pad(190, "1.25"));
-  // orion: metadata = "{\"collection\":\"Constellations\",\"image\":\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'><path d='M0 4 L2 0 L4 4' stroke='%23fff'/></svg>\"}" (len 172)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "metadata"), 172, Bytes[
+  // orion: magnitude = "1.25" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "magnitude"), 1, 4, pad(189, "1.25"));
+  // orion: metadata = "{\"collection\":\"Constellations\",\"image\":\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 4'><path d='M0 4 L2 0 L4 4' stroke='%23fff'/></svg>\"}" (val-type 3 JSON, val-len 172)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "metadata"), 3, 172, Bytes[
     0x7b, 0x22, 0x63, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
     0x22, 0x3a, 0x22, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x65, 0x6c, 0x6c, 0x61,
     0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x2c, 0x22, 0x69, 0x6d, 0x61, 0x67,
@@ -115,7 +116,7 @@ export circuit updateOrion2(): [] {
     0x30, 0x20, 0x34, 0x20, 0x4c, 0x32, 0x20, 0x30, 0x20, 0x4c, 0x34, 0x20,
     0x34, 0x27, 0x20, 0x73, 0x74, 0x72, 0x6f, 0x6b, 0x65, 0x3d, 0x27, 0x25,
     0x32, 0x33, 0x66, 0x66, 0x66, 0x27, 0x2f, 0x3e, 0x3c, 0x2f, 0x73, 0x76,
-    0x67, 0x3e, 0x22, 0x7d, ...pad(18, "")
+    0x67, 0x3e, 0x22, 0x7d, ...pad(17, "")
   ]);
 }
 
@@ -123,80 +124,80 @@ export circuit updateOrion2(): [] {
  * @description publishPiece + setPieceTrait + setPieceTrait + setPieceTrait — 6 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit publishLyra(): [] {
-  // lyra: name = "Constellations · Lyra" (len 22)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "name"), 22, Bytes[
+  // lyra: name = "Constellations · Lyra" (val-type 1 string, val-len 22)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "name"), 1, 22, Bytes[
     0x43, 0x6f, 0x6e, 0x73, 0x74, 0x65, 0x6c, 0x6c, 0x61, 0x74, 0x69, 0x6f,
-    0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x4c, 0x79, 0x72, 0x61, ...pad(168, "")
+    0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x4c, 0x79, 0x72, 0x61, ...pad(167, "")
   ]);
-  // lyra: symbol = "CNST" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "symbol"), 4, pad(190, "CNST"));
-  // lyra: decimals = "0" (len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
-  // lyra: tokenUri = "http://localhost:10020/constellations/lyra" (len 42)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "tokenUri"), 42, pad(190, "http://localhost:10020/constellations/lyra"));
-  // lyra: hemisphere = "northern" (len 8)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "hemisphere"), 8, pad(190, "northern"));
-  // lyra: magnitude = "0.03" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "magnitude"), 4, pad(190, "0.03"));
+  // lyra: symbol = "CNST" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
+  // lyra: decimals = "0" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // lyra: tokenUri = "http://localhost:10020/constellations/lyra" (val-type 4 URI, val-len 42)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "tokenUri"), 4, 42, pad(189, "http://localhost:10020/constellations/lyra"));
+  // lyra: hemisphere = "northern" (val-type 1 string, val-len 8)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "hemisphere"), 1, 8, pad(189, "northern"));
+  // lyra: magnitude = "0.03" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "magnitude"), 1, 4, pad(189, "0.03"));
 }
 
 /**
  * @description publishPiece + setPieceTrait + setPieceTrait + setPieceTrait — 6 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit publishCygnus(): [] {
-  // cygnus: name = "Constellations · Cygnus" (len 24)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "name"), 24, Bytes[
+  // cygnus: name = "Constellations · Cygnus" (val-type 1 string, val-len 24)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "name"), 1, 24, Bytes[
     0x43, 0x6f, 0x6e, 0x73, 0x74, 0x65, 0x6c, 0x6c, 0x61, 0x74, 0x69, 0x6f,
     0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x43, 0x79, 0x67, 0x6e, 0x75, 0x73,
-    ...pad(166, "")
+    ...pad(165, "")
   ]);
-  // cygnus: symbol = "CNST" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "symbol"), 4, pad(190, "CNST"));
-  // cygnus: decimals = "0" (len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
-  // cygnus: tokenUri = "http://localhost:10020/constellations/cygnus" (len 44)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "tokenUri"), 44, pad(190, "http://localhost:10020/constellations/cygnus"));
-  // cygnus: hemisphere = "northern" (len 8)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "hemisphere"), 8, pad(190, "northern"));
-  // cygnus: magnitude = "1.25" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "magnitude"), 4, pad(190, "1.25"));
+  // cygnus: symbol = "CNST" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
+  // cygnus: decimals = "0" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // cygnus: tokenUri = "http://localhost:10020/constellations/cygnus" (val-type 4 URI, val-len 44)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "tokenUri"), 4, 44, pad(189, "http://localhost:10020/constellations/cygnus"));
+  // cygnus: hemisphere = "northern" (val-type 1 string, val-len 8)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "hemisphere"), 1, 8, pad(189, "northern"));
+  // cygnus: magnitude = "1.25" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "magnitude"), 1, 4, pad(189, "1.25"));
 }
 
 /**
  * @description publishPiece + setPieceTrait + setPieceTrait — 5 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit publishVega(): [] {
-  // vega: name = "Constellations · Vega" (len 22)
-  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "name"), 22, Bytes[
+  // vega: name = "Constellations · Vega" (val-type 1 string, val-len 22)
+  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "name"), 1, 22, Bytes[
     0x43, 0x6f, 0x6e, 0x73, 0x74, 0x65, 0x6c, 0x6c, 0x61, 0x74, 0x69, 0x6f,
-    0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x56, 0x65, 0x67, 0x61, ...pad(168, "")
+    0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x56, 0x65, 0x67, 0x61, ...pad(167, "")
   ]);
-  // vega: symbol = "CNST" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "symbol"), 4, pad(190, "CNST"));
-  // vega: decimals = "0" (len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
-  // vega: tokenUri = "http://localhost:10020/constellations/vega" (len 42)
-  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "tokenUri"), 42, pad(190, "http://localhost:10020/constellations/vega"));
-  // vega: hemisphere = "northern" (len 8)
-  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "hemisphere"), 8, pad(190, "northern"));
+  // vega: symbol = "CNST" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
+  // vega: decimals = "0" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // vega: tokenUri = "http://localhost:10020/constellations/vega" (val-type 4 URI, val-len 42)
+  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "tokenUri"), 4, 42, pad(189, "http://localhost:10020/constellations/vega"));
+  // vega: hemisphere = "northern" (val-type 1 string, val-len 8)
+  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "hemisphere"), 1, 8, pad(189, "northern"));
 }
 
 /**
  * @description publishPiece + setPieceTrait + setPieceTrait — 5 TokenMetadata events, every byte a compile-time literal.
  */
 export circuit publishAltair(): [] {
-  // altair: name = "Constellations · Altair" (len 24)
-  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "name"), 24, Bytes[
+  // altair: name = "Constellations · Altair" (val-type 1 string, val-len 24)
+  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "name"), 1, 24, Bytes[
     0x43, 0x6f, 0x6e, 0x73, 0x74, 0x65, 0x6c, 0x6c, 0x61, 0x74, 0x69, 0x6f,
     0x6e, 0x73, 0x20, 0xc2, 0xb7, 0x20, 0x41, 0x6c, 0x74, 0x61, 0x69, 0x72,
-    ...pad(166, "")
+    ...pad(165, "")
   ]);
-  // altair: symbol = "CNST" (len 4)
-  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "symbol"), 4, pad(190, "CNST"));
-  // altair: decimals = "0" (len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "decimals"), 1, Bytes[0x00, ...pad(189, "")]);
-  // altair: tokenUri = "http://localhost:10020/constellations/altair" (len 44)
-  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "tokenUri"), 44, pad(190, "http://localhost:10020/constellations/altair"));
-  // altair: hemisphere = "equatorial" (len 10)
-  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "hemisphere"), 10, pad(190, "equatorial"));
+  // altair: symbol = "CNST" (val-type 1 string, val-len 4)
+  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
+  // altair: decimals = "0" (val-type 2 integer, val-len 1)
+  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // altair: tokenUri = "http://localhost:10020/constellations/altair" (val-type 4 URI, val-len 44)
+  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "tokenUri"), 4, 44, pad(189, "http://localhost:10020/constellations/altair"));
+  // altair: hemisphere = "equatorial" (val-type 1 string, val-len 10)
+  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "hemisphere"), 1, 10, pad(189, "equatorial"));
 }

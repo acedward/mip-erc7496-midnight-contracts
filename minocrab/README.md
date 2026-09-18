@@ -1,18 +1,26 @@
-# MinoCrab token-metadata reference and benchmarks
+# Historical MinoCrab token-metadata reference and benchmarks
 
-This focused crate is the MinoCrab reference for the metadata routines and
-publishers in this repository. It does not port the full token, mint, transfer,
-or ownership implementations.
+This focused crate preserves MinoCrab ports of historical metadata routines and
+publishers at their audited source pins. It does not port the repository's
+current MIP implementation or the full token, mint, transfer, or ownership
+implementations.
 
 The source is intentionally divided by wire-format status:
 
-- [`src/lib.rs`](src/lib.rs) contains the exact ports of the current five-field
-  metadata format: `MetadataProbe.publishRaw`, `publishStandard`,
-  `publishFixture`, `calls`, and generated `SSTAR.publishMetadata`;
+- [`src/lib.rs`](src/lib.rs) contains exact ports of the pre-MIP five-field
+  format pinned at contract revision `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6`:
+  `MetadataProbe.publishRaw`, `publishStandard`, `publishFixture`, `calls`, and
+  generated `SSTAR.publishMetadata`;
 - [`src/shapes.rs`](src/shapes.rs) contains five user-requested typed benchmark
   examples: `literal3`, `ledger3`, `runtime1`, `runtime2`, and `runtime3`. The
-  extra value-type field and 189-byte value are benchmark-local and are not the
-  deployed format or an upstream standard.
+  extra value-type field and 189-byte value are benchmark-local.
+
+Both suites emit the legacy NUL-padded name `TokenMetadata` and use
+`Bytes<16>` symbols. The typed examples happen to share the current MIP's
+189-byte value width, but they do not use the current event name
+`mip-xxxx:token-metadata[v1]`, its normative tag rules, or its `Bytes<32>`
+standard-field symbol. They are not measurements of the current MIP contracts
+or deployments.
 
 The original Compact files at revision `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6` are copied under `compact-src/`. `compact-src/shapes/MetadataShapes.compact` is a clearly isolated comparable fixture for the benchmark-local typed format. MinoCrab and every Rust dependency are pinned by `Cargo.toml` and `Cargo.lock`.
 

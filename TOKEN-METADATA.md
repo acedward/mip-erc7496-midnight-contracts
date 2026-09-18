@@ -1,319 +1,155 @@
-# The `TokenMetadata` standard
+# The standard lives in the MIP, not here
 
-**Version**: 1 (the event name `TokenMetadata` *is* the version — see [Versioning](#versioning))
-**Status**: experimental, first proof of concept
-**Toolchain**: Compact 0.34.0 (language 0.26.0, runtime 0.19.0), Midnight ledger 9
-**Canonical copy**: this file, in `acedward/mip-erc7496-midnight-contracts`
+**The normative text is [MIP PR #315, "On-Chain Token Metadata Emission"](https://github.com/midnightntwrk/midnight-improvement-proposals/pull/315)** —
+file `mips/mip-xxxx-on-chain-token-metadata.md`, commit `f433056`, status Draft.
+This repository is that MIP's reference implementation: the Compact module, the
+reference contracts, a byte-exact consumer-side decoder and two fixture corpora.
 
-A Midnight contract can mint many tokens. Each is identified inside the contract
-by a 32-byte **domain separator**, and its **colour** (the token type the ledger
-and every wallet see) is derived from the domain separator and the contract's own
-address:
+Earlier revisions of this file carried a second, repo-local copy of the rules.
+It is gone on purpose. Two normative texts drift, and when they do nobody can
+say which one a contract was written against. Read the MIP for what the bytes
+mean; read this file for how this repository implements them.
 
-```
-colour = persistentCommit([domainSep, contractAddress], pad(32, "midnight:derive_token"))
-```
+Where the MIP is cited below, "section N" is a section of the MIP.
 
-Minting is public and static in the transaction — a contract call's transcript
-carries `effects.shieldedMints` / `effects.unshieldedMints` as
-`domainSep → amount` — so anyone can enumerate every colour that was ever minted
-and who minted it. What no one can do is say what a colour *means*: nothing on
-chain carries a name, a symbol, a number of decimals or anything else.
+## What the MIP fixes, in one paragraph
 
-This standard fixes that with **one event shape**. A contract describes its own
-tokens by emitting `Misc` events named `TokenMetadata`, one event per
-`(domainSep, kind, key, value)` tuple. An indexer folds them, last write wins,
-and gets a table of every token with its display fields and its arbitrary traits.
-The design follows [EIP-7496 (NFT Dynamic Traits)](https://eips.ethereum.org/EIPS/eip-7496):
-keys are fixed-width byte strings, values are opaque bytes, the emitting contract
-is the sole authority, and updates are just later events.
+A contract emits one [MIP-0002](https://github.com/midnightntwrk/midnight-improvement-proposals)
+`Misc` event per `(domainSep, kind, key, value)` tuple, named
+`pad(32, "mip-xxxx:token-metadata[v1]")`, with a 256-byte payload:
+`domainSep` (32) ‖ `kind` (1) ‖ `key` (32) ‖ `val-type` (1) ‖ `val-len` (1) ‖
+`value` (189). A consumer folds those events last-write-wins into a table keyed
+by `(contractAddress, domainSep, kind)`. The emitting contract is the only
+authority for its own tokens, because a native token's colour is derived from
+`(domainSep, contractAddress)` and never transmitted. Sections 1 to 8 are
+normative; the well-known keys of Appendix A are a convention.
 
----
+## The module
 
-## 1. The event
-
-```
-Misc {
-  name:    pad(32, "TokenMetadata")   // Bytes<32>, NUL-padded
-  payload: <the 256 bytes of section 2> // Bytes<256>
-}
-```
-
-`Misc` is the Compact standard library's catch-all event type
-(`onchain-vm` event tag 10). A conforming consumer accepts an event as a
-`TokenMetadata` event **iff**
-
-1. its type is `Misc`, and
-2. `name == pad(32, "TokenMetadata")` (`0x546f6b656e4d65746164617461` followed by
-   19 NUL bytes), and
-3. its payload is **exactly 256 bytes**.
-
-Anything else is not a `TokenMetadata` event and MUST be ignored. A payload of
-the right name but the wrong length MUST be recorded as rejected, never applied.
-
-A Compact **constructor cannot emit**, directly or through a circuit it calls.
-Conforming contracts therefore expose a `publishMetadata()` circuit that the
-deployer calls immediately after deployment (see section 6).
-
-## 2. Payload layout
-
-256 bytes, big-endian, no padding between fields:
-
-| Offset | Size | Field | Meaning |
-|---|---|---|---|
-| 0 | 32 | `domainSep` | the token within the contract (the ERC-1155 `id` analogue). For native tokens it is exactly the value passed to `mintShieldedToken` / `mintUnshieldedToken`; for ledger tokens it is any 32 bytes the contract chooses, e.g. `pad(32, "umbra:lsun")` |
-| 32 | 1 | `kind` | see section 3 |
-| 33 | 32 | `key` | UTF-8 key name, NUL-padded (`pad(32, "name")`); compared after trimming trailing NULs |
-| 65 | 1 | `len` | number of meaningful bytes in `value`, `0 ≤ len ≤ 190` |
-| 66 | 190 | `value` | the value bytes, NUL-padded after `len` |
-
-`32 + 1 + 32 + 1 + 190 = 256`.
-
-`len > 190` MUST reject the event. Bytes of `value` at or after `len` carry no
-meaning and MUST be ignored by consumers (the reference contracts set them to
-NUL).
-
-## 3. The `kind` byte
-
-| Bit | 0 | 1 |
-|---|---|---|
-| 0 | unshielded | shielded |
-| 1 | native (UTxO, minted by `mintShieldedToken` / `mintUnshieldedToken`) | ledger (balances kept in contract state) |
-| 2–7 | MUST be zero | reserved — a set bit rejects the event |
-
-So the four valid values are:
-
-| `kind` | meaning |
-|---|---|
-| `0` | unshielded native |
-| `1` | shielded native |
-| `2` | unshielded ledger (MIP-0004 style account token) |
-| `3` | shielded ledger (confidential balances) |
-
-A colour exists only for **native** tokens (bit 1 clear). A consumer MUST NOT
-derive a colour for a declaration with bit 1 set.
-
-The `(domainSep, kind)` pair — not `domainSep` alone — identifies a token: a
-contract may mint the same domain separator both shielded and unshielded, which
-produces one colour value used as two different token types. Such a contract
-publishes its metadata twice, once per kind.
-
-## 4. Key registry
-
-Well-known keys, which a consumer projects into dedicated columns:
-
-| key | value encoding | validation |
-|---|---|---|
-| `name` | UTF-8 | `1 ≤ len ≤ 190`, valid UTF-8 |
-| `symbol` | UTF-8 | `1 ≤ len ≤ 32`, valid UTF-8 |
-| `decimals` | one byte | `len == 1`, `value[0] ≤ 36` |
-| `metadata` | UTF-8 JSON, single part | `len ≥ 2`, parses as a JSON object |
-| `metadata/<n>` | UTF-8 JSON split into parts `n = 0, 1, …` (each ≤ 190 bytes) | parts are concatenated in `n` order and applied only when `0..max` are all present and the concatenation parses as a JSON object; `n ≤ 15` (≤ 3 040 bytes) |
-| `tokenUri` | UTF-8 URL — the ERC-721 `tokenURI` analogue: where this token's metadata document can be fetched | `len ≤ 190`, parses as an absolute `http(s)://` URL |
-
-Any other key is a **trait**: stored verbatim (raw bytes plus `len`) against
-`(contract, domainSep, kind)` and surfaced as such. This is EIP-7496's
-`getTraitValue`. Suggested, not required: `description`, `image` (a URL or a
-`data:` URI, usually inside `metadata`), `website`, `metadataUri` (EIP-7496's
-collection-level trait-definition document, distinct from the per-token
-`tokenUri`).
-
-Key comparison: trailing NUL bytes are trimmed, then the bytes are compared
-exactly. Keys are case-sensitive.
-
-## 5. Rules
-
-1. **Authority.** The emitting contract is the only authority for
-   `(its own address, domainSep, kind)`. A consumer MUST take the address from
-   the event's `contractAddress`, never from the payload. Because a colour is
-   derived from `(domainSep, contractAddress)`, no contract can describe another
-   contract's token.
-2. **Last write wins**, per `(contract, domainSep, kind, key)`, ordered by block
-   height and then by the event's position in the transaction's evaluation
-   order. Earlier values are history, not truth.
-3. **Declaration never overrides observation.** A mint effect in a transcript is
-   a fact; a `TokenMetadata` event is a claim. If a contract has been observed
-   minting `(domainSep, kind)` natively, an event claiming `kind` bit 1 (ledger)
-   or the other value of bit 0 does not change what was observed: the consumer
-   keeps the observed storage and kind, still applies the key/value, and flags
-   the token as inconsistent.
-4. **Describing an unminted token is legal.** A ledger token has no mint at all
-   and can only ever be declared; a native token may be described before (or
-   without) its first mint.
-5. **No registration.** Nothing needs to be registered with anyone. A consumer
-   discovers contracts from the transactions themselves — every contract call's
-   transcript publicly states how many `log` (event) operations it ran — and
-   fetches the events of exactly those calls.
-
-## 6. Writing a conforming contract
-
-Import the module, store what you want to publish, and call it from a circuit —
-**not** from the constructor, which cannot emit.
+`contracts/TokenMetadata.compact` is the module a conforming contract imports.
+It is the API the MIP's Implementation Example describes:
 
 ```compact
-pragma language_version >= 0.26.0;
-import CompactStandardLibrary;
 import "./TokenMetadata" prefix TM_;
 
-export sealed ledger _domain: Bytes<32>;
-export sealed ledger _name: Bytes<32>;   export sealed ledger _nameLen: Uint<8>;
-export sealed ledger _symbol: Bytes<16>; export sealed ledger _symbolLen: Uint<8>;
-export sealed ledger _decimals: Uint<8>;
-export ledger _published: Boolean;
+TM_emitTokenMetadata(domainSep, kind, key, valType, valLen, value);  // value: Bytes<189>
+TM_emitStandardFields(domainSep, kind, name_, nameLen, symbol_, symbolLen, decimals_);
 
-constructor(domain_: Bytes<32>, name_: Bytes<32>, nameLen: Uint<8>,
-            symbol_: Bytes<16>, symbolLen: Uint<8>, decimals_: Uint<8>) {
-  _domain = disclose(domain_);
-  _name = disclose(name_);     _nameLen = disclose(nameLen);
-  _symbol = disclose(symbol_); _symbolLen = disclose(symbolLen);
-  _decimals = disclose(decimals_);
-}
-
-// The colour anyone else derives from (domainSep, address) must equal this.
-export circuit tokenColor(): Bytes<32> {
-  return tokenType(_domain, kernel.self());
-}
-
-// Called once, right after deployment: three events (name, symbol, decimals).
-export circuit publishMetadata(): [] {
-  assert(!_published, "already published");
-  _published = true;
-  TM_emitStandardFields(_domain, TM_KIND_SHIELDED(),
-                        _name, _nameLen, _symbol, _symbolLen, _decimals);
-}
-
-// EIP-7496 dynamic trait update. Guard it with your own access control.
-export circuit setMetadata(key: Bytes<32>, len: Uint<8>, value: Bytes<190>): [] {
-  TM_emitTokenMetadata(_domain, TM_KIND_SHIELDED(), key, len, value);
-}
-
-export circuit mint(recipient: ZswapCoinPublicKey, amount: Uint<64>,
-                    nonce: Bytes<32>): ShieldedCoinInfo {
-  return mintShieldedToken(_domain, disclose(amount), disclose(nonce),
-                           left<ZswapCoinPublicKey, ContractAddress>(disclose(recipient)));
-}
+TM_KIND_UNSHIELDED()   // 0 — unshielded native
+TM_KIND_SHIELDED()     // 1 — shielded native
+TM_KIND_LEDGER_FLAG()  // 2 — added to the privacy bit: balances in contract state
+TM_EVENT_NAME()        // pad(32, "mip-xxxx:token-metadata[v1]")
 ```
 
-Everything that reaches `emit` is public: pass `disclose(...)` for anything
-derived from a witness, exactly as you would for any other public write.
+`emitStandardFields` emits MIP Appendix A's three core fields in order: `name`
+(val-type 1), `symbol` (val-type 1) and `decimals` (val-type 2, exactly one
+byte). `symbol` is `Bytes<32>` so the module covers Appendix A's whole 1..32
+range.
 
-The module itself is [`contracts/TokenMetadata.compact`](./contracts/TokenMetadata.compact):
+Implementation notes that are not obvious from the MIP:
 
-```compact
-pragma language_version >= 0.26.0;
-import CompactStandardLibrary;
+- **The payload is one `Bytes[...]` spread.**
+  `Bytes[...domainSep, kind, ...key, valType, valLen, ...value]` compiles under
+  compactc 0.34.0 and produces exactly the documented 256 bytes.
+  `test/probe.test.ts` asserts every offset on real compiled output.
+- **The event name is one literal**, inside `EVENT_NAME()`. The compiler folds
+  the call away — a three-event all-literal publish is still k=7 / 28 rows — so
+  there is no cost to keeping the name in exactly one place.
+- **A constructor cannot emit** (section 6.7). Every reference contract exposes
+  `publishMetadata()` (or `publishPiece(…)`) for the deployer to call right
+  after deployment.
+- **`Opaque<"string">` cannot be serialised into a circuit.** A contract that
+  keeps `name`/`symbol` as `Opaque<"string">` for its MIP-0011/0014/0004
+  circuits must also hold the byte form for the event path; the parameterised
+  templates take both at construction and the deploy script derives both from
+  one string.
+- **Reading log events in process**: the VM hands over the 288 serialized event
+  bytes as an aligned value with trailing NULs **trimmed**, while declaring
+  `length: 288`. Zero-extend before slicing (`rawMiscBytes` does). An indexer
+  reading `MiscContractEvent.payload` over GraphQL gets the 256 bytes already
+  re-padded.
 
-export module TokenMetadata {
-  export circuit KIND_UNSHIELDED(): Uint<8>  { return 0; }
-  export circuit KIND_SHIELDED(): Uint<8>    { return 1; }
-  export circuit KIND_LEDGER_FLAG(): Uint<8> { return 2; }
+## The placeholder MIP number — read before deploying
 
-  export circuit emitTokenMetadata(domainSep: Bytes<32>, kind: Uint<8>, key: Bytes<32>,
-                                   len: Uint<8>, value: Bytes<190>): [] {
-    emit(Misc {
-      name: pad(32, "TokenMetadata"),
-      payload: Bytes[...domainSep, kind, ...key, len, ...value]   // 32+1+32+1+190 = 256
-    });
-  }
+`xxxx` in `mip-xxxx:token-metadata[v1]` is a placeholder. The MIP fixes the
+final string when a number is assigned on merge, and the event name **is** the
+identity of the format (section 8): a consumer accepts an event if and only if
+its name matches those 32 bytes.
 
-  export circuit emitStandardFields(domainSep: Bytes<32>, kind: Uint<8>,
-                                    name_: Bytes<32>, nameLen: Uint<8>,
-                                    symbol_: Bytes<16>, symbolLen: Uint<8>,
-                                    decimals_: Uint<8>): [] {
-    emitTokenMetadata(domainSep, kind, pad(32, "name"),     nameLen,   Bytes[...name_,   ...pad(158, "")]);
-    emitTokenMetadata(domainSep, kind, pad(32, "symbol"),   symbolLen, Bytes[...symbol_, ...pad(174, "")]);
-    emitTokenMetadata(domainSep, kind, pad(32, "decimals"), 1,         Bytes[decimals_,  ...pad(189, "")]);
-  }
-}
-```
+So every contract deployed today emits an event that a post-merge consumer will
+ignore. When the number lands:
 
-`Bytes[...]` literals with spreads of `Bytes<n>` values are how the payload is
-concatenated: each spread contributes its `n` `Uint<8>` elements, so the literal
-above is exactly 256 elements. (`serialize<T, n>` is not an option — Compact
-instantiates it only for standard event types, not for `Bytes<32>` or a
-user-defined struct.)
+1. change the one literal in `TokenMetadata.compact`;
+2. regenerate and recompile (`scripts/generate-literal-contracts.ts`,
+   `scripts/compile.sh`) — the name is baked into every circuit;
+3. **redeploy**, or have each contract's maintenance authority insert a new
+   emitting circuit (the MIP's "Upgrade Path for Existing Contracts");
+4. change the indexer's one name constant and rebuild its derived tables.
 
-## 6a. Circuit cost — literal versus runtime payloads
+Nothing else in the layout changes. This is a known, accepted cost of
+publishing a reference deployment against a draft.
 
-The standard fixes the bytes on the wire, not how a contract assembles them, and the two
-ways of assembling them differ by four orders of magnitude in proving cost. Measured with
-compactc 0.34.0 and `zkir mock-compile` (`./scripts/circuit-cost.sh`; no proving keys
-needed), ZKIR v2, which is the compiler default and what every contract live on Stagenet
-today was built with:
+## Reference contracts
 
-| what the circuit emits | k | rows | proving key |
-|---|---|---|---|
-| a payload of compile-time literals | 6–7 | 23–28 | ~40 KB, seconds to generate |
-| one **runtime** byte, the rest literal | 15 | 26 422 | ~4 MB |
-| a payload assembled from ledger fields, per event | 17 | 122 419 | ~17 MB |
-| `emitTokenMetadata(…, value: Bytes<190>)` — the standard's setter | 19 | 328 671 | 134 MB, ~6 min |
-| `publishMetadata()` — three such events | 19 | 416 601 | 134 MB, ~6 min |
-| six events in one circuit | 20 | 832 004 | ~270 MB |
-
-Two facts follow, and both are about **circuits**, not about the standard:
-
-1. **An emit is dominated by a fixed ~26 000-row cost the moment any runtime value reaches
-   it**, plus roughly 550–1 400 rows per runtime byte. A literal payload skips all of it.
-2. **Splitting helps linearly, literals help exponentially.** Keeping a circuit under k=19
-   is a matter of emitting at most three runtime-built events; getting to k=7 is a matter of
-   knowing the bytes at compile time.
-
-This repository ships both shapes, and they emit **identical bytes**:
-
-- `contracts/*.compact` — the reference **implementation**: parameterised, `Ownable`-gated,
-  metadata taken at construction or at call time. This is what a real issuer writes, and it
-  pays k=19 per publish.
-- `contracts/generated/*.compact` — the reference **deployment**, produced by
-  `scripts/generate-literal-contracts.ts` from `deployments/reference-set.json` with every
-  field baked in. `publishMetadata()` there is **k=7, 28 rows**, and the eleven-contract set
-  key-generates in about three minutes instead of an hour and a half.
-
-Choose literals when a contract's metadata is fixed at deployment (most tokens), and pay for
-runtime payloads when it genuinely is not. ZKIR v3 (`--feature-zkir-v3`) is uniformly about
-4.4× cheaper than the table above, but its acceptance by a live network has not been
-established here and the deployed reference set does not use it.
-
-Measured Compact-v3/MinoCrab-v3 comparisons, exact source pins, and the focused
-MinoCrab metadata reference are in [`benchmarks/`](./benchmarks/) and
-[`minocrab/`](./minocrab/README.md). The separate typed-format measurements are
-benchmark examples and do not alter this standard's wire format.
-
-## 7. Mapping to EIP-7496
-
-| EIP-7496 | here |
+| file | what it demonstrates |
 |---|---|
-| `tokenId` | `domainSep` (+ `kind`) |
-| `traitKey: bytes32` | `key: Bytes<32>` |
-| `traitValue: bytes32` | `value: Bytes<190>` with `len` — longer values, no hashing |
-| `TraitUpdated` event | one `TokenMetadata` `Misc` event |
-| `getTraitValue(tokenId, traitKey)` | the folded key/value table of the consumer |
-| `getTraitMetadataURI` | the `metadata` JSON inline, or a `metadataUri` key |
-| ERC-721 `tokenURI(tokenId)` | the `tokenUri` key |
-| the contract is the authority | the emitting contract is the authority, enforced by colour derivation |
+| `contracts/NativeShieldedToken.compact` | one static domain, kind 1 (MIP-0011 Fungible profile + events) |
+| `contracts/NativeUnshieldedToken.compact` | one static domain, kind 0; its `kind_` argument also builds the "Ledger Liar" |
+| `contracts/NativeDualToken.compact` | one domain minted both shielded and unshielded — two rows, one colour |
+| `contracts/ShieldedCollection.compact` | one address, one domain per piece: the ERC-1155 / EIP-7496 shape |
+| `contracts/LedgerToken.compact` | balances in contract state, kind 2 — the case only events can make visible |
+| `contracts/generated/*.compact` | the same eleven tokens with every payload as a compile-time literal |
+| `contracts/probe/MetadataProbe.compact` | arbitrary payloads, including the ones a consumer must reject or ignore |
 
-## Versioning
+The consumer reference is `test/token-metadata.ts`: a decoder and a validator
+that re-implement sections 1, 2.1, 2.2 and 3 from the MIP text rather than
+importing anything from the contracts, so a disagreement between the two sides
+fails a test. Its rejection reasons are `payload_size`, `kind_unknown`,
+`key_empty`, `val_type_reserved`, `val_len_too_long` and `val_type_rule`; an
+event under another name is `ignored`, which is not the same thing as rejected.
 
-The **event name is the version**. A future, incompatible layout uses a new name
-(`TokenMetadata2`) and never a reinterpretation of this one. A consumer that only
-knows version 1 ignores `TokenMetadata2` events; a consumer that knows both keeps
-them apart. Within version 1, new keys are added to the registry freely — unknown
-keys are already required to be stored verbatim as traits.
+## Circuit cost
 
-## Consumer notes
+The MIP fixes the bytes on the wire, not how a contract assembles them, and the
+assembly strategy dominates the proving cost. Measured with
+`./scripts/circuit-cost.sh` (ZKIR v2, `zkir mock-compile`, no keys generated):
 
-Event *contents* cannot be read statically from a transaction: `emit` compiles to
-the VM's `log` opcode and its operand comes from the stack at execution time.
-What a transaction does state publicly is **how many `log` ops each contract
-call's transcript runs**. A consumer therefore:
+| what is emitted | k | rows |
+|---|---|---|
+| three events, every byte a compile-time literal (`SSTAR.publishMetadata`) | 7 | 28 |
+| one event, all literal (`CNST.updateOrion1`) | 6 | 23 |
+| one event with a runtime `Bytes<189>` value (`setMetadata`) | 19 | 330 369 |
+| three events from ledger fields (`NativeShieldedToken.publishMetadata`) | 19 | 467 284 |
+| three events from ledger fields (`ShieldedCollection.publishPiece`) | 19 | 470 165 |
+| six events in one circuit (before `NativeDualToken` was split) | 20 | 832 004 |
 
-1. scans every transaction for `ContractDeploy` / `ContractCall` actions and for
-   the mint effects of each call's transcripts (these are the *observed* facts);
-2. counts `log` ops in the guaranteed transcript and in the fallible transcript
-   of every successful segment;
-3. for each call with at least one `log` op, fetches that call's events — from an
-   indexer, or from its own ledger replay — and compares the count it got with
-   the count the transcript promised before applying anything.
+For scale, OpenZeppelin's shielded `_mint` is k=14. A k=19 proving key is about
+134 MB and some six minutes of `zkir`; a k=20 key is roughly 270 MB.
 
-Mints in a guaranteed transcript count when the transaction succeeded or
-partially succeeded; mints in a fallible transcript count only when that intent's
-segment succeeded.
+Consequences, all applied here: **no circuit emits more than three events**, and
+the contracts that are actually deployed are the generated literal ones, which
+emit byte-identical payloads for a four-figure factor less proving work
+(`test/generated.test.ts` asserts that identity). ZKIR v3 measured ~4.4× cheaper
+and is one switch away (`ZKIR_V3=true ./scripts/compile.sh`), but no deployment
+has shown a live network accepts a v3 verifier key.
+
+Historical Compact/MinoCrab results and their exact fixtures are archived under
+[`benchmarks/`](./benchmarks/) and [`minocrab/`](./minocrab/README.md). Those
+fixtures use the earlier `TokenMetadata` event name and `Bytes<16>` symbols.
+One experiment also uses a 189-byte value, but matching the current payload
+width does not make it a measurement of this MIP format or deployment.
+
+## Fixtures
+
+`fixtures/simulator/` is the offline corpus: the whole reference set executed in
+the Compact simulator, with deterministic addresses, so an indexer can be
+written and tested byte-exactly before any chain is involved. It carries the
+events, the mint effects, the colour vectors, the expected token rows and a
+negative corpus with one payload per rejection rule — plus the events a consumer
+must *ignore* (the pre-MIP name) and the ones it must *apply* even though their
+Appendix A projection fails.
+
+`fixtures/stagenet/` is the same thing recorded from the public Stagenet indexer
+for a real deployment.
+
+See the README for how to regenerate both.

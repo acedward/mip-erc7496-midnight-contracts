@@ -25,7 +25,7 @@ import "../node_modules/@openzeppelin/compact-contracts/token/NativeShieldedToke
 export { ContractAddress, Either, Maybe, ShieldedCoinInfo, ZswapCoinPublicKey };
 
 /** The family symbol, in the byte form the metadata events carry. */
-export sealed ledger _symbolBytes: Bytes<16>;
+export sealed ledger _symbolBytes: Bytes<32>;
 export sealed ledger _symbolLen: Uint<8>;
 /** How many pieces have been minted, for a cheap read-back after deployment. */
 export ledger _mintedPieces: Counter;
@@ -34,7 +34,7 @@ constructor(
   owner: Either<Bytes<32>, ContractAddress>,
   name_: Opaque<"string">,
   symbol_: Opaque<"string">,
-  symbolBytes_: Bytes<16>,
+  symbolBytes_: Bytes<32>,
   symbolLen_: Uint<8>,
   decimals_: Uint<8>
 ) {
@@ -103,12 +103,13 @@ export circuit publishPiece(
 export circuit setPieceTrait(
   pieceDomain: Bytes<32>,
   key: Bytes<32>,
-  len: Uint<8>,
-  value: Bytes<190>
+  valType: Uint<8>,
+  valLen: Uint<8>,
+  value: Bytes<189>
 ): [] {
   Ownable_assertOnlyOwner();
   TM_emitTokenMetadata(disclose(pieceDomain), TM_KIND_SHIELDED(), disclose(key),
-                       disclose(len), disclose(value));
+                       disclose(valType), disclose(valLen), disclose(value));
 }
 
 export circuit owner(): Either<Bytes<32>, ContractAddress> {
