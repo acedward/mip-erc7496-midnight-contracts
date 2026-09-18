@@ -212,7 +212,7 @@ runs the whole set through the simulator and writes `fixtures/simulator/`:
 
 | file | what is in it |
 |---|---|
-| `events.json` | every `TokenMetadata` event, with its 256-byte payload as hex |
+| `events.json` | every `mip-xxxx:token-metadata[v1]` event, with its 256-byte payload as hex |
 | `mints.json` | every mint effect a scanner would read out of a transcript |
 | `color-vectors.json` | `(domainSep, address) → colour`, checked against each contract's own `tokenColor()` |
 | `expected-tokens.json` | the rows an indexer should end up with — 17 rows over 17 identities, in the MIP's three states: observed, declared, described |
@@ -233,20 +233,35 @@ one. Neither can hide or relabel the other, which is exactly the point of MIP
 section 6.3 — and it is why this corpus has 17 rows where the pre-MIP one had
 16.
 
-### ⚠ `fixtures/stagenet/` and `deployments/stagenet-deployment.json` are the PRE-MIP layout
+### `fixtures/stagenet/` and `deployments/stagenet-deployment.json` — the live record
 
-Both were recorded from the Stagenet deployment of 2026-09-17, which ran under
-the earlier, repo-local layout: the event name `TokenMetadata`, no `val-type`
-byte, a 190-byte value, and a token table keyed on bit 0 of the kind byte (which
-is why its `expected-tokens.json` still contains an `inconsistent` row). They
-are kept verbatim as the record of what that deployment emitted, and a MIP
-consumer **ignores** every event in them.
+Both are recorded from the **Stagenet redeployment of 2026-09-18**, which is the
+first one emitting `mip-xxxx:token-metadata[v1]`: eleven contracts, 48
+transactions, blocks **508 432 – 508 599**, zero failures. `fixtures/stagenet/`
+holds 48 raw transactions with their results, the 69 `MiscContractEvent`
+payloads they emitted (each exactly 256 bytes, decoded field by field), the
+**17 token rows over 17 identities** a consumer should fold out of them, and 15
+colour vectors checked against what the chain actually minted. The addresses and
+transaction hashes live in `deployments/stagenet-deployment.json`, and the
+public record of the same deployment is
+[effectstream/staging-tokens-addresses](https://github.com/effectstream/staging-tokens-addresses).
 
-They are **superseded by the 00021 redeploy**, which replaces both files with a
-set emitting `mip-xxxx:token-metadata[v1]`. Until then, use
-`fixtures/simulator/` for anything that has to be current: it is regenerated
-from the compiled contracts and is the only corpus in this repository that
-carries the MIP layout.
+**Previous deployment (pre-MIP layout, `71c5b0b`).** The set below was deployed
+on 2026-09-17 under the earlier repo-local layout — event name `TokenMetadata`,
+no `val-type` byte, a 190-byte value, a token table keyed on bit 0 of the kind
+byte — and a MIP consumer **ignores** every event it emitted (MIP section 1).
+The contracts are still on chain; nothing was revoked. Its fixtures are not kept
+in this repository any more: read them at
+[`71c5b0b`](https://github.com/acedward/mip-erc7496-midnight-contracts/tree/71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6/fixtures/stagenet).
+
+| row | pre-MIP address | row | pre-MIP address |
+|---|---|---|---|
+| LSUN | `76c2fd63ad1a637dc5900e2bbfac47c2a30405eb3b8b2c0c32d675846c100058` | UMET | `f184f92ffe9f015d1a2cdb76d7b5621fe50714175360310b046c9a7fe8fee43e` |
+| LMOON | `9fe4724d67cb395791ad69ba040f8c7dae872b9e961bd766a390db3954694932` | UPROM | `64f7b33d55c2647b6ce11a8a6c631f9558da6a6354f0ffa9a852cccc4c547da2` |
+| SSTAR | `7d0bbc9546e0976f27a069e43490deb670ec0d51514c2da634b062e65b2938c7` | DAUR | `57244319c3660e539b6f7f66248e46642c0d31d862986bedb2c1d4186061d685` |
+| SNEB | `e7597c0205132b33c76d1df7f062ed022616807bd868d0fc101a65a89fee6fce` | CNST | `6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c` |
+| SGHOST | `520b8ecf3517a9fa797352bb97f438ccab0aa8f3cc452d3b3ef57df519a77298` | LLIAR | `b006a6647c26829987ec1bd59de1d4107019d7f54c097d3fdc25a4dddcf1231e` |
+| UCOM | `40918a6666a2390010f189cdb535b5b17cdd9479f502241e02ec4a76a69eebf2` | | |
 
 ## Deploy
 

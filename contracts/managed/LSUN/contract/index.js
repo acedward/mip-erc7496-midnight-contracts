@@ -896,6 +896,12 @@ export const pureCircuits = {
 };
 export const contractReferenceLocations =
   { tag: 'publicLedgerArray', indices: { } };
-export const expectedVk = {};
+export const expectedVk = {
+  'balanceOf': 'f8285aef45ab5104d6d44591e2748da169018c1bdce6dd6fba38e2ed0e03d157',
+  'ledgerMint': 'e87e392627ce96b1ecae6498fcfd1f7db02de60f0a1e275cabc5f8799a3cb6cf',
+  'publishMetadata': '61fcd9042420fad593fb39129e281415c80f9a92a83ff582316ac86d00591ca4',
+  'totalSupply': '73e0045e390d7c12b5010aa42bd95098be2366880e3127236a32c2655f0741ab',
+  'transfer': 'e8208c3d5bae42f8cbc1c145b78c555063f01a555412f964759afc0315956c5a',
+};
 
 //# sourceMappingURL=index.js.map

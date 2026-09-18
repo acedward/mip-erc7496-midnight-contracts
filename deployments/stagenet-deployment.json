@@ -7,72 +7,6 @@
     "indexer": "https://indexer.stagenet.shielded.tools/api/v4/graphql"
   },
   "rows": {
-    "SSTAR": {
-      "id": "SSTAR",
-      "contract": "SSTAR",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "publishMetadata",
-          "txId": "00d9e41d78b392214839a3449002f71da7926034c935386edfd05e93750f16b7cb",
-          "txHash": "ca7aa26e6ac435dac92678d4c4ada1226d5fbc435f52ee0b043fe9af55666e56",
-          "blockHeight": 497306,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T05:54:38.466Z"
-        },
-        {
-          "index": 1,
-          "circuit": "mint",
-          "txId": "00e9ce5ca6b953aee5d1daf93605bf9fb3e2b2d7d86b25546bae8f4dcde5995084",
-          "txHash": "403336bc75c82f3690647c783282d891beecf8ae897427e7dc06dc0781473784",
-          "blockHeight": 497355,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T05:59:32.378Z"
-        }
-      ],
-      "artifactSha256": "34eec417c635cf3bb5d821a58f5abc3d4bf10f45aa7a9156de10383d3c4681e6",
-      "address": "7d0bbc9546e0976f27a069e43490deb670ec0d51514c2da634b062e65b2938c7",
-      "deploy": {
-        "txId": "008cbb9c0c79455bc47bc43a7fb69b3ba92d007e5476edc87cc69c36e08627edae",
-        "txHash": "e95797175c485df7d0c5a809e0e3178909c18f43fc63f9fae96a0b242390f34d",
-        "blockHeight": 497302,
-        "at": "2026-09-17T05:54:14.976Z"
-      },
-      "tokenColor": "a988a5eccbc9ba6faa93c72aa344db0776dae4962a6c67dbe1b1633a883df997"
-    },
-    "UCOM": {
-      "id": "UCOM",
-      "contract": "UCOM",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "publishMetadata",
-          "txId": "000ed789cecc510debd6b465a7f4b0b4b615f61741c700c6ca3e1cf11e880afa9e",
-          "txHash": "3284003ada9f8812dbe1a94132a9e02de409be4900eb9d2b4b5eb87bd7649635",
-          "blockHeight": 497363,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:00:20.250Z"
-        },
-        {
-          "index": 1,
-          "circuit": "mint",
-          "txId": "00ad8ae67fb362d40e77d9489695204e24d47b81d9d1873552a9a2be2da7d9e0c7",
-          "txHash": "6247a89afa6aba2b81e09447da75cbd4b5d7b307f2859b547ccc2f3d725eb0d5",
-          "blockHeight": 497367,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:00:44.337Z"
-        }
-      ],
-      "artifactSha256": "7158abf8c9b2ab8fba211807dbdf46985205b89a764ab3789f3d265224c6537c",
-      "address": "40918a6666a2390010f189cdb535b5b17cdd9479f502241e02ec4a76a69eebf2",
-      "deploy": {
-        "txId": "00f54fb6a24241dca4f7cc994e08b0764626d27c5ec834f07b1d384543f895c22e",
-        "txHash": "a0a9b5b6abcfae62b6b80bd2fa791843127856bf0da1c8be128eb23171bf014e",
-        "blockHeight": 497358,
-        "at": "2026-09-17T05:59:51.211Z"
-      },
-      "tokenColor": "b92eb7e767009c202a9419a7f8952002959d42c2a1672efc7171a8af1e0c7fa4"
-    },
     "LSUN": {
       "id": "LSUN",
       "contract": "LSUN",
@@ -80,361 +14,40 @@
         {
           "index": 0,
           "circuit": "publishMetadata",
-          "txId": "00ca8349206bb9ac91021bdf691cadf978f97968345844d65a4a594307c531bf2d",
-          "txHash": "cd51d104924895a1f8601568e88420d3bb0dc671188f9b3715b7ea15e24a5be8",
-          "blockHeight": 497373,
+          "txId": "00b035e640fdfabdb9f0dd9041548f0f7d2b815496184aea3aee301b88e2b9f0db",
+          "txHash": "fba09720978780bbf8ee675467691dd3286436d675a8ca17a26e8f4a1846079c",
+          "blockHeight": 508442,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:01:20.291Z"
+          "at": "2026-09-18T00:28:14.756Z"
         },
         {
           "index": 1,
           "circuit": "ledgerMint",
-          "txId": "00d4e41f361c61493bc9204994119099668ff849cea135eb5e204826085f8e3890",
-          "txHash": "2643633e666d18a989919d2875272e3c411c3ec2f6e1ea3a6908000f1e0b2a9d",
-          "blockHeight": 497376,
+          "txId": "00638e9c9e5e5285af18020789883050f55fd792469cb367103674b8fa994114b0",
+          "txHash": "973ee90713850d35edd53fe794dd5fb1bc42e3f7507e368c9638aa4c626da3b9",
+          "blockHeight": 508445,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:01:38.993Z"
+          "at": "2026-09-18T00:28:31.850Z"
         },
         {
           "index": 2,
           "circuit": "transfer",
-          "txId": "00e6dee19c4ffaf7b45674412ca50e7d55d8323a5fbbb08825055243e2e7f4ba1d",
-          "txHash": "34e0052c4ffb7387a06c19a0d98aebb089cb9c563ffccae6798f9adcad760f44",
-          "blockHeight": 497379,
+          "txId": "00fd5dd834e27e1cd89d8f67b2319b4e58cfe813b6d5fc3330a6f3c6dbb801239d",
+          "txHash": "19d940276b6037515484a523c31130083325c5dbe79027db1a8a9b20ba380232",
+          "blockHeight": 508448,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:01:56.360Z"
+          "at": "2026-09-18T00:28:50.586Z"
         }
       ],
-      "artifactSha256": "6e0c3e6fdfd16b0340c0d4096e88a126d118e8b5e1136ee3f1846f85933b0523",
-      "address": "76c2fd63ad1a637dc5900e2bbfac47c2a30405eb3b8b2c0c32d675846c100058",
+      "artifactSha256": "2ae4c2fe41d44e65472c934a4400d4a7f585b8c17c4499360497c7bd24e04ba5",
+      "address": "152827bc1d9ea7ecec0d13879e87a21ecf8f283804dfef16c9b805612acfea90",
       "deploy": {
-        "txId": "00e1015fb005a27bef3a51cc3a671f0cd8c090a2d2807f645c3aeab2419b6d8acc",
-        "txHash": "1439d7af123095c763fee76ebca7481401637a7d3d3a0d4d71d7d0daae632262",
-        "blockHeight": 497370,
-        "at": "2026-09-17T06:01:01.893Z"
+        "txId": "001e34832416c9015ea681142603eb2d13f50e17b4d6a1cbe827491f1af53c0944",
+        "txHash": "9a131d060981b73d8574bd2307f62d9e9fd90611704b9168aafe2ef1ad7287b6",
+        "blockHeight": 508432,
+        "at": "2026-09-18T00:27:15.037Z"
       },
-      "tokenColor": "231ccd99aacff5ac2ad9527b261f1a5c803d1ec0bd448ac7cb33f29600976f90"
-    },
-    "DAUR": {
-      "id": "DAUR",
-      "contract": "DAUR",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "publishUnshielded",
-          "txId": "001b2638a769994d390f7ad2a40fcd529880f3f0447864e1f16731ae42a5249255",
-          "txHash": "3ca0b8329d36bdd02c6bb336ce37fa8daa9a76fd34e697795e9257b40ce128b4",
-          "blockHeight": 497385,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:02:32.398Z"
-        },
-        {
-          "index": 1,
-          "circuit": "publishShielded",
-          "txId": "00bef86e57fc293879cbf9b4752cf181f7f2f27ca05759d51a11b09a1e60071ee4",
-          "txHash": "08c0889ccca19a30808043f3a52de497662cfc46a57f36069d0ba76c9bd1e5e4",
-          "blockHeight": 497388,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:02:49.831Z"
-        },
-        {
-          "index": 2,
-          "circuit": "mintShielded",
-          "txId": "008502efeeacc84755167231b04b88be4f397212235b7bb1caa3aae436f1429d52",
-          "txHash": "1569078f5a3333aa84d0baf1ed2343cde4fd887f6034dc200c467247bae7b92c",
-          "blockHeight": 497392,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:03:13.977Z"
-        },
-        {
-          "index": 3,
-          "circuit": "mintUnshielded",
-          "txId": "0082f281c5a43b01dee218d981f592febca92cea72a3b37bc2f957229065baae62",
-          "txHash": "66e053366275aaa46201b833cc17920c761975b472ce88f7e0d0304b660d1ea3",
-          "blockHeight": 497396,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:03:37.792Z"
-        }
-      ],
-      "artifactSha256": "5ffe2786e1a57a696e92423e86ce6947da6b7dcfdb9d7c77e5bb112fa8c48d2d",
-      "address": "57244319c3660e539b6f7f66248e46642c0d31d862986bedb2c1d4186061d685",
-      "deploy": {
-        "txId": "00652d5972dbeb57be4dff3186eb9fb2bdb50d0af32337282e1177f3c526406e6a",
-        "txHash": "3a892dc137614d410b2faff51dbad7fad2a99969b26d0513bd966e91135ed8ed",
-        "blockHeight": 497382,
-        "at": "2026-09-17T06:02:14.256Z"
-      },
-      "tokenColor": "0cc414ba41fbfcc579fcc23abc40d15686ba0256e366e53e8145683a97fef136"
-    },
-    "CNST": {
-      "id": "CNST",
-      "contract": "CNST",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "mintPiece",
-          "txId": "00ced0c5f2d476e1727a489f16eea3ad99f39f4dcfb51af095c662468ad5af99bb",
-          "txHash": "a80d3d0674544837d4d74702348d6e70cc80161fc40e7f9ed0118bb0cea90e2f",
-          "blockHeight": 497403,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:04:20.731Z"
-        },
-        {
-          "index": 1,
-          "circuit": "publishOrion",
-          "txId": "00241d2439b23607c09fd6cfdc095770b8e3af4a4b7bb1cb6b3891d767528fa1bb",
-          "txHash": "6b30eeab3c39549f086ad3ec893e7d81f0a6a50873d53b211567ee15bda7ef51",
-          "blockHeight": 497407,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:04:44.597Z"
-        },
-        {
-          "index": 2,
-          "circuit": "updateOrion1",
-          "txId": "0033eb78ca39becc751fe31752ca7aca20f205df07947b0a59a139aa75d795b7d2",
-          "txHash": "de9e90a0bea8cd16c1c4e2be587bfda7b8cfc7d3199b9b66d1b76ccd65eeb6d6",
-          "blockHeight": 497411,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:05:08.584Z"
-        },
-        {
-          "index": 3,
-          "circuit": "updateOrion2",
-          "txId": "003df357afc47a30f3a624e52630ac0d227def686624840a5689178d463b1b5fe3",
-          "txHash": "5f953c7439a7bc408508663ee59f86407fc8cc76d6618956483f1fbf60e56f69",
-          "blockHeight": 497414,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:05:25.966Z"
-        },
-        {
-          "index": 4,
-          "circuit": "mintPiece",
-          "txId": "00f7d596f561dd43092fa0e87216259c2ab713700485829325719b936b9b9fe408",
-          "txHash": "f5dfa612d229a05e5002eeae84085863c3c19800ac8d94646c567ffa025e7825",
-          "blockHeight": 497418,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:05:50.207Z"
-        },
-        {
-          "index": 5,
-          "circuit": "publishLyra",
-          "txId": "001a0a416f267bb7a0e3ca49f910ce29100c9491023951c21b68eb53a48e42ddea",
-          "txHash": "251c639ee9d91a1ea88a7b9675c6003dc45a8607601203a3163987c9b0819026",
-          "blockHeight": 497421,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:06:08.692Z"
-        },
-        {
-          "index": 6,
-          "circuit": "mintPiece",
-          "txId": "001e949c0bb1593786881dc1ff697cd88f451d9aac5ffdc3c6c01ca9185ba5a91b",
-          "txHash": "0def795054303f32d4a10bb8244ce66dd27f58e4657303784ca3614dba8ebc92",
-          "blockHeight": 497425,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:06:32.909Z"
-        },
-        {
-          "index": 7,
-          "circuit": "publishCygnus",
-          "txId": "00c91034053559a8019b17f38809b21c346420584852c4206cd6e6abf8405f97f0",
-          "txHash": "4b0d51d23cb2c01b27f7c981e72290152ed631a9f9e1d159fc58ac19e9810b37",
-          "blockHeight": 497428,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:06:50.019Z"
-        },
-        {
-          "index": 8,
-          "circuit": "mintPiece",
-          "txId": "002563a1e0a44838a4d1421a5cc3e62a9c7ef6e7d06c3026ba5a85b125efb50f8e",
-          "txHash": "edbe3db225d6faa3278eac4571175d2e864645a3e1c30329339008ca7716b950",
-          "blockHeight": 497432,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:07:14.396Z"
-        },
-        {
-          "index": 9,
-          "circuit": "publishVega",
-          "txId": "00c9d23cc4879fc3365d86eb25838c9ba7dddfa3be784dbbab86b85d85a449024f",
-          "txHash": "d946c24a9713f6e52974b167160ca0a31b1566b5c3fddb9d1b7976d7e273e48e",
-          "blockHeight": 497435,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:07:32.808Z"
-        },
-        {
-          "index": 10,
-          "circuit": "mintPiece",
-          "txId": "00bd73fb4c61384114642cd34a167ab5340ccc6bbc5f8fd61bbed92d82d96c5cb5",
-          "txHash": "03089d2ff33b2d379a82f5f08824e5fa7e077bbe3225dcbc92c81ae9fdf907a8",
-          "blockHeight": 497439,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:07:57.006Z"
-        },
-        {
-          "index": 11,
-          "circuit": "publishAltair",
-          "txId": "00d05d1e6df4f4e6e4e01682d500c918c927e506466e7c6cd6d460005f4b127d68",
-          "txHash": "772055212d7fa0312cc46141f1dff887862f21b572b1ff0e0dd414d59e5222ea",
-          "blockHeight": 497442,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:08:14.197Z"
-        }
-      ],
-      "artifactSha256": "d3c76108bc30debc4f58d291a925ea0f79090e118f8d523f66991adee9098ccc",
-      "address": "6cedc46ac5a8cda964c2493a753c2c4942d6e3ed7641bdd0c28e9b672cb1e97c",
-      "deploy": {
-        "txId": "00f7eeab9635b11771fa763c344113176091110ba225e1c617da79f53d08adfed7",
-        "txHash": "3c75c42298fb4355f3946f4386502c8eaded7c0a07a8e91bfa5f81923689a5a2",
-        "blockHeight": 497399,
-        "at": "2026-09-17T06:03:57.116Z"
-      },
-      "tokenColor": {
-        "orion": "00a3eb500a600b975ff35b9ac624513e0c1c4277f794a3df4d5dfd3e0b487b93",
-        "lyra": "cd99dea3f3a4e691f045d76e4b98747b68e3fa4f90b9c8414337a5b3e6758081",
-        "cygnus": "4d04dab56afbb37ce2b135937f6efeac132b7a7e79139daec9854fc908da2868",
-        "vega": "3d9180f0b7b00dd52c8a35c0ee1558d901e11619bcea9e2e4aaef1a0722bf64f",
-        "altair": "9e7032f27cb031d4a3518d970391c0d775485b8f15f41cbf18d4142c7e1f15b1"
-      }
-    },
-    "SNEB": {
-      "id": "SNEB",
-      "contract": "SNEB",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "publishMetadata",
-          "txId": "00182c0fa92a43d7de57efb6b214579791b2c393c1eeebf1d0f7495a0d76430911",
-          "txHash": "d8cd47f423f1b4b9dda0ac6b9247f4d319319dd87882276effca5045981767c1",
-          "blockHeight": 497482,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:12:14.473Z"
-        },
-        {
-          "index": 1,
-          "circuit": "mint",
-          "txId": "003e2249399db0a3128cfa5a88784d903592eca166f4af99c4ef79e95f9a625081",
-          "txHash": "16f89052b957025fef69be9f16f1f3eba19acd59812739a4436942df94a0297b",
-          "blockHeight": 497486,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:12:38.753Z"
-        },
-        {
-          "index": 2,
-          "circuit": "mint",
-          "txId": "00d1cbf5c321911915ab2f145485f1a1eae4a8f1b0d2d2d37ccecf0b74bf947656",
-          "txHash": "deac4287d5aa3efcea81df8fb581a3dbd3b1833ab9112bca0be77b9f5338c058",
-          "blockHeight": 497490,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:13:02.741Z"
-        }
-      ],
-      "artifactSha256": "057e23444423e4a4d6784705f8af8d058f7489d6e670c8e2f9978aa32fd7b6ee",
-      "address": "e7597c0205132b33c76d1df7f062ed022616807bd868d0fc101a65a89fee6fce",
-      "deploy": {
-        "txId": "003a4d77990c25a03c5dd8835ee901c6f36a68eb66bf3c1ce255f534aa682e0633",
-        "txHash": "06dda4c041b31830de6bc816f5a45269cc5b6c07ea5cee0412c0dcb3bf1626f7",
-        "blockHeight": 497479,
-        "at": "2026-09-17T06:11:56.157Z"
-      },
-      "tokenColor": "b147dc1b324117e5c5f8d06cf8b2277b4067b1feeb285f00b76e692e1f760566"
-    },
-    "SGHOST": {
-      "id": "SGHOST",
-      "contract": "SGHOST",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "mint",
-          "txId": "0016887861183d72ac3813c5bdaf89bb4675d44c33a297e69fa065ce7afa385cee",
-          "txHash": "fcc68933c203738b7fa93b806e2231b86e5f1b3fe590ac6f2729dd1f10cfdd77",
-          "blockHeight": 497497,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:13:44.161Z"
-        }
-      ],
-      "artifactSha256": "ccaa94d5265e30cabd6085866422251b641a04c5551b3b6968aa5e623d08e395",
-      "address": "520b8ecf3517a9fa797352bb97f438ccab0aa8f3cc452d3b3ef57df519a77298",
-      "deploy": {
-        "txId": "003eddec1fe594610f6c419894477bc9b0c833bfae51ca3a2320866b17d6d07df0",
-        "txHash": "fd1de354173b232bc19f2ecdf75be32a2c5c47e5e5ceee8219fa020d5bb597b0",
-        "blockHeight": 497493,
-        "at": "2026-09-17T06:13:20.477Z"
-      },
-      "tokenColor": "14422c1082c4af5037779011e96926fd13f59786fa36e6df61a45c41d75e7f11"
-    },
-    "UMET": {
-      "id": "UMET",
-      "contract": "UMET",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "mint",
-          "txId": "0075377b75bfc3b4cc0b8cf46fd6e7d4f7442c5c1ae8c5c37a42eb615a4a99b837",
-          "txHash": "3e27a0879bcfc38dc65eaf7db342c170399783380c139fe6658311e85869f457",
-          "blockHeight": 497504,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:14:26.598Z"
-        },
-        {
-          "index": 1,
-          "circuit": "mint",
-          "txId": "000fd851ccfa36c2e10cef55e2cf9092ce90c856f3b5a8d28e231bde7026d5961f",
-          "txHash": "a3d90cfe4c0d374e9d384a50d6cf60dae048f27ab8bedf9b30025008028f71e6",
-          "blockHeight": 497508,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:14:50.744Z"
-        },
-        {
-          "index": 2,
-          "circuit": "mint",
-          "txId": "00ae2bb0ad4c6558edd1ce44e238f869dc68247fdc1c4c781706c0f6902126713f",
-          "txHash": "5916ccb98dbfa8172995670df6f391afadf649bb2b182e0fb71844a45ded61a3",
-          "blockHeight": 497512,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:15:14.660Z"
-        },
-        {
-          "index": 3,
-          "circuit": "publishMetadata",
-          "txId": "00892f5d930df974092172de12d599f2f1085af99c845802b3a00445c4cd3161e3",
-          "txHash": "7c2644c1249c1082a7e49b62ad79236f93e35cbd6fb98d73e3dc9b28fa185a98",
-          "blockHeight": 497515,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:15:32.095Z"
-        }
-      ],
-      "artifactSha256": "3f4442b5d2bd8af96a66c2861fd65099b6de2f162fc870558596e737a27262a5",
-      "address": "f184f92ffe9f015d1a2cdb76d7b5621fe50714175360310b046c9a7fe8fee43e",
-      "deploy": {
-        "txId": "00086c26fc45bf03ec1a6b9443716022257cc9a2d892e5c880d4fd66419691fdd2",
-        "txHash": "6d41f42213c3dacce511bed657a035d0233709dc3919ad9540b921fb45805448",
-        "blockHeight": 497500,
-        "at": "2026-09-17T06:14:02.849Z"
-      },
-      "tokenColor": "1677a42ad8a035718b84662852e9be4961870b1d601c2b35a709be68ebee0438"
-    },
-    "UPROM": {
-      "id": "UPROM",
-      "contract": "UPROM",
-      "steps": [
-        {
-          "index": 0,
-          "circuit": "publishMetadata",
-          "txId": "005d1e797c26d716c04792ba6d20be6d4110f0795cf3e89ae83e3d3cfa3b984238",
-          "txHash": "725569eea2b4f3a7be502d4d461cdc6301e00bc1fda290009429485e30395d75",
-          "blockHeight": 497521,
-          "status": "SucceedEntirely",
-          "at": "2026-09-17T06:16:08.046Z"
-        }
-      ],
-      "artifactSha256": "b1e0c0d2a15636aaea05106f880fc31ab4592c7af95ce7b95a48bb812d400d6a",
-      "address": "64f7b33d55c2647b6ce11a8a6c631f9558da6a6354f0ffa9a852cccc4c547da2",
-      "deploy": {
-        "txId": "00053e07132960b94be8f03d52c864305743d134f1ea3588f1171145981bf35368",
-        "txHash": "6b49da50bc65fde667244d6f622f8995affb72974f45a2eca973a261fdb9322f",
-        "blockHeight": 497518,
-        "at": "2026-09-17T06:15:50.978Z"
-      },
-      "tokenColor": "19e18ca3ee12f6e93e24ec53ca5dfe3f3904509767e3ffd8e5fd02498b471cf9"
+      "tokenColor": "b0868c145e6959e538d17ae0f880e1481d9aa325888102a5502bdf931a2544c4"
     },
     "LMOON": {
       "id": "LMOON",
@@ -443,40 +56,427 @@
         {
           "index": 0,
           "circuit": "publishMetadata",
-          "txId": "00dbffb1f933510d46ff3bfd0ef824f4fb5d5ea4ba3febdafbf2bae865bf74a2ce",
-          "txHash": "8f8bbd0e98101dc90bc0363efe6ed8e8e05ec42f76c07e3e097eb15c790817db",
-          "blockHeight": 497528,
+          "txId": "00534be65e3a9afd722104ea1d57b2aa038956a61414f95575555e5241d6db72eb",
+          "txHash": "d21119de590a698a01a8185cf70c68a4ef8947f0220e0196d47c94977f51cc57",
+          "blockHeight": 508454,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:16:51.056Z"
+          "at": "2026-09-18T00:29:26.624Z"
         },
         {
           "index": 1,
           "circuit": "ledgerMint",
-          "txId": "00d67c6a026e4c7bc0748666486658d5337e175097b7c44e69a8be889003e01584",
-          "txHash": "6d93e088948f48eb2b6104aa445eb82020087125d0aa6de50d535c5ad6952cf6",
-          "blockHeight": 497532,
+          "txId": "00a8f52d63ec6ec3bb334dce837712bf8ed9d82e3980fcec8b3932026e42877587",
+          "txHash": "9de39cc155bc8b13596230143db1ce0e8d4fdbaa945838afd47d737752319e57",
+          "blockHeight": 508457,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:17:15.075Z"
+          "at": "2026-09-18T00:29:43.951Z"
         },
         {
           "index": 2,
           "circuit": "publishRename",
-          "txId": "000fc0639a54833f148a2454b5f0d10b251809d6e7efa7525abbeb442566ba18dc",
-          "txHash": "bd5fc946efc966cc9f70afd3a50db8049c63e9de8c5a6aac3747b27364f08956",
-          "blockHeight": 497535,
+          "txId": "00bc815484cdab3bf1dbf97818e93086ef42909d32f748357ac366e0fd7e870b8f",
+          "txHash": "d2e96632e7d368a3fcd2379fb4978d55a3ea09d491e8828245da5faabddc742d",
+          "blockHeight": 508461,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:17:32.224Z"
+          "at": "2026-09-18T00:30:07.966Z"
         }
       ],
-      "artifactSha256": "c6cd3d0e773f9285575ee39945b68575e31064f6f2536fdebd83cb1548706258",
-      "address": "9fe4724d67cb395791ad69ba040f8c7dae872b9e961bd766a390db3954694932",
+      "artifactSha256": "218656a63c52d70458c6aa7a830099ad014a8bc8128588870d9c7e4603a84c06",
+      "address": "fef951c605d33514bd9c54b56772e23e9abaad07982457fd918dc68984cc433a",
       "deploy": {
-        "txId": "00e5eab7c7fa2f05de56d12789699ffcdc586cd7317b3e7ea9e1a49341409d2c03",
-        "txHash": "98617142cff03d0ebef93a4f329b8f37515f14d34a415227b65fa759e8f4a898",
-        "blockHeight": 497524,
-        "at": "2026-09-17T06:16:27.233Z"
+        "txId": "00a8e6788d6a6f147ff517d265f02af2d10262fa6719407467109c1e7863d8c550",
+        "txHash": "b51f62231cb15984bb4f7b727ae931b25ab65f510eb5848c56d338dd408621e8",
+        "blockHeight": 508451,
+        "at": "2026-09-18T00:29:08.467Z"
       },
-      "tokenColor": "60a4aef306f0c87a9fce9d5deddf6dd12d4dae8eac088fd2f4de4b6120fb3400"
+      "tokenColor": "18146aa4ac2dd90e665d1dc71c4370cc0408d9abd3ee8f4e3d6dc6a5f4819612"
+    },
+    "SSTAR": {
+      "id": "SSTAR",
+      "contract": "SSTAR",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "publishMetadata",
+          "txId": "00ea125d8b4e055845149526e5069ce612f48725c07bcd50802339bf12c90d9391",
+          "txHash": "4f9c48dd7c9c71d35bb9c55f9d6cc6dfb704267a720d46b66a61954a402ba564",
+          "blockHeight": 508467,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:30:44.038Z"
+        },
+        {
+          "index": 1,
+          "circuit": "mint",
+          "txId": "005c1773bdd1c4722293d0d5f07f58ee14413aca1e338eb2c44b984965f110ead5",
+          "txHash": "a25d848fd9d8bf38a9ca782adb40611d4be9158760c8e5b088e01336cccda147",
+          "blockHeight": 508471,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:31:08.270Z"
+        }
+      ],
+      "artifactSha256": "055a65a7128a6a6a2f04a4c48c05b8b31a4743632668ed9df91e2a87efb87069",
+      "address": "171ac372bb73fb9fee495cf578fe8e99ddc622f2ee18fd327e1a90d01cb3cc95",
+      "deploy": {
+        "txId": "0031ddab3ee80ad2b2a3a58cea6b30fec7081e509a775302e7e4339a0577cd3dec",
+        "txHash": "ddd4afb291674087db777871d602475a3e605e1f7819421f39387d2947bb3e4d",
+        "blockHeight": 508464,
+        "at": "2026-09-18T00:30:27.018Z"
+      },
+      "tokenColor": "3248c456d02ce8a8c2b42541488add504152f745e168d139934c637339c55553"
+    },
+    "SNEB": {
+      "id": "SNEB",
+      "contract": "SNEB",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "publishMetadata",
+          "txId": "00a43593f2066456b1f6b5dc5cca1a31089938710d60ef386a7a822e073dc83c24",
+          "txHash": "c5605da20d98b27b9393998762dd401aaa916b76829786f9bb31f43412815144",
+          "blockHeight": 508478,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:31:50.757Z"
+        },
+        {
+          "index": 1,
+          "circuit": "mint",
+          "txId": "00be5776f6cf881a57a4b7046e70d072f360410fdce4a707e709a5172a19b04497",
+          "txHash": "dfb58222e42486ce648b58af707f8601758392d8f5e767e157b1b4222fc01ade",
+          "blockHeight": 508482,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:32:14.998Z"
+        },
+        {
+          "index": 2,
+          "circuit": "mint",
+          "txId": "0047aa08a0e1b728ea86ef2c21b804915e6878cfd1867c77ec01efcd1a0601f881",
+          "txHash": "6196df7d85f97273b1ce5cf1438765d5a4f6abadb1eeaa39d1d89026c021775c",
+          "blockHeight": 508486,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:32:39.117Z"
+        }
+      ],
+      "artifactSha256": "7e22ec0cb67f8a77ff357823476773cf0ffe5420d1028fa5245d884e25759bf4",
+      "address": "19036e0277d378ff8356b32e74bbd6aa03d4531bc9094031e785fb48c151b538",
+      "deploy": {
+        "txId": "0097aa6a5b2aec7711cc65e14ca1ac40464eb5278ff91014d983223bb61f9af11a",
+        "txHash": "5a8970eb2b0baf755a14a9b217e5d7019f4c2bd8895adb876c01b1f02670180b",
+        "blockHeight": 508474,
+        "at": "2026-09-18T00:31:27.148Z"
+      },
+      "tokenColor": "e51a1df69e7bdac483b1ef3a418ab993145e075c946aa90b57a5200328a60e01"
+    },
+    "SGHOST": {
+      "id": "SGHOST",
+      "contract": "SGHOST",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "mint",
+          "txId": "00caa7cf71d0e94517767b754eed1b039a6af988ba54262f32e5c4f92a9954f344",
+          "txHash": "2e62bdab138c3228ddeddcf37fc47d6f6f9296ff1805eb0be0bfb8523fb50897",
+          "blockHeight": 508493,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:33:20.372Z"
+        }
+      ],
+      "artifactSha256": "adfe46e83da1d995b955cb1dd16ee6c9130b7f81016eca6469ab48b9a26e7f14",
+      "address": "165e623bc4e5e0fc99607011fcb8cbe436e001071f52130435b2ae11bbfdcf34",
+      "deploy": {
+        "txId": "006e87fcaa876cc627b4e9120190ab77433f8d15d0ba205e0b6dc09c945b0b55c3",
+        "txHash": "f279fb502650ce0a243a7a1721794a8bd23637a71327fb21427eb426dff09fc1",
+        "blockHeight": 508489,
+        "at": "2026-09-18T00:32:56.502Z"
+      },
+      "tokenColor": "1be172b1e46d0ceacc3200aded4f681eafabe42611ee2b962200802573675bb3"
+    },
+    "UCOM": {
+      "id": "UCOM",
+      "contract": "UCOM",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "publishMetadata",
+          "txId": "008d8fb227af7f209ef686e179e09c28e63a86d920faf6e8006ed1cb0679dc0845",
+          "txHash": "44b534f86a9af1dccc4de2d7f3589c16e91d9450e2f2b671d637b4662d7480c2",
+          "blockHeight": 508500,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:34:02.879Z"
+        },
+        {
+          "index": 1,
+          "circuit": "mint",
+          "txId": "009449c7bd8faf4f50138ce597b5bf911e8becf7de4637b6cf8ae8cc818274fb84",
+          "txHash": "d9776f172ea74c059f83b04999ef9ed941c0b815d72c418bddbfcad168d83f07",
+          "blockHeight": 508504,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:34:25.618Z"
+        }
+      ],
+      "artifactSha256": "bb3352d88b2c3251fc901eaa1aeb3ccfd0dfc23a716a59d318ea589119141937",
+      "address": "de76f303d319aa7427cfac5eb671c1d693259e9ba59086c251c495708fc88acb",
+      "deploy": {
+        "txId": "0004b869f51b4ab62ab5086f3f0ae32c3c5a40c682a417eff4469293e2d9ee4d2c",
+        "txHash": "76405e2e994fd11c0e698f6f4133e65d5be4ba96337991741652bc2b18e7f2ba",
+        "blockHeight": 508496,
+        "at": "2026-09-18T00:33:39.354Z"
+      },
+      "tokenColor": "10dbdaf2b0b0aee765b3a83517f63a0371088565aa1d4cf89ccdc1c70b298269"
+    },
+    "UMET": {
+      "id": "UMET",
+      "contract": "UMET",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "mint",
+          "txId": "00d361157ca01ce964f5645fe1ae942770647a89d523c682e4dd0eeeb26b22cdd4",
+          "txHash": "ce3f21f21cf4ea0bee8ea4105ea50cc624db44ec8c4a60de60030779042119da",
+          "blockHeight": 508511,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:35:08.270Z"
+        },
+        {
+          "index": 1,
+          "circuit": "mint",
+          "txId": "00665640bbd0c96cdab7380d0e7912511626109fe8493004b2396f8a896f440c49",
+          "txHash": "88f37a81eedba36b3477008492af9a60a28a37699685fc7d19e9d1598bada3fe",
+          "blockHeight": 508514,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:35:25.622Z"
+        },
+        {
+          "index": 2,
+          "circuit": "mint",
+          "txId": "001d43d17ce6bdbf8d11ae662e477923b05bf6146e41c2d872ea196fdaca36a7f2",
+          "txHash": "088037cb9ce3e17ff2399f3d0847e47d06648b996d3ac250b550a8cd6ceda4d5",
+          "blockHeight": 508518,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:35:49.627Z"
+        },
+        {
+          "index": 3,
+          "circuit": "publishMetadata",
+          "txId": "0082284a275ba3add3fe57b0d014170d0c757c759f441283d23c83dd9aa135734f",
+          "txHash": "f1243033cf60fce52465d479f032b6fdf74b4b1857c18c9b5d38ec77d4244b51",
+          "blockHeight": 508521,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:36:08.387Z"
+        }
+      ],
+      "artifactSha256": "0c1ddee94faa3b6ac14f90aa215702c9d405e276e28579dc708dc2105f8dbfe1",
+      "address": "e17be6733ec82a884927041bdcf2e954265a0cd07864df8922064bc218e8198a",
+      "deploy": {
+        "txId": "008f97e75ff9305159ea837c4c3b86b505003c527ea45ff68b443bd6c63251e105",
+        "txHash": "88fcfd807e6a7e9a26ecb456fa256b1be72fbfc49b6233cbe35f6c944be0ee19",
+        "blockHeight": 508507,
+        "at": "2026-09-18T00:34:44.544Z"
+      },
+      "tokenColor": "ab2fed68e75cd202f09dc7dc224fdb9c7a77c078a073596d39f574598f19d6ee"
+    },
+    "UPROM": {
+      "id": "UPROM",
+      "contract": "UPROM",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "publishMetadata",
+          "txId": "00edae0eba9a5e2d35a579d7021108082567464bac09fc55e35e4d76fd89a1d026",
+          "txHash": "0cf6cdf80fb2534a59e29aac9bf5307726574d194b8ea417c26c9398dd284bb8",
+          "blockHeight": 508527,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:36:44.414Z"
+        }
+      ],
+      "artifactSha256": "d52e20d3784d069f9b2c59d9047effaaa07313300a80b4b2bc57af60479bddab",
+      "address": "2af4685bc8328a1a18ae86e428a9ecacc7c2f3bf12c293e18b2fd9cf4092bdf3",
+      "deploy": {
+        "txId": "0066aa1080cad1604991eb8577451b1fcef6a5c1f65f6d6d9987ea404d1b667a92",
+        "txHash": "e4a9bd3eed9fb034bc1cab9bfc1d08a6a90ac32e1f4b8d27bc51afbb2d18dc48",
+        "blockHeight": 508524,
+        "at": "2026-09-18T00:36:25.974Z"
+      },
+      "tokenColor": "a166e633b53e590c2d8fd9c7d6bcd655867b4c03b3f0cdd53be11adb99d80ac3"
+    },
+    "DAUR": {
+      "id": "DAUR",
+      "contract": "DAUR",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "publishUnshielded",
+          "txId": "00c1db372d8079b469d44923334d6bf52da6a21c4721258ad05c452814fc096091",
+          "txHash": "a78694fe4a01b8ff207f5c0b937b75b56175825c17b1b54a6e0959d21096cbbc",
+          "blockHeight": 508533,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:37:20.431Z"
+        },
+        {
+          "index": 1,
+          "circuit": "publishShielded",
+          "txId": "00d392da6ef8cd74c7e3570fed2b73bd30b72ab7cd324355c971fe06df5da987e2",
+          "txHash": "07b668ee87dc7f4f85fec2ea3c8c2370fe36ae8a1206a78a64f4807f6ffb4b90",
+          "blockHeight": 508536,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:37:37.768Z"
+        },
+        {
+          "index": 2,
+          "circuit": "mintShielded",
+          "txId": "001c7f31e1913694504f6a08506e8f89d239c46f10c18ccc0c256e49a847612ac5",
+          "txHash": "905cce98a63a69d167cbd1e623cc86f9d788f3ef204e6098f34cfcdd55d32428",
+          "blockHeight": 508540,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:38:01.986Z"
+        },
+        {
+          "index": 3,
+          "circuit": "mintUnshielded",
+          "txId": "00e552b9da4beaed3db1a80932192b09d23dccbc48151e73b621e5ff241723d1f0",
+          "txHash": "bcc9c1226b0217cf1a4caa1b8acee9dbc6b3fc45f03189e289ff837236c64d85",
+          "blockHeight": 508544,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:38:25.759Z"
+        }
+      ],
+      "artifactSha256": "eab07f637c50155e363b650542d1700458d912c0cd7ffc7803fda633913db0c6",
+      "address": "3ad541b2dbbaeb69b2381bec19b0d9211925726f8784b8bff1b87b92d6a09256",
+      "deploy": {
+        "txId": "0042eefc5423d50bd79669102227fcfb586495f0e60200a8d76947dca7d91250c8",
+        "txHash": "31d308627efd2dffe6c369b0205e160a6d0c02075de2836b420ae5632b86beca",
+        "blockHeight": 508530,
+        "at": "2026-09-18T00:37:02.210Z"
+      },
+      "tokenColor": "00b357a6d3d7a08be132a3ff81c48a54c9a566b4e73eedc285a34c6d2c51d325"
+    },
+    "CNST": {
+      "id": "CNST",
+      "contract": "CNST",
+      "steps": [
+        {
+          "index": 0,
+          "circuit": "mintPiece",
+          "txId": "00a8f4510d5f29e6d3370aaa89e5716d89cf94625e007ade246b75070beaa515dc",
+          "txHash": "6b460586b758a441d706cca8fcc390937929c1ddf785bd42db007d21190095d0",
+          "blockHeight": 508551,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:39:08.792Z"
+        },
+        {
+          "index": 1,
+          "circuit": "publishOrion",
+          "txId": "0071f1eabdfc140b0a779ee2b6006cf3f2e844d0a0096ec3223df8947f25d84446",
+          "txHash": "3ad443ffb246854763f4e215b1a4bcf40c95601590dfcdae86d58a79290dad7e",
+          "blockHeight": 508554,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:39:25.856Z"
+        },
+        {
+          "index": 2,
+          "circuit": "updateOrion1",
+          "txId": "002b1448fe38cd70bfe8b798314713f0b1688b915658a0cd229730c391cb5b3e72",
+          "txHash": "e9f679d8c741602e24a773db9b61f0f7f2078c6e4f3e9cb1c6c2f87cb40af8cb",
+          "blockHeight": 508557,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:39:44.574Z"
+        },
+        {
+          "index": 3,
+          "circuit": "updateOrion2",
+          "txId": "00d26f3679ad2d636c7d79edf6516b995a42ebd9a50bf4445a95dcf8a7b58d5026",
+          "txHash": "b482d285b284ed9c8f555a7e36d3d8155568692be9c7c7508c4aea00d5091f40",
+          "blockHeight": 508560,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:40:01.931Z"
+        },
+        {
+          "index": 4,
+          "circuit": "mintPiece",
+          "txId": "002512c817007c94858ae6f4b4b2201902189caefa57963dc3574e482d2e7a099d",
+          "txHash": "8eec45631ee6812f1486fa47b4c8b9511958a02740f1401fa1156149383c6012",
+          "blockHeight": 508564,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:40:26.145Z"
+        },
+        {
+          "index": 5,
+          "circuit": "publishLyra",
+          "txId": "0059ad770323f327a63187b381f95f3ba6e80f2e5964fe190e368e87af5218aa36",
+          "txHash": "d1f43fb4e30137671300c52502171684d44ee0e3cab309d546002fd13bdb9d82",
+          "blockHeight": 508567,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:40:44.612Z"
+        },
+        {
+          "index": 6,
+          "circuit": "mintPiece",
+          "txId": "00a1ecb332c0f9c9752ab2286eeb866dc760f9cfb7cedc889ba11581e816f0c8a4",
+          "txHash": "cf9008d7fea43041be2837e14daf74c648477234d2b69535204ba078d4a2c42f",
+          "blockHeight": 508571,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:41:08.833Z"
+        },
+        {
+          "index": 7,
+          "circuit": "publishCygnus",
+          "txId": "00b70bb5510d6be0a2910827f1d7812e382f921f6ca268f3d765750a52b90cd373",
+          "txHash": "6542360a07686bf8fddb6cb8554ee8e481d5624b0a9284f1495c4516ae67344c",
+          "blockHeight": 508575,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:41:32.670Z"
+        },
+        {
+          "index": 8,
+          "circuit": "mintPiece",
+          "txId": "00d0cbd20b9443843d1b9915bc077305f14b5ca1c7cad5ca0e4d18c2d63469995b",
+          "txHash": "c0febe7ceaea028a12be555301471e7d17306f683c3aa8fa904896a20bf35803",
+          "blockHeight": 508579,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:41:56.988Z"
+        },
+        {
+          "index": 9,
+          "circuit": "publishVega",
+          "txId": "0056422d5191394af4ac8384602c1251b4637c071729aef035d5df55ec056a6f87",
+          "txHash": "b9c633bdc5f8c6c6190bad7f22e51336429e3f2ee3ecb26ecd633dfee07a84cf",
+          "blockHeight": 508582,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:42:14.038Z"
+        },
+        {
+          "index": 10,
+          "circuit": "mintPiece",
+          "txId": "0007567292f324449a4b5971bc1823a539db31b7342fe15730bdfa736aa483c214",
+          "txHash": "26c517051b1ca33c0d807c58eef0de1ffb6a8fc1dbe2fad2c3efa1a12f74d8dd",
+          "blockHeight": 508586,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:42:38.306Z"
+        },
+        {
+          "index": 11,
+          "circuit": "publishAltair",
+          "txId": "0023e1e7ce0e06cf5cf4af559f7ee3a1b2c8fdb3739fb7dbcc0358d450c484ee1e",
+          "txHash": "cb92579d7fe432f6ce1965f20e64bc7260cabafd6c0944f649012212253c1b81",
+          "blockHeight": 508589,
+          "status": "SucceedEntirely",
+          "at": "2026-09-18T00:42:56.762Z"
+        }
+      ],
+      "artifactSha256": "22f1428951ea960a1025e9bc8e6cab1ca93e2e458875c6f32a12f582d9b4b0ec",
+      "address": "9f0d030eb2716e593a3872d569664d6ff680cdfd81ed40e86d60de39557511d7",
+      "deploy": {
+        "txId": "0041f402b5a08c0e4ee9dbf024249939e1817801c90388d122df673069dc3f91e1",
+        "txHash": "49dfe957eaf737dcbadb3345e052a54ff0311b296c1b160eec2d52d595c8866c",
+        "blockHeight": 508547,
+        "at": "2026-09-18T00:38:45.085Z"
+      },
+      "tokenColor": {
+        "orion": "e53dea555436716ce8a774fcfe0a71a3076725f6723930d82a0134e02730ccdc",
+        "lyra": "ffe655921c01f3a091fc2f935c71e72ac41669609bfd0c97ac9a84b4546097dd",
+        "cygnus": "d33a7c573e3272dfc2a52620327e682d178fb9df5d391cb9b5da966587ec5934",
+        "vega": "6f6d0047200c30d3bf0b6bdd9c6beaf4946255e7eadc1ceb15192f8c6d71a5cf",
+        "altair": "43a69ea323b809fa5ece303c1b7d8bb6c9f7835e67ca5b8a205074e2840e1032"
+      }
     },
     "LLIAR": {
       "id": "LLIAR",
@@ -485,31 +485,31 @@
         {
           "index": 0,
           "circuit": "publishMetadata",
-          "txId": "0032467e20ae6d354e340a7fb2a6f412cf19c8f31fe3c78a5079e75cb76581c871",
-          "txHash": "5208e34a1b52b838fb89c8a3ffa195491e3ee100532ff0837fee1eb5e55c3633",
-          "blockHeight": 497542,
+          "txId": "0018beb42fe6cb3b0a355bd27fb69cb5974e188753c8fcddce99b0f298571710b6",
+          "txHash": "87145bb180fba12fd471d4e1fb3fde77b3b2278bd0920d53e74c4def709e79c9",
+          "blockHeight": 508595,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:18:14.924Z"
+          "at": "2026-09-18T00:43:33.127Z"
         },
         {
           "index": 1,
           "circuit": "mint",
-          "txId": "0042821b73c7e3e3a97c0715465860d60ef47f2411d6abfad984cc7856d549f392",
-          "txHash": "9e1786cb028593e9fa346f772524a8d67e5ee272e56e3d84afe7b420fa889cfe",
-          "blockHeight": 497546,
+          "txId": "00ff1d19adb1562359770ceb9d907a77898626081aa0850b63008f83bf15afc343",
+          "txHash": "7938eeebab0367aeeebe437a2cf22ea0673492222e1487e30daca74d070881ae",
+          "blockHeight": 508599,
           "status": "SucceedEntirely",
-          "at": "2026-09-17T06:18:37.597Z"
+          "at": "2026-09-18T00:43:56.821Z"
         }
       ],
-      "artifactSha256": "4ef3204538ec1e3ee02b7b0e7740711486fd7dad200f249e7f51e34e27a0cf83",
-      "address": "b006a6647c26829987ec1bd59de1d4107019d7f54c097d3fdc25a4dddcf1231e",
+      "artifactSha256": "79f9e8eb2e21b11b475aad7ab7587b996cc091041a48d8dc39f0489d243ba8bb",
+      "address": "af0330b143e2ea01071a1435495f8be82cd689e8c5af8a05c5dd0df652f20a95",
       "deploy": {
-        "txId": "002a9183fd830203bf34a35879254a6b18feb5ff7a1aa240750788482df6f3c0b1",
-        "txHash": "4371af40438b44abf29cd568a2a740eeafd204b5fbfdd89ef046f65cda13da27",
-        "blockHeight": 497538,
-        "at": "2026-09-17T06:17:51.154Z"
+        "txId": "00506a914ce46af617cecf7ff5a14f9bec7746d623c909493c5745ff53dc54599b",
+        "txHash": "ea3acc74df49db1c1e99f872e9a4b041bb8413b6a49aa1aa0386069fda09a143",
+        "blockHeight": 508592,
+        "at": "2026-09-18T00:43:14.462Z"
       },
-      "tokenColor": "322445b1187ef7c276c68740958ed158f32b7582b2ad8b4d67ef05c9b5de988d"
+      "tokenColor": "3b420f37be1c6c175a2f3766e74ab4308aba79a33c7037acdc9a1c7118fd4dc1"
     }
   }
 }
