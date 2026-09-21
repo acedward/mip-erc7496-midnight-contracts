@@ -109,6 +109,7 @@ fails a test. Its rejection reasons are `payload_size`, `kind_unknown`,
 event under another name is `ignored`, which is not the same thing as rejected.
 
 ## Circuit cost
+> NOTE These values have been updated in the MIP
 
 The MIP fixes the bytes on the wire, not how a contract assembles them, and the
 assembly strategy dominates the proving cost. Measured with
