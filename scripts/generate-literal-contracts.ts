@@ -1,6 +1,6 @@
 /**
  * Generate one Compact contract per row of `deployments/reference-set.json`, with every
- * TokenMetadata payload (MIP PR #315 section 2, val-type byte included) written as a
+ * TokenMetadata payload (MIP-0018 section 2, val-type byte included) written as a
  * COMPILE-TIME LITERAL.
  *
  * Why (question Q13, decided 2026-09-17):
@@ -46,18 +46,32 @@ const DOMAIN_SIZE = 32;
 /**
  * MIP section 2.1 — the `val-type` byte.
  *
- * 0 opaque · 1 UTF-8 string · 2 unsigned big-endian integer (1..16 bytes) ·
- * 3 UTF-8 JSON · 4 UTF-8 absolute URI · 5..255 reserved (a consumer rejects).
+ * 0 opaque · 1 UTF-8 string · 2 unsigned integer (Compact `Uint<8*val-len>`,
+ * little-endian, 1..31 bytes) · 3 ONE complete UTF-8 JSON value ·
+ * 4 UTF-8 absolute URI · 5 Null (val-len 0) · 6..255 reserved (a consumer rejects).
  */
+const VAL_TYPE_OPAQUE = 0;
 const VAL_TYPE_STRING = 1;
 const VAL_TYPE_INTEGER = 2;
 const VAL_TYPE_JSON = 3;
 const VAL_TYPE_URI = 4;
+const VAL_TYPE_NULL = 5;
+/** 6..255 are reserved; nothing here may emit one on purpose. */
+const VAL_TYPE_RESERVED_FROM = 6;
+
+/** MIP section 2.1: val-type 2 is `Uint<8>`..`Uint<248>`, so 1..31 bytes. */
+const MIN_INTEGER_LEN = 1;
+const MAX_INTEGER_LEN = 31;
+/** MIP Appendix A's recommended emitter default for val-type 2: `Uint<128>`. */
+const INTEGER_LEN = 16;
+
+/** MIP section 5.1: keys under this prefix must be valid RFC 6901 pointers. */
+const METADATA_POINTER_PREFIX = '/metadata/';
 
 /**
- * The val-type MIP Appendix A gives each well-known key. A step in the
- * reference set may state its own `valType`; this is the fallback, and an
- * unknown key defaults to a UTF-8 string.
+ * The val-type MIP Appendix A gives each example key. A step in the reference
+ * set may state its own `valType`; this is the fallback, and an unknown key
+ * defaults to a UTF-8 string.
  *
  * `magnitude` is deliberately type 1 and not 2: the collection's magnitudes are
  * decimals with a fraction ("1.25") and type 2 is integers only (spec 00021 Q6).
@@ -73,11 +87,45 @@ const WELL_KNOWN_VAL_TYPE: Record<string, number> = {
   hemisphere: VAL_TYPE_STRING,
 };
 
-/** `metadata/<n>` parts are JSON fragments; everything else falls back to text. */
+/**
+ * Everything falls back to text. There is deliberately NO `metadata/<n>` rule
+ * any more: MIP-0018 defines no multipart representation or reassembly
+ * (section 5.4), and a JSON fragment is not one complete JSON value, so a
+ * `metadata/<n>` part emitted as val-type 3 would be REJECTED by a conforming
+ * consumer rather than reassembled.
+ */
 function valTypeFor(key: string, declared: number | undefined): number {
   if (declared !== undefined) return declared;
-  if (/^metadata\/\d+$/.test(key)) return VAL_TYPE_JSON;
   return WELL_KNOWN_VAL_TYPE[key] ?? VAL_TYPE_STRING;
+}
+
+/**
+ * RFC 6901, as MIP section 5.1 requires of a `/metadata/` key: `/`-prefixed
+ * reference tokens whose only legal `~` escapes are `~0` and `~1`.
+ */
+function isJsonPointer(text: string): boolean {
+  if (text.length === 0) return true;
+  if (!text.startsWith('/')) return false;
+  for (let i = 0; i < text.length; i += 1) {
+    if (text[i] !== '~') continue;
+    const next = text[i + 1];
+    if (next !== '0' && next !== '1') return false;
+    i += 1;
+  }
+  return true;
+}
+
+/**
+ * MIP section 5.1, from the emitter's side. Any key may be arbitrary bytes and
+ * is never rejected for its encoding — except one under `/metadata/`, which
+ * must be a valid RFC 6901 JSON Pointer or the whole event is rejected.
+ */
+function assertKeyIsValid(where: string, key: string): void {
+  if (key.length === 0) throw new Error(`${where}: an empty key is rejected (MIP section 2.2)`);
+  if (!key.startsWith(METADATA_POINTER_PREFIX)) return;
+  if (!isJsonPointer(key)) {
+    throw new Error(`${where}: "${key}" is not a valid RFC 6901 pointer (MIP section 5.1)`);
+  }
 }
 
 /**
@@ -86,7 +134,7 @@ function valTypeFor(key: string, declared: number | undefined): number {
  * refuses to write one.
  */
 function assertValueMatchesType(where: string, valType: number, value: Uint8Array): void {
-  if (valType < 0 || valType > 4) {
+  if (valType < VAL_TYPE_OPAQUE || valType >= VAL_TYPE_RESERVED_FROM) {
     throw new Error(`${where}: val-type ${valType} is reserved (MIP section 2.1)`);
   }
   const text = Buffer.from(value).toString('utf8');
@@ -94,8 +142,20 @@ function assertValueMatchesType(where: string, valType: number, value: Uint8Arra
   if ((valType === VAL_TYPE_STRING || valType === VAL_TYPE_JSON || valType === VAL_TYPE_URI) && !roundTrips) {
     throw new Error(`${where}: val-type ${valType} requires valid UTF-8`);
   }
-  if (valType === VAL_TYPE_INTEGER && (value.length < 1 || value.length > 16)) {
-    throw new Error(`${where}: val-type 2 requires 1 <= val-len <= 16, got ${value.length}`);
+  if (valType === VAL_TYPE_INTEGER && (value.length < MIN_INTEGER_LEN || value.length > MAX_INTEGER_LEN)) {
+    throw new Error(
+      `${where}: val-type 2 requires ${MIN_INTEGER_LEN} <= val-len <= ${MAX_INTEGER_LEN}, got ${value.length}`,
+    );
+  }
+  if (valType === VAL_TYPE_JSON) {
+    // ONE complete JSON value (MIP section 2.1). A fragment is rejected, which
+    // is exactly what retires the old `metadata/<n>` convention.
+    if (value.length === 0) throw new Error(`${where}: val-type 3 cannot be empty`);
+    try {
+      JSON.parse(text);
+    } catch (error) {
+      throw new Error(`${where}: val-type 3 requires ONE complete JSON value — ${String(error)}`);
+    }
   }
   if (valType === VAL_TYPE_URI) {
     let absolute = false;
@@ -106,6 +166,29 @@ function assertValueMatchesType(where: string, valType: number, value: Uint8Arra
     }
     if (!absolute) throw new Error(`${where}: val-type 4 requires an absolute URI, got "${text}"`);
   }
+  if (valType === VAL_TYPE_NULL && value.length !== 0) {
+    throw new Error(`${where}: val-type 5 (Null) requires val-len 0, got ${value.length}`);
+  }
+}
+
+/**
+ * MIP section 2.1, val-type 2: the value is the canonical Compact serialization
+ * of `Uint<8 * val-len>`, which is LITTLE-ENDIAN — verified against
+ * `@midnight-ntwrk/compact-runtime` 0.19.0 (`convertBigintToBytes(16, 6n)` is
+ * `06` followed by fifteen NULs) and against a compiled `Uint<128>` ledger cell
+ * holding 258, whose aligned atom is `0201` under a compiler-declared 16-byte
+ * alignment. MIP Appendix A prints exactly these bytes for `6` as `Uint<128>`.
+ */
+function integerBytes(value: number, length = INTEGER_LEN): Uint8Array {
+  if (!Number.isInteger(value) || value < 0) throw new Error(`val-type 2 is an unsigned integer: ${value}`);
+  const out = new Uint8Array(length);
+  let rest = BigInt(value);
+  for (let i = 0; i < length; i += 1) {
+    out[i] = Number(rest & 0xffn);
+    rest >>= 8n;
+  }
+  if (rest !== 0n) throw new Error(`${value} does not fit in ${length} bytes`);
+  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -167,8 +250,14 @@ const hex = (bytes: Uint8Array): string => Buffer.from(bytes).toString('hex');
  * reads a string literal.
  */
 const byteLiteral = (bytes: Uint8Array, size: number): string => {
-  const padded = padTo(bytes, size);
-  const meaningful = bytes;
+  padTo(bytes, size); // bounds check only: the literal below spells out `size` bytes
+  // Trailing NULs inside the meaningful prefix are byte-for-byte the same as the
+  // NUL padding that follows them, so they come from the one `pad(...)` spread
+  // rather than a wall of `0x00`. This is what keeps a 16-byte `Uint<128>`
+  // `decimals` value readable as `Bytes[0x06, ...pad(188, "")]`.
+  let end = bytes.length;
+  while (end > 0 && bytes[end - 1] === 0) end -= 1;
+  const meaningful = bytes.subarray(0, end);
   const simple =
     meaningful.every((b) => b >= 0x20 && b <= 0x7e && b !== 0x22 && b !== 0x5c);
   if (simple) {
@@ -222,6 +311,7 @@ const makeEmit = (
   if (value.length > VALUE_SIZE) {
     throw new Error(`${row.id}: value for "${key}" is ${value.length} bytes (max ${VALUE_SIZE})`);
   }
+  assertKeyIsValid(`${row.id}/${key}`, key);
   assertValueMatchesType(`${row.id}/${key}`, valType, value);
   const domain = domainFor(row, piece);
   return {
@@ -238,12 +328,36 @@ const makeEmit = (
   };
 };
 
-/** The three core fields of MIP Appendix A: name (1), symbol (1), decimals (2). */
+/**
+ * The three core example fields of MIP Appendix A: name (1), symbol (1),
+ * decimals (2 as `Uint<128>`, val-len 16 — Appendix A's recommended width).
+ */
 const standardEmits = (row: Row, name: string, piece?: string): Emit[] => [
   makeEmit(row, 'name', VAL_TYPE_STRING, utf8(name), name, piece),
   makeEmit(row, 'symbol', VAL_TYPE_STRING, utf8(row.symbol), row.symbol, piece),
-  makeEmit(row, 'decimals', VAL_TYPE_INTEGER, new Uint8Array([row.decimals]), String(row.decimals), piece),
+  makeEmit(row, 'decimals', VAL_TYPE_INTEGER, integerBytes(row.decimals), String(row.decimals), piece),
 ];
+
+/**
+ * The meaningful value bytes a metadata step carries. A Null step (val-type 5)
+ * has none: `val-len` MUST be zero and all 189 `value` bytes are ignored
+ * (MIP sections 2.1 and 2.2).
+ */
+const stepValue = (step: Step, valType: number): { bytes: Uint8Array; text: string | null } => {
+  if (valType === VAL_TYPE_NULL) {
+    if (step.value !== undefined) {
+      throw new Error(`a val-type 5 (Null) step carries no value; got "${step.value}"`);
+    }
+    return { bytes: new Uint8Array(0), text: null };
+  }
+  // A val-type 2 step states its number in decimal and travels as the
+  // little-endian `Uint<128>` serialization — NOT as the digits' UTF-8 bytes,
+  // which would decode to a different number entirely.
+  if (valType === VAL_TYPE_INTEGER) {
+    return { bytes: integerBytes(Number(step.value!)), text: step.value! };
+  }
+  return { bytes: utf8(step.value!), text: step.value! };
+};
 
 // ---------------------------------------------------------------------------
 // grouping steps into circuits
@@ -322,31 +436,23 @@ function planSteps(row: Row): PlannedStep[] {
       case 'publishPiece':
         push(standardEmits(row, step.pieceName ?? row.name, step.piece), step.op, step.piece ?? null, 'publishPiece');
         break;
-      case 'setMetadata':
-        push(
-          [makeEmit(row, step.key!, valTypeFor(step.key!, step.valType), utf8(step.value!), step.value!)],
-          step.op,
-          null,
-          null,
-        );
+      case 'setMetadata': {
+        const valType = valTypeFor(step.key!, step.valType);
+        const { bytes, text } = stepValue(step, valType);
+        push([makeEmit(row, step.key!, valType, bytes, text)], step.op, null, null);
         break;
-      case 'setPieceTrait':
+      }
+      case 'setPieceTrait': {
+        const valType = valTypeFor(step.key!, step.valType);
+        const { bytes, text } = stepValue(step, valType);
         push(
-          [
-            makeEmit(
-              row,
-              step.key!,
-              valTypeFor(step.key!, step.valType),
-              utf8(step.value!),
-              step.value!,
-              step.piece,
-            ),
-          ],
+          [makeEmit(row, step.key!, valType, bytes, text, step.piece)],
           step.op,
           step.piece ?? null,
           null,
         );
         break;
+      }
       case 'mint':
       case 'mintShielded':
       case 'mintUnshielded':
@@ -400,15 +506,22 @@ const VAL_TYPE_NAME: Record<number, string> = {
   2: 'integer',
   3: 'JSON',
   4: 'URI',
+  5: 'Null',
 };
 
 const emitCall = (emit: Emit): string => {
   const domain = byteLiteral(utf8(emit.domain), DOMAIN_SIZE);
   const key = byteLiteral(utf8(emit.key), KEY_SIZE);
   const value = byteLiteral(emit.value, VALUE_SIZE);
-  return `  // ${emit.piece ? `${emit.piece}: ` : ''}${emit.key} = ${
-    emit.text === null ? '<bytes>' : JSON.stringify(emit.text)
-  } (val-type ${emit.valType} ${VAL_TYPE_NAME[emit.valType]}, val-len ${emit.len})
+  const shown =
+    emit.valType === VAL_TYPE_NULL
+      ? 'Null — the current value is cleared, the history is not'
+      : emit.text === null
+        ? '<bytes>'
+        : JSON.stringify(emit.text);
+  return `  // ${emit.piece ? `${emit.piece}: ` : ''}${emit.key} = ${shown} (val-type ${emit.valType} ${
+    VAL_TYPE_NAME[emit.valType]
+  }, val-len ${emit.len})
   TM_emitTokenMetadata(${domain}, ${emit.kind}, ${key}, ${emit.valType}, ${emit.len}, ${value});`;
 };
 

@@ -16,7 +16,18 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { EVENT_NAME, MAX_VALUE_LEN, deploy, hex, pad, PAYLOAD_SIZE, validateTokenMetadataEvent } from './token-metadata.js';
+import {
+  DEFAULT_INTEGER_LEN,
+  EVENT_NAME,
+  MAX_VALUE_LEN,
+  PAYLOAD_SIZE,
+  VAL_TYPE_NULL,
+  decodeInteger,
+  deploy,
+  hex,
+  pad,
+  validateTokenMetadataEvent,
+} from './token-metadata.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -67,9 +78,11 @@ describe('generated-matrix.json', () => {
           const where = `${row.id}/${step.circuit}/${event.key}`;
           expect(event.len, where).toBeLessThanOrEqual(MAX_VALUE_LEN);
           expect(event.value.length, where).toBe(MAX_VALUE_LEN * 2);
-          // MIP section 2.1: 0..4 are defined, 5..255 are reserved.
+          // MIP section 2.1: 0..5 are defined, 6..255 are reserved.
           expect(event.valType, where).toBeGreaterThanOrEqual(0);
-          expect(event.valType, where).toBeLessThanOrEqual(4);
+          expect(event.valType, where).toBeLessThanOrEqual(VAL_TYPE_NULL);
+          // A Null carries no bytes at all.
+          if (event.valType === VAL_TYPE_NULL) expect(event.len, where).toBe(0);
         }
       }
     }
@@ -86,10 +99,67 @@ describe('generated-matrix.json', () => {
     for (const row of matrix.rows) {
       for (const step of row.steps) {
         for (const event of step.events ?? []) {
-          const want = /^metadata\/\d+$/.test(event.key) ? 3 : expected[event.key];
+          // A Null clears any key, well-known or not (MIP section 2.1).
+          if (event.valType === VAL_TYPE_NULL) continue;
+          const want = expected[event.key];
           if (want !== undefined) {
             expect(event.valType, `${row.id}/${step.circuit}/${event.key}`).toBe(want);
           }
+        }
+      }
+    }
+  });
+
+  it('emits every `decimals` as `Uint<128>`: val-len 16, little-endian', () => {
+    // MIP Appendix A's recommended width. The bytes are the number in the LOW
+    // byte followed by NULs, never the digits' UTF-8 — a `Uint<128>` of 6 is
+    // `0x06` + fifteen NULs, which is what Appendix A prints.
+    let seen = 0;
+    for (const row of matrix.rows) {
+      for (const step of row.steps) {
+        for (const event of step.events ?? []) {
+          if (event.key !== 'decimals') continue;
+          seen += 1;
+          const where = `${row.id}/${step.circuit}/decimals`;
+          expect(event.len, where).toBe(DEFAULT_INTEGER_LEN);
+          const value = Uint8Array.from(Buffer.from(event.value, 'hex'));
+          expect(decodeInteger(value.subarray(0, DEFAULT_INTEGER_LEN)), where).toBe(BigInt(row.decimals));
+          // Every byte past the number is NUL, for the whole 189-byte field.
+          expect(value.subarray(1).every((b) => b === 0), where).toBe(true);
+        }
+      }
+    }
+    expect(seen).toBeGreaterThan(0);
+  });
+
+  it('carries the Null declaration MIP section 2.1 defines', () => {
+    const nulls = matrix.rows.flatMap((row) =>
+      row.steps.flatMap((step) => (step.events ?? []).filter((e) => e.valType === VAL_TYPE_NULL)),
+    );
+    expect(nulls.length).toBeGreaterThan(0);
+    for (const event of nulls) {
+      expect(event.len).toBe(0);
+      // Emitters SHOULD zero the ignored bytes, and this one does: all 189.
+      expect(event.value).toBe('00'.repeat(MAX_VALUE_LEN));
+      expect(event.text).toBeNull();
+    }
+  });
+
+  it('no longer carries a `metadata/<n>` part: MIP-0018 defines no reassembly', () => {
+    // A val-type 3 value must be ONE complete JSON value (section 2.1) and the
+    // MIP defines no multipart representation (section 5.4), so the six-part
+    // document this repository published against the #315 draft is gone. The
+    // rejected fragment lives on in fixtures/simulator/negative-payloads.json.
+    const keys = matrix.rows.flatMap((row) =>
+      row.steps.flatMap((step) => (step.events ?? []).map((e) => e.key)),
+    );
+    expect(keys.filter((key) => key.startsWith('metadata/'))).toEqual([]);
+    for (const row of matrix.rows) {
+      for (const step of row.steps) {
+        for (const event of step.events ?? []) {
+          if (event.valType !== 3) continue;
+          const text = Buffer.from(event.value, 'hex').subarray(0, event.len).toString('utf8');
+          expect(() => JSON.parse(text), `${row.id}/${event.key}`).not.toThrow();
         }
       }
     }

@@ -21,6 +21,7 @@ export type ImpureCircuits<PS> = {
            amount_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishRename(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  update1(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
 }
 
 export type ProvableCircuits<PS> = {
@@ -35,6 +36,7 @@ export type ProvableCircuits<PS> = {
            amount_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishRename(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  update1(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
 }
 
 export type PureCircuits = {
@@ -58,6 +60,7 @@ export type Circuits<PS> = {
            amount_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishMetadata(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishRename(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  update1(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
 }
 
 export type Ledger = {

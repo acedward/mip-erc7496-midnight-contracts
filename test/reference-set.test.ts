@@ -15,11 +15,16 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_INTEGER_LEN,
   EVENT_NAME,
   LEGACY_EVENT_NAME,
+  MAX_INTEGER_LEN,
   MAX_VALUE_LEN,
   MISC_EVENT_SIZE,
   PAYLOAD_SIZE,
+  PRE_MIP_EVENT_NAME,
+  VAL_TYPE_NULL,
+  decodeInteger,
 } from './token-metadata.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -58,9 +63,55 @@ describe('the reference set fixtures', () => {
       expect(event.payloadHex).toHaveLength(PAYLOAD_SIZE * 2);
       expect(event.len).toBeLessThanOrEqual(MAX_VALUE_LEN);
       expect(event.kind).toBeLessThanOrEqual(3);
-      // MIP section 2.1: 0..4 defined, 5..255 reserved.
+      // MIP section 2.1: 0..5 defined, 6..255 reserved.
       expect(event.valType).toBeGreaterThanOrEqual(0);
-      expect(event.valType).toBeLessThanOrEqual(4);
+      expect(event.valType).toBeLessThanOrEqual(VAL_TYPE_NULL);
+      if (event.valType === VAL_TYPE_NULL) expect(event.len).toBe(0);
+      // val-type 2 is `Uint<8 * val-len>`; `decimals` uses Appendix A's default.
+      if (event.valType === 2) {
+        expect(event.len).toBeGreaterThanOrEqual(1);
+        expect(event.len).toBeLessThanOrEqual(MAX_INTEGER_LEN);
+        if (event.keyText === 'decimals') expect(event.len).toBe(DEFAULT_INTEGER_LEN);
+      }
+      // val-type 3 is ONE complete JSON value: no `metadata/<n>` parts left.
+      if (event.valType === 3) {
+        expect(() => JSON.parse(Buffer.from(event.valueHex, 'hex').toString('utf8'))).not.toThrow();
+      }
+      expect(event.keyText.startsWith('metadata/')).toBe(false);
+    }
+  });
+
+  it('projects every `decimals` from its little-endian `Uint<128>` bytes', () => {
+    // MIP section 2.1 and Appendix A: val-len 16, low byte first. A consumer
+    // that read these bytes big-endian would see 6 as 2.6e37.
+    const seen = events.filter((e: { keyText: string; valType: number }) => e.keyText === 'decimals' && e.valType === 2);
+    expect(seen.length).toBeGreaterThan(0);
+    for (const event of seen) {
+      const bytes = Uint8Array.from(Buffer.from(event.valueHex, 'hex'));
+      expect(bytes).toHaveLength(DEFAULT_INTEGER_LEN);
+      const row = referenceSet.rows.find((r: { id: string }) => r.id === event.row);
+      expect(decodeInteger(bytes), `${event.row}.decimals`).toBe(BigInt(row.decimals));
+    }
+  });
+
+  it('carries a Null declaration, and it clears exactly one key', () => {
+    // MIP sections 2.1 and 6.2. LMOON sets a `description` and then clears it.
+    const nulls = events.filter((e: { valType: number }) => e.valType === VAL_TYPE_NULL);
+    expect(nulls.length).toBeGreaterThan(0);
+    for (const event of nulls) {
+      expect(event.len).toBe(0);
+      expect(event.valueHex).toBe('');
+      // The cleared key is still present as history in this very file.
+      const earlier = events.filter(
+        (e: { row: string; keyText: string; valType: number }) =>
+          e.row === event.row && e.keyText === event.keyText && e.valType !== VAL_TYPE_NULL,
+      );
+      expect(earlier.length, `${event.row}.${event.keyText} has no history`).toBeGreaterThan(0);
+      // …and the folded row shows the key with its current value Null.
+      const token = (tokens as Token[]).find((tk) => tk.row === event.row) as unknown as {
+        traits: Record<string, { valType: number }>;
+      };
+      expect(token.traits[event.keyText]?.valType, `${event.row}.${event.keyText}`).toBe(VAL_TYPE_NULL);
     }
   });
 
@@ -189,28 +240,78 @@ describe('the reference set fixtures', () => {
       payloads.filter((p: { expect: string }) => p.expect === 'rejected').map((p: { reason: string }) => p.reason),
     );
     expect(reasons).toEqual(
-      new Set(['val_len_too_long', 'val_type_reserved', 'val_type_rule', 'key_empty', 'kind_unknown']),
+      new Set([
+        'val_len_too_long',
+        'val_type_reserved',
+        'val_type_rule',
+        'key_empty',
+        'key_pointer_invalid',
+        'kind_unknown',
+      ]),
     );
 
     for (const payload of payloads) {
       expect(payload.payloadHex).toHaveLength(PAYLOAD_SIZE * 2);
       expect(payload.why).toBeTruthy();
       expect(['rejected', 'applied', 'ignored']).toContain(payload.expect);
-      expect(payload.eventName).toBe(payload.expect === 'ignored' ? LEGACY_EVENT_NAME : EVENT_NAME);
+      if (payload.expect === 'ignored') {
+        expect([LEGACY_EVENT_NAME, PRE_MIP_EVENT_NAME]).toContain(payload.eventName);
+      } else {
+        expect(payload.eventName).toBe(EVENT_NAME);
+      }
     }
 
     expect(payloads.some((p: { len: number }) => p.len > MAX_VALUE_LEN)).toBe(true);
     expect(payloads.some((p: { kind: number }) => p.kind > 3)).toBe(true);
-    expect(payloads.some((p: { valType: number }) => p.valType > 4)).toBe(true);
+    // 6 is the first reserved val-type in the final text; 5 became Null.
+    expect(payloads.some((p: { valType: number }) => p.valType > VAL_TYPE_NULL)).toBe(true);
   });
 
-  it('carries the one event a consumer must IGNORE rather than reject', () => {
+  it('keeps the rules MIP-0018 added to the #315 draft, on both sides of each', () => {
+    const find = (predicate: (p: Record<string, unknown>) => boolean): Record<string, unknown>[] =>
+      (payloads as Record<string, unknown>[]).filter(predicate);
+
+    // A Null is applied when val-len is 0 and rejected when it is not.
+    expect(
+      find((p) => p.valType === VAL_TYPE_NULL && p.expect === 'applied').every((p) => p.len === 0),
+    ).toBe(true);
+    expect(find((p) => p.valType === VAL_TYPE_NULL && p.expect === 'applied').length).toBeGreaterThan(0);
+    expect(
+      find((p) => p.valType === VAL_TYPE_NULL && p.expect === 'rejected' && p.reason === 'val_type_rule').length,
+    ).toBe(1);
+
+    // val-type 6, not 5, is the first reserved value.
+    expect(find((p) => p.valType === 6 && p.expect === 'rejected' && p.reason === 'val_type_reserved').length).toBe(1);
+
+    // An integer may be 1..31 bytes: a 3-byte one is applied, a 32-byte one is not.
+    expect(find((p) => p.valType === 2 && p.len === 3 && p.expect === 'applied').length).toBe(1);
+    expect(find((p) => p.valType === 2 && p.len === MAX_INTEGER_LEN + 1 && p.expect === 'rejected').length).toBe(1);
+
+    // A JSON fragment is rejected — the `metadata/<n>` convention is retired —
+    // while a JSON scalar is one complete value and is applied.
+    expect(find((p) => p.valType === 3 && p.keyText === 'metadata/0' && p.expect === 'rejected').length).toBe(1);
+    expect(find((p) => p.valType === 3 && p.expect === 'applied').length).toBeGreaterThan(0);
+
+    // A `/metadata/` key must be an RFC 6901 pointer: `~1`/`~0` yes, `~2` no.
+    expect(
+      find((p) => String(p.keyText).startsWith('/metadata/') && p.expect === 'applied').length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(find((p) => p.reason === 'key_pointer_invalid').length).toBe(1);
+  });
+
+  it('carries the events a consumer must IGNORE rather than reject', () => {
     // MIP section 1: any Misc event under another name is not a TokenMetadata
     // event at all. The pre-MIP name is the case that will actually be seen.
+    // Two names are ignored: this repository's pre-MIP `TokenMetadata`, and the
+    // `mip-xxxx:token-metadata[v1]` placeholder of the #315 draft that the
+    // Stagenet reference set was actually deployed under — the event name IS
+    // the layout version (MIP section 8), and nothing was redeployed.
     const ignored = payloads.filter((p: { expect: string }) => p.expect === 'ignored');
-    expect(ignored).toHaveLength(1);
-    expect(ignored[0].eventName).toBe(LEGACY_EVENT_NAME);
-    expect(ignored[0].reason).toBeUndefined();
+    expect(ignored).toHaveLength(2);
+    expect(new Set(ignored.map((p: { eventName: string }) => p.eventName))).toEqual(
+      new Set([LEGACY_EVENT_NAME, PRE_MIP_EVENT_NAME]),
+    );
+    for (const payload of ignored) expect(payload.reason).toBeUndefined();
   });
 
   it('carries well-known keys whose Appendix A projection fails but whose event is APPLIED', () => {

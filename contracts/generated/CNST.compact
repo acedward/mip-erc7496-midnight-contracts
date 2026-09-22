@@ -76,8 +76,8 @@ export circuit publishOrion(): [] {
   ]);
   // orion: symbol = "CNST" (val-type 1 string, val-len 4)
   TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
-  // orion: decimals = "0" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // orion: decimals = "0" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "decimals"), 2, 16, pad(189, ""));
   // orion: tokenUri = "http://localhost:10020/constellations/orion" (val-type 4 URI, val-len 43)
   TM_emitTokenMetadata(pad(32, "cnst:orion"), 1, pad(32, "tokenUri"), 4, 43, pad(189, "http://localhost:10020/constellations/orion"));
   // orion: hemisphere = "equatorial" (val-type 1 string, val-len 10)
@@ -131,8 +131,8 @@ export circuit publishLyra(): [] {
   ]);
   // lyra: symbol = "CNST" (val-type 1 string, val-len 4)
   TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
-  // lyra: decimals = "0" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // lyra: decimals = "0" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "decimals"), 2, 16, pad(189, ""));
   // lyra: tokenUri = "http://localhost:10020/constellations/lyra" (val-type 4 URI, val-len 42)
   TM_emitTokenMetadata(pad(32, "cnst:lyra"), 1, pad(32, "tokenUri"), 4, 42, pad(189, "http://localhost:10020/constellations/lyra"));
   // lyra: hemisphere = "northern" (val-type 1 string, val-len 8)
@@ -153,8 +153,8 @@ export circuit publishCygnus(): [] {
   ]);
   // cygnus: symbol = "CNST" (val-type 1 string, val-len 4)
   TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
-  // cygnus: decimals = "0" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // cygnus: decimals = "0" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "decimals"), 2, 16, pad(189, ""));
   // cygnus: tokenUri = "http://localhost:10020/constellations/cygnus" (val-type 4 URI, val-len 44)
   TM_emitTokenMetadata(pad(32, "cnst:cygnus"), 1, pad(32, "tokenUri"), 4, 44, pad(189, "http://localhost:10020/constellations/cygnus"));
   // cygnus: hemisphere = "northern" (val-type 1 string, val-len 8)
@@ -174,8 +174,8 @@ export circuit publishVega(): [] {
   ]);
   // vega: symbol = "CNST" (val-type 1 string, val-len 4)
   TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
-  // vega: decimals = "0" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // vega: decimals = "0" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "decimals"), 2, 16, pad(189, ""));
   // vega: tokenUri = "http://localhost:10020/constellations/vega" (val-type 4 URI, val-len 42)
   TM_emitTokenMetadata(pad(32, "cnst:vega"), 1, pad(32, "tokenUri"), 4, 42, pad(189, "http://localhost:10020/constellations/vega"));
   // vega: hemisphere = "northern" (val-type 1 string, val-len 8)
@@ -194,8 +194,8 @@ export circuit publishAltair(): [] {
   ]);
   // altair: symbol = "CNST" (val-type 1 string, val-len 4)
   TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "symbol"), 1, 4, pad(189, "CNST"));
-  // altair: decimals = "0" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "decimals"), 2, 1, Bytes[0x00, ...pad(188, "")]);
+  // altair: decimals = "0" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "decimals"), 2, 16, pad(189, ""));
   // altair: tokenUri = "http://localhost:10020/constellations/altair" (val-type 4 URI, val-len 44)
   TM_emitTokenMetadata(pad(32, "cnst:altair"), 1, pad(32, "tokenUri"), 4, 44, pad(189, "http://localhost:10020/constellations/altair"));
   // altair: hemisphere = "equatorial" (val-type 1 string, val-len 10)

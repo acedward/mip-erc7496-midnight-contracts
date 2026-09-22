@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // A native shielded token with one static domain separator that describes
-// itself on chain per MIP PR #315 (`mips/mip-xxxx-on-chain-token-metadata.md`
-// @ `f433056`), the normative text; ../TOKEN-METADATA.md points at it.
+// itself on chain per MIP-0018 (MIP PR #325,
+// `mips/mip-0018-on-chain-token-metadata.md` @ `37a3471`), the normative text;
+// ../TOKEN-METADATA.md points at it.
 //
 // Composition:
 //   OpenZeppelin `NativeShieldedToken`  the domain, the colour, the mint, and

@@ -20,13 +20,13 @@
     },
     "index.js": {
       "type": "file",
-      "size": 71656,
-      "hash": "20962abffaaef68cf9917192be7c4f15e087dc6068a067190afcc250b7765817"
+      "size": 61346,
+      "hash": "ae12ca6aaea4ab2b6173f9c2aff703f6606336425265c121f1b7d80dde1f3325"
     },
     "index.js.map": {
       "type": "file",
-      "size": 2592,
-      "hash": "9f047b87e882d5a662842453921e7dc99be61904043cd348b761d125b8e9624d"
+      "size": 2466,
+      "hash": "233f52c7b65764c05b26c6844290614aae9300653fbda708cddac6d11cdd7698"
     }
   },
   "zkir": {
@@ -53,13 +53,13 @@
     },
     "publishMetadata.bzkir": {
       "type": "file",
-      "size": 1615,
-      "hash": "8230b691a88d54adb38ae470a6224d0ba4fecc84f09f7a19efffad83f32ee254"
+      "size": 953,
+      "hash": "3d4b88c91de3bca79ed18eaae30761b52b3a2e003048e8e6f020bd9d3844eaa5"
     },
     "publishMetadata.zkir": {
       "type": "file",
-      "size": 16151,
-      "hash": "7b69aae47f84cf676c082fd31fd22140231e2aaa87b662de4cf646244e3664dd"
+      "size": 9825,
+      "hash": "2bb2569c5c2f5ca7fd694f75e20b6df91b46b659bb3bc6af86d75785eff09681"
     },
     "tokenColor.bzkir": {
       "type": "file",
@@ -96,13 +96,13 @@
     },
     "publishMetadata.prover": {
       "type": "file",
-      "size": 74265,
-      "hash": "ee566b5c89f1e18ad33a005198da7ff122ae85a87b9c165f8329028500850b04"
+      "size": 73584,
+      "hash": "684a0764304fc835327e3a7db101d9eda976bfb12135ddd52a95b92fa2a6e61f"
     },
     "publishMetadata.verifier": {
       "type": "file",
       "size": 1351,
-      "hash": "9389d55c401a703c0ab6af81fd30e679d4d1c73c12d4a60bbdbdf97e643a1b4f"
+      "hash": "17b5a25936ad9a950b8b2a8226de277b72359fadbf086d3864582120f3e0419b"
     },
     "tokenColor.prover": {
       "type": "file",

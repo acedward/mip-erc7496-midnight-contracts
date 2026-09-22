@@ -1,12 +1,12 @@
 /**
- * Test-side decoder and validator for MIP PR #315
- * (`mips/mip-xxxx-on-chain-token-metadata.md` @ `f433056`), plus the small
- * simulator harness the contract tests share.
+ * Test-side decoder and validator for MIP-0018
+ * (MIP PR #325, `mips/mip-0018-on-chain-token-metadata.md` @ `37a3471`), plus
+ * the small simulator harness the contract tests share.
  *
- * The decoder deliberately re-implements sections 1, 2 and 3 of the MIP rather
- * than importing anything from the contracts: if the Compact side and this side
- * ever disagree, a test must fail. It is the "consumer reference" the MIP's
- * Implementation Example points at.
+ * The decoder deliberately re-implements sections 1, 2, 3 and 5 of the MIP
+ * rather than importing anything from the contracts: if the Compact side and
+ * this side ever disagree, a test must fail. It is the "consumer reference" the
+ * MIP's Implementation Example points at.
  */
 import {
   createCircuitContext,
@@ -21,11 +21,19 @@ export const PAYLOAD_SIZE = 256;
 export const MAX_VALUE_LEN = 189;
 
 /**
- * MIP section 1. `xxxx` is a placeholder until the MIP number is assigned; the
- * final string is fixed at that point and everything deployed under the
- * placeholder has to be redeployed.
+ * MIP section 1: the event name, which is also the layout version (section 8).
+ * A v1 consumer accepts a `Misc` event if and only if its name is exactly
+ * `pad(32, EVENT_NAME)`; every other name is ignored, not rejected.
  */
-export const EVENT_NAME = 'mip-xxxx:token-metadata[v1]';
+export const EVENT_NAME = 'mip-0018:token-metadata[v1]';
+/**
+ * The placeholder name of the #315 draft, under which this repository's
+ * Stagenet reference set was deployed (commit `1721636`) while the MIP number
+ * was still unassigned. A conforming v1 consumer IGNORES it. It is kept here so
+ * the corpus can carry the case: a consumer that also wants to show the legacy
+ * deployment must treat it as a second, separate name with the draft's rules.
+ */
+export const PRE_MIP_EVENT_NAME = 'mip-xxxx:token-metadata[v1]';
 /** The pre-MIP name this repository's 00020 contracts used; now ignored. */
 export const LEGACY_EVENT_NAME = 'TokenMetadata';
 
@@ -39,8 +47,25 @@ export const VAL_TYPE_STRING = 1;
 export const VAL_TYPE_INTEGER = 2;
 export const VAL_TYPE_JSON = 3;
 export const VAL_TYPE_URI = 4;
-/** The first reserved val-type: 5..255 MUST reject the event. */
-export const VAL_TYPE_RESERVED_FROM = 5;
+/** MIP section 2.1: an explicit Null. `val-len` MUST be 0 and `value` is ignored. */
+export const VAL_TYPE_NULL = 5;
+/** The first reserved val-type: 6..255 MUST reject the event. */
+export const VAL_TYPE_RESERVED_FROM = 6;
+
+/**
+ * MIP section 2.1, val-type 2: the integer's Compact type is `Uint<8 * val-len>`
+ * and only `Uint<8>` through `Uint<248>` exist, so `1 <= val-len <= 31`.
+ */
+export const MIN_INTEGER_LEN = 1;
+export const MAX_INTEGER_LEN = 31;
+/** MIP Appendix A's recommended emitter default, `Uint<128>`. */
+export const DEFAULT_INTEGER_LEN = 16;
+
+/**
+ * MIP section 5.1: a key whose trimmed bytes start with these must be valid
+ * UTF-8 and a valid RFC 6901 JSON Pointer, or the event is rejected.
+ */
+export const METADATA_POINTER_PREFIX = '/metadata/';
 
 /** Compact's `pad(n, "text")`: UTF-8 bytes, NUL-padded on the right. */
 export function pad(n: number, text: string): Uint8Array {
@@ -151,6 +176,8 @@ export type RejectReason =
   | 'payload_size'
   | 'kind_unknown'
   | 'key_empty'
+  /** MIP section 5.1: a `/metadata/` key that is not a valid RFC 6901 pointer. */
+  | 'key_pointer_invalid'
   | 'val_type_reserved'
   | 'val_len_too_long'
   | 'val_type_rule';
@@ -180,16 +207,110 @@ function isAbsoluteUri(text: string): boolean {
 }
 
 /**
- * Applies MIP sections 1, 2.1, 2.2 and 3 to a decoded event. Appendix A's
- * per-key rules are NOT applied here: a well-known key carrying the wrong type
- * is still a valid event at the transport level and is stored as a trait
- * (MIP sections 5.3 and 7.1).
+ * MIP section 2.1, val-type 3: the meaningful bytes must be ONE complete JSON
+ * value (RFC 8259) — an object, an array or a scalar. `JSON.parse` is exactly
+ * that test: it accepts a single complete value with optional surrounding
+ * whitespace and rejects a fragment, a truncation or trailing content. The
+ * multipart `metadata/<n>` convention this repository used against the #315
+ * draft does not survive it, which is the point: the MIP defines no reassembly.
+ */
+function isOneCompleteJsonValue(bytes: Uint8Array): boolean {
+  if (bytes.length === 0) return false;
+  let text: string;
+  try {
+    text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return false;
+  }
+  try {
+    JSON.parse(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * RFC 6901: a JSON Pointer is the empty string or a sequence of `/`-prefixed
+ * reference tokens, in which the only legal `~` escapes are `~0` (a literal
+ * `~`) and `~1` (a literal `/`). Written by hand rather than as a regular
+ * expression so the rule reads as the RFC states it.
+ */
+export function isJsonPointer(text: string): boolean {
+  if (text.length === 0) return true;
+  if (!text.startsWith('/')) return false;
+  for (let i = 0; i < text.length; i += 1) {
+    if (text[i] !== '~') continue;
+    const next = text[i + 1];
+    if (next !== '0' && next !== '1') return false;
+    i += 1;
+  }
+  return true;
+}
+
+/** The key bytes with trailing NULs dropped — the identity MIP section 5.1 compares. */
+export function trimmedKey(key: Uint8Array): Uint8Array {
+  let end = key.length;
+  while (end > 0 && key[end - 1] === 0) end -= 1;
+  return key.subarray(0, end);
+}
+
+function startsWith(bytes: Uint8Array, prefix: Uint8Array): boolean {
+  if (bytes.length < prefix.length) return false;
+  for (let i = 0; i < prefix.length; i += 1) if (bytes[i] !== prefix[i]) return false;
+  return true;
+}
+
+/**
+ * MIP section 2.1, val-type 2: the meaningful prefix is the canonical Compact
+ * serialization of `Uint<8 * val-len>`, which is LITTLE-ENDIAN — the low byte
+ * first. Verified against `@midnight-ntwrk/compact-runtime` 0.19.0
+ * (`convertBigintToBytes(16, 6n)` = `06` + fifteen NULs) and against a compiled
+ * `Uint<128>` ledger cell holding 258, whose aligned atom is `0201` under a
+ * compiler-declared 16-byte alignment. MIP Appendix A prints the same bytes.
+ */
+export function decodeInteger(bytes: Uint8Array): bigint {
+  let value = 0n;
+  for (let i = bytes.length - 1; i >= 0; i -= 1) value = (value << 8n) | BigInt(bytes[i]!);
+  return value;
+}
+
+/** The 16 canonical bytes of `serialize<Uint<128>, N>(value)`, little-endian. */
+export function encodeInteger(value: bigint, length = DEFAULT_INTEGER_LEN): Uint8Array {
+  if (value < 0n) throw new Error('val-type 2 is unsigned');
+  const out = new Uint8Array(length);
+  let rest = value;
+  for (let i = 0; i < length; i += 1) {
+    out[i] = Number(rest & 0xffn);
+    rest >>= 8n;
+  }
+  if (rest !== 0n) throw new Error(`${value} does not fit in ${length} bytes`);
+  return out;
+}
+
+/**
+ * Applies MIP sections 1, 2.1, 2.2, 3 and 5.1 to a decoded event, in payload
+ * offset order. Appendix A's per-key rules are NOT applied here: a well-known
+ * key carrying the wrong type is still a valid event at the transport level and
+ * is stored as a trait (MIP sections 5.2, 5.3 and 7.1).
  */
 export function validateTokenMetadataEvent(event: TokenMetadataEvent): Verdict {
   if (event.eventName !== EVENT_NAME) return { outcome: 'ignored', reason: 'event_name' };
   if (event.payload.length !== PAYLOAD_SIZE) return { outcome: 'rejected', reason: 'payload_size' };
   if (event.kind > 3) return { outcome: 'rejected', reason: 'kind_unknown' };
-  if (event.key.every((b) => b === 0)) return { outcome: 'rejected', reason: 'key_empty' };
+
+  const key = trimmedKey(event.key);
+  if (key.length === 0) return { outcome: 'rejected', reason: 'key_empty' };
+  // MIP section 5.1: every other key is bytes and is NEVER rejected for its
+  // encoding; a `/metadata/` key is the one exception — it must be valid UTF-8
+  // and a valid RFC 6901 pointer.
+  if (startsWith(key, new TextEncoder().encode(METADATA_POINTER_PREFIX))) {
+    if (!isValidUtf8(key)) return { outcome: 'rejected', reason: 'key_pointer_invalid' };
+    if (!isJsonPointer(new TextDecoder().decode(key))) {
+      return { outcome: 'rejected', reason: 'key_pointer_invalid' };
+    }
+  }
+
   if (event.valType >= VAL_TYPE_RESERVED_FROM) return { outcome: 'rejected', reason: 'val_type_reserved' };
   if (event.len > MAX_VALUE_LEN) return { outcome: 'rejected', reason: 'val_len_too_long' };
 
@@ -198,17 +319,28 @@ export function validateTokenMetadataEvent(event: TokenMetadataEvent): Verdict {
     case VAL_TYPE_OPAQUE:
       break;
     case VAL_TYPE_STRING:
-    case VAL_TYPE_JSON:
       if (!isValidUtf8(bytes)) return { outcome: 'rejected', reason: 'val_type_rule' };
       break;
+    case VAL_TYPE_JSON:
+      // ONE complete JSON value, not a fragment (MIP section 2.1).
+      if (!isOneCompleteJsonValue(bytes)) return { outcome: 'rejected', reason: 'val_type_rule' };
+      break;
     case VAL_TYPE_INTEGER:
-      if (event.len < 1 || event.len > 16) return { outcome: 'rejected', reason: 'val_type_rule' };
+      // `Uint<8>` through `Uint<248>`: 1..31 bytes, any permitted width.
+      if (event.len < MIN_INTEGER_LEN || event.len > MAX_INTEGER_LEN) {
+        return { outcome: 'rejected', reason: 'val_type_rule' };
+      }
       break;
     case VAL_TYPE_URI:
       if (!isValidUtf8(bytes)) return { outcome: 'rejected', reason: 'val_type_rule' };
       if (!isAbsoluteUri(new TextDecoder().decode(bytes))) {
         return { outcome: 'rejected', reason: 'val_type_rule' };
       }
+      break;
+    case VAL_TYPE_NULL:
+      // MIP section 2.1: `serialize<[], 0>([])` is zero bytes, so `val-len`
+      // MUST be zero; all 189 value bytes are ignored either way.
+      if (event.len !== 0) return { outcome: 'rejected', reason: 'val_type_rule' };
       break;
     default:
       return { outcome: 'rejected', reason: 'val_type_reserved' };

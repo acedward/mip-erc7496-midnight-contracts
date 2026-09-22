@@ -828,9 +828,11 @@ export class Contract {
     return result_0;
   }
   _EVENT_NAME_0() {
-    return new Uint8Array([109, 105, 112, 45, 120, 120, 120, 120, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
+    return new Uint8Array([109, 105, 112, 45, 48, 48, 49, 56, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
   }
   _KIND_LEDGER_FLAG_0() { return 2n; }
+  _VAL_TYPE_STRING_0() { return 1n; }
+  _VAL_TYPE_INTEGER_0() { return 2n; }
   async _emitTokenMetadata_0(context,
                              partialProofData,
                              domainSep_0,
@@ -886,7 +888,7 @@ export class Contract {
                                     domainSep_0,
                                     kind_0,
                                     new Uint8Array([110, 97, 109, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                                    1n,
+                                    this._VAL_TYPE_STRING_0(),
                                     nameLen_0,
                                     Uint8Array.from([...Array.from(name__0,
                                                                    BigInt),
@@ -898,7 +900,7 @@ export class Contract {
                                     domainSep_0,
                                     kind_0,
                                     new Uint8Array([115, 121, 109, 98, 111, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                                    1n,
+                                    this._VAL_TYPE_STRING_0(),
                                     symbolLen_0,
                                     Uint8Array.from([...Array.from(symbol__0,
                                                                    BigInt),
@@ -910,8 +912,8 @@ export class Contract {
                                     domainSep_0,
                                     kind_0,
                                     new Uint8Array([100, 101, 99, 105, 109, 97, 108, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                                    2n,
-                                    1n,
+                                    this._VAL_TYPE_INTEGER_0(),
+                                    16n,
                                     Uint8Array.from([decimals__0,
                                                      ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                                                    BigInt)],

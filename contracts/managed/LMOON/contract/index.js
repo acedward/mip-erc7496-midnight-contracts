@@ -80,7 +80,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('totalSupply',
                                      'argument 1 (as invoked from Typescript)',
-                                     'LMOON.compact line 49 char 1',
+                                     'LMOON.compact line 50 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -105,14 +105,14 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('balanceOf',
                                      'argument 1 (as invoked from Typescript)',
-                                     'LMOON.compact line 53 char 1',
+                                     'LMOON.compact line 54 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(account_0.buffer instanceof ArrayBuffer && account_0.BYTES_PER_ELEMENT === 1 && account_0.length === 32)) {
           __compactRuntime.typeError('balanceOf',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'LMOON.compact line 53 char 1',
+                                     'LMOON.compact line 54 char 1',
                                      'Bytes<32>',
                                      account_0)
         }
@@ -143,21 +143,21 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('ledgerMint',
                                      'argument 1 (as invoked from Typescript)',
-                                     'LMOON.compact line 61 char 1',
+                                     'LMOON.compact line 62 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(account_0.buffer instanceof ArrayBuffer && account_0.BYTES_PER_ELEMENT === 1 && account_0.length === 32)) {
           __compactRuntime.typeError('ledgerMint',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'LMOON.compact line 61 char 1',
+                                     'LMOON.compact line 62 char 1',
                                      'Bytes<32>',
                                      account_0)
         }
         if (!(typeof(amount_0) === 'bigint' && amount_0 >= 0n && amount_0 <= 340282366920938463463374607431768211455n)) {
           __compactRuntime.typeError('ledgerMint',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'LMOON.compact line 61 char 1',
+                                     'LMOON.compact line 62 char 1',
                                      'Uint<0..340282366920938463463374607431768211456>',
                                      amount_0)
         }
@@ -190,28 +190,28 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('transfer',
                                      'argument 1 (as invoked from Typescript)',
-                                     'LMOON.compact line 69 char 1',
+                                     'LMOON.compact line 70 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(sender_0.buffer instanceof ArrayBuffer && sender_0.BYTES_PER_ELEMENT === 1 && sender_0.length === 32)) {
           __compactRuntime.typeError('transfer',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'LMOON.compact line 69 char 1',
+                                     'LMOON.compact line 70 char 1',
                                      'Bytes<32>',
                                      sender_0)
         }
         if (!(recipient_0.buffer instanceof ArrayBuffer && recipient_0.BYTES_PER_ELEMENT === 1 && recipient_0.length === 32)) {
           __compactRuntime.typeError('transfer',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'LMOON.compact line 69 char 1',
+                                     'LMOON.compact line 70 char 1',
                                      'Bytes<32>',
                                      recipient_0)
         }
         if (!(typeof(amount_0) === 'bigint' && amount_0 >= 0n && amount_0 <= 340282366920938463463374607431768211455n)) {
           __compactRuntime.typeError('transfer',
                                      'argument 3 (argument 4 as invoked from Typescript)',
-                                     'LMOON.compact line 69 char 1',
+                                     'LMOON.compact line 70 char 1',
                                      'Uint<0..340282366920938463463374607431768211456>',
                                      amount_0)
         }
@@ -242,7 +242,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('publishMetadata',
                                      'argument 1 (as invoked from Typescript)',
-                                     'LMOON.compact line 80 char 1',
+                                     'LMOON.compact line 81 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -266,7 +266,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('publishRename',
                                      'argument 1 (as invoked from Typescript)',
-                                     'LMOON.compact line 94 char 1',
+                                     'LMOON.compact line 95 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -281,6 +281,30 @@ export class Contract {
         partialProofData.output = { value: [], alignment: [] };
         __compactRuntime.finalizeCallProofData(context, partialProofData);
         return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
+      },
+      update1: async (...args_1) => {
+        if (args_1.length !== 1) {
+          throw new __compactRuntime.CompactError(`update1: expected 1 argument (as invoked from Typescript), received ${args_1.length}`);
+        }
+        const contextOrig_0 = args_1[0];
+        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
+          __compactRuntime.typeError('update1',
+                                     'argument 1 (as invoked from Typescript)',
+                                     'LMOON.compact line 105 char 1',
+                                     'CircuitContext',
+                                     contextOrig_0)
+        }
+        const context = __compactRuntime.copyCircuitContext(contextOrig_0);
+        const partialProofData = {
+          input: { value: [], alignment: [] },
+          output: undefined,
+          publicTranscript: [],
+          privateTranscriptOutputs: []
+        };
+        const result_0 = await this._update1_0(context, partialProofData);
+        partialProofData.output = { value: [], alignment: [] };
+        __compactRuntime.finalizeCallProofData(context, partialProofData);
+        return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
       }
     };
     this.impureCircuits = {
@@ -289,7 +313,8 @@ export class Contract {
       ledgerMint: this.circuits.ledgerMint,
       transfer: this.circuits.transfer,
       publishMetadata: this.circuits.publishMetadata,
-      publishRename: this.circuits.publishRename
+      publishRename: this.circuits.publishRename,
+      update1: this.circuits.update1
     };
     this.provableCircuits = {
       totalSupply: this.circuits.totalSupply,
@@ -297,7 +322,8 @@ export class Contract {
       ledgerMint: this.circuits.ledgerMint,
       transfer: this.circuits.transfer,
       publishMetadata: this.circuits.publishMetadata,
-      publishRename: this.circuits.publishRename
+      publishRename: this.circuits.publishRename,
+      update1: this.circuits.update1
     };
   }
   async initialState(...args_0) {
@@ -326,6 +352,7 @@ export class Contract {
     state_0.setOperation('transfer', new __compactRuntime.ContractOperation());
     state_0.setOperation('publishMetadata', new __compactRuntime.ContractOperation());
     state_0.setOperation('publishRename', new __compactRuntime.ContractOperation());
+    state_0.setOperation('update1', new __compactRuntime.ContractOperation());
     const context = __compactRuntime.createCircuitContext('constructor', __compactRuntime.dummyContractAddress(), constructorContext_0.initialZswapLocalState.coinPublicKey, state_0.data, constructorContext_0.initialPrivateState);
     const partialProofData = {
       input: { value: [], alignment: [] },
@@ -372,7 +399,7 @@ export class Contract {
     }
   }
   _EVENT_NAME_0() {
-    return new Uint8Array([109, 105, 112, 45, 120, 120, 120, 120, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
+    return new Uint8Array([109, 105, 112, 45, 48, 48, 49, 56, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
   }
   async _emitTokenMetadata_0(context,
                              partialProofData,
@@ -514,7 +541,7 @@ export class Contract {
                     0n;
     const tmp_0 = ((t1) => {
                     if (t1 > 340282366920938463463374607431768211455n) {
-                      throw new __compactRuntime.CompactError('LMOON.compact line 64 char 39: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 340282366920938463463374607431768211455');
+                      throw new __compactRuntime.CompactError('LMOON.compact line 65 char 39: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 340282366920938463463374607431768211455');
                     }
                     return t1;
                   })(prior_0 + amount_0);
@@ -537,7 +564,7 @@ export class Contract {
                                        { ins: { cached: true, n: 1 } }]);
     const tmp_1 = ((t1) => {
                     if (t1 > 340282366920938463463374607431768211455n) {
-                      throw new __compactRuntime.CompactError('LMOON.compact line 65 char 18: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 340282366920938463463374607431768211455');
+                      throw new __compactRuntime.CompactError('LMOON.compact line 66 char 18: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 340282366920938463463374607431768211455');
                     }
                     return t1;
                   })(_descriptor_2.fromValue(__compactRuntime.queryLedgerState(context,
@@ -667,7 +694,7 @@ export class Contract {
                     0n;
     const tmp_1 = ((t1) => {
                     if (t1 > 340282366920938463463374607431768211455n) {
-                      throw new __compactRuntime.CompactError('LMOON.compact line 74 char 41: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 340282366920938463463374607431768211455');
+                      throw new __compactRuntime.CompactError('LMOON.compact line 75 char 41: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 340282366920938463463374607431768211455');
                     }
                     return t1;
                   })(prior_0 + amount_0);
@@ -736,7 +763,7 @@ export class Contract {
                                     2n,
                                     new Uint8Array([100, 101, 99, 105, 109, 97, 108, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                     2n,
-                                    1n,
+                                    16n,
                                     Uint8Array.from([8n,
                                                      ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                                                    BigInt)],
@@ -760,6 +787,17 @@ export class Contract {
                                     1n,
                                     52n,
                                     new Uint8Array([65, 32, 108, 101, 100, 103, 101, 114, 32, 116, 111, 107, 101, 110, 32, 116, 104, 97, 116, 32, 114, 101, 110, 97, 109, 101, 100, 32, 105, 116, 115, 101, 108, 102, 32, 105, 110, 32, 97, 32, 108, 97, 116, 101, 114, 32, 98, 108, 111, 99, 107, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+    return [];
+  }
+  async _update1_0(context, partialProofData) {
+    await this._emitTokenMetadata_0(context,
+                                    partialProofData,
+                                    new Uint8Array([117, 109, 98, 114, 97, 58, 108, 109, 111, 111, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    2n,
+                                    new Uint8Array([100, 101, 115, 99, 114, 105, 112, 116, 105, 111, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+                                    5n,
+                                    0n,
+                                    new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
     return [];
   }
 }
@@ -826,7 +864,7 @@ export function ledger(stateOrChargedState) {
         if (!(key_0.buffer instanceof ArrayBuffer && key_0.BYTES_PER_ELEMENT === 1 && key_0.length === 32)) {
           __compactRuntime.typeError('member',
                                      'argument 1',
-                                     'LMOON.compact line 30 char 1',
+                                     'LMOON.compact line 31 char 1',
                                      'Bytes<32>',
                                      key_0)
         }
@@ -855,7 +893,7 @@ export function ledger(stateOrChargedState) {
         if (!(key_0.buffer instanceof ArrayBuffer && key_0.BYTES_PER_ELEMENT === 1 && key_0.length === 32)) {
           __compactRuntime.typeError('lookup',
                                      'argument 1',
-                                     'LMOON.compact line 30 char 1',
+                                     'LMOON.compact line 31 char 1',
                                      'Bytes<32>',
                                      key_0)
         }
@@ -945,10 +983,11 @@ export const contractReferenceLocations =
 export const expectedVk = {
   'balanceOf': 'f8285aef45ab5104d6d44591e2748da169018c1bdce6dd6fba38e2ed0e03d157',
   'ledgerMint': 'e87e392627ce96b1ecae6498fcfd1f7db02de60f0a1e275cabc5f8799a3cb6cf',
-  'publishMetadata': '90e4a8de7ccdc13195ed9552f8f6a2cf52ffefa7be1d83e67977bc954682fa9b',
-  'publishRename': '75758477f0da4b1829c9f8139dca31d0604e6738b356733f19caaed9852d5cdd',
+  'publishMetadata': 'cbfe6f144528988907e2a39452b64efa8b00b197f77f346ee724d298203ab38b',
+  'publishRename': '79f9c2a385a597d4dd388df04436b2f9de09bf7d44ca97e4f6b8bc12c6edeb43',
   'totalSupply': '73e0045e390d7c12b5010aa42bd95098be2366880e3127236a32c2655f0741ab',
   'transfer': 'e8208c3d5bae42f8cbc1c145b78c555063f01a555412f964759afc0315956c5a',
+  'update1': '6ea4abfe609bcbae42adc65e446a19f1369283f6b362d4d163de1473f86baf91',
 };
 
 //# sourceMappingURL=index.js.map

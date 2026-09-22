@@ -59,8 +59,8 @@ export circuit publishMetadata(): [] {
   TM_emitTokenMetadata(pad(32, "umbra:ucom"), 0, pad(32, "name"), 1, 16, pad(189, "Unshielded Comet"));
   // symbol = "UCOM" (val-type 1 string, val-len 4)
   TM_emitTokenMetadata(pad(32, "umbra:ucom"), 0, pad(32, "symbol"), 1, 4, pad(189, "UCOM"));
-  // decimals = "6" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "umbra:ucom"), 0, pad(32, "decimals"), 2, 1, Bytes[0x06, ...pad(188, "")]);
+  // decimals = "6" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "umbra:ucom"), 0, pad(32, "decimals"), 2, 16, Bytes[0x06, ...pad(188, "")]);
 }
 
 /**

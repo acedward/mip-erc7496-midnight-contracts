@@ -5,7 +5,7 @@
   "instructions": [
     { "op": "load_imm", "imm": "01" },
     { "op": "load_imm", "imm": "00636E73743A6F72696F6E" },
-    { "op": "load_imm", "imm": "6D69702D787878783A746F6B656E2D6D657461646174615B76315D" },
+    { "op": "load_imm", "imm": "6D69702D303031383A746F6B656E2D6D657461646174615B76315D" },
     { "op": "load_imm", "imm": "000000000104312E3235" },
     { "op": "load_imm", "imm": "0000016D61676E6974756465" },
     { "op": "load_imm", "imm": "00" },
@@ -42,7 +42,7 @@
     { "op": "declare_pub_input", "var": 11 },
     { "op": "pi_skip", "guard": 0, "count": 1 },
     { "op": "load_imm", "imm": "00636E73743A6F72696F6E" },
-    { "op": "load_imm", "imm": "6D69702D787878783A746F6B656E2D6D657461646174615B76315D" },
+    { "op": "load_imm", "imm": "6D69702D303031383A746F6B656E2D6D657461646174615B76315D" },
     { "op": "load_imm", "imm": "0000000003AC7B22636F6C6C656374696F6E223A22436F6E7374656C6C6174" },
     { "op": "load_imm", "imm": "0000016D65746164617461" },
     { "op": "load_imm", "imm": "6D6C3B757466382C3C73766720786D6C6E733D27687474703A2F2F7777772E" },

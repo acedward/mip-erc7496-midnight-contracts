@@ -1,5 +1,5 @@
 {
-  "$comment": "The reference set of spec 00020 §7.1: every family, every table state a token indexer has to render. Each row is one contract deployment plus the ordered steps taken against it. `domain` and `piece` strings are passed through Compact's pad(32, …); `name` and `symbol` are padded to 32 bytes each. Every metadata step carries the `valType` of MIP section 2.1 (1 UTF-8 string, 2 unsigned integer, 3 JSON, 4 absolute URI), which is what the generator writes into the payload's type byte. This file drives scripts/export-simulator-fixtures.ts and scripts/generate-literal-contracts.ts, and is the seed for the on-chain deployment matrix.",
+  "$comment": "The reference set of spec 00020 §7.1: every family, every table state a token indexer has to render. Each row is one contract deployment plus the ordered steps taken against it. `domain` and `piece` strings are passed through Compact's pad(32, …); `name` and `symbol` are padded to 32 bytes each. Every metadata step carries the `valType` of MIP section 2.1 (1 UTF-8 string, 2 unsigned integer as a little-endian Compact `Uint<8*val-len>`, 3 ONE complete JSON value, 4 absolute URI, 5 Null with val-len 0), which is what the generator writes into the payload's type byte. A `valType` 5 step carries no `value`. This file drives scripts/export-simulator-fixtures.ts and scripts/generate-literal-contracts.ts, and is the seed for the on-chain deployment matrix.",
   "rows": [
     {
       "id": "LSUN",
@@ -24,12 +24,14 @@
       "kind": 2,
       "template": "LedgerToken",
       "domain": "umbra:lmoon",
+      "$comment": "Renames itself in a later block, then CLEARS its `description` with a Null declaration (val-type 5, val-len 0 — MIP sections 2.1 and 6.2). The current value goes; the history does not.",
       "expect": { "status": "declared", "storage": "ledger", "color": null, "mintCount": 0 },
       "steps": [
         { "op": "publishMetadata" },
         { "op": "ledgerMint", "to": "owner", "amount": "5000000" },
         { "op": "setMetadata", "key": "name", "valType": 1, "value": "Ledger Moon (renamed)" },
-        { "op": "setMetadata", "key": "description", "valType": 1, "value": "A ledger token that renamed itself in a later block." }
+        { "op": "setMetadata", "key": "description", "valType": 1, "value": "A ledger token that renamed itself in a later block." },
+        { "op": "setMetadata", "key": "description", "valType": 5 }
       ]
     },
     {
@@ -54,15 +56,12 @@
       "kind": 1,
       "template": "NativeShieldedToken",
       "domain": "umbra:sneb",
+      "$comment": "Carries `metadata` as ONE complete JSON value, and one RFC 6901 example key. Until MIP-0018 was numbered this row published a six-part `metadata/<n>` document; the final text defines no multipart representation or reassembly (section 5.4) and a val-type 3 value must be one complete JSON value (section 2.1), so a fragment is now REJECTED rather than reassembled. The `/metadata/description` key shows section 5.1's pointer rule: the whole pointer string is the key, and nothing about assembly follows from the path.",
       "expect": { "status": "described", "storage": "native", "mintCount": 2, "totalMinted": "3" },
       "steps": [
         { "op": "publishMetadata" },
-        { "op": "setMetadata", "key": "metadata/0", "valType": 3, "value": "{\"description\":\"A nebula published in parts, because one TokenMetadata eve" },
-        { "op": "setMetadata", "key": "metadata/1", "valType": 3, "value": "nt carries at most 189 bytes of value and this JSON does not fit in one." },
-        { "op": "setMetadata", "key": "metadata/2", "valType": 3, "value": "\",\"website\":\"https://example.invalid/nebula\",\"image\":\"data:image/svg+xml" },
-        { "op": "setMetadata", "key": "metadata/3", "valType": 3, "value": ";utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><circle " },
-        { "op": "setMetadata", "key": "metadata/4", "valType": 3, "value": "cx='4' cy='4' r='3' fill='%236b4fa0'/></svg>\",\"collection\":\"Umbra refere" },
-        { "op": "setMetadata", "key": "metadata/5", "valType": 3, "value": "nce set\"}" },
+        { "op": "setMetadata", "key": "metadata", "valType": 3, "value": "{\"description\":\"A nebula described by one complete JSON value: MIP-0018 defines no multipart reassembly.\",\"collection\":\"Umbra reference set\"}" },
+        { "op": "setMetadata", "key": "/metadata/description", "valType": 1, "value": "A pointer key is just a key: no assembly, no nesting." },
         { "op": "mint", "to": "holder:sneb-1", "amount": "1", "nonce": "sneb:1" },
         { "op": "mint", "to": "holder:sneb-2", "amount": "2", "nonce": "sneb:2" }
       ]

@@ -2,8 +2,8 @@
  * The five reference templates, exercised in the Compact simulator.
  *
  * What these tests are for:
- *  - every template emits exactly the events MIP PR #315 prescribes
- *    (`mips/mip-xxxx-on-chain-token-metadata.md` @ `f433056`), with the right
+ *  - every template emits exactly the events MIP-0018 prescribes (MIP PR #325,
+ *    `mips/mip-0018-on-chain-token-metadata.md` @ `37a3471`), with the right
  *    kind byte and MIP Appendix A's val-type per key;
  *  - the colour an outside observer derives from `(domainSep, address)` equals
  *    the colour the contract mints — the check the indexer performs (spec §6.4)
@@ -35,6 +35,7 @@ import {
   VAL_TYPE_JSON,
   VAL_TYPE_STRING,
   VAL_TYPE_URI,
+  decodeInteger,
   deploy,
   hex,
   pad,
@@ -144,11 +145,10 @@ describe('NativeShieldedToken', () => {
     const { events } = await c.call('publishMetadata');
 
     expect(events).toHaveLength(3);
-    expect(events.map((e) => [e.keyText, e.valueText])).toEqual([
-      ['name', 'Shielded Star'],
-      ['symbol', 'SSTAR'],
-      ['decimals', ''],
-    ]);
+    expect(events.map((e) => e.keyText)).toEqual(['name', 'symbol', 'decimals']);
+    // Only the string-typed fields have a text form; `decimals` is an integer
+    // and its bytes are asserted below, never read as text.
+    expect(events.slice(0, 2).map((e) => e.valueText)).toEqual(['Shielded Star', 'SSTAR']);
     for (const event of events) {
       expect(event.eventName).toBe(EVENT_NAME);
       expect(event.kind).toBe(KIND_SHIELDED);
@@ -162,8 +162,11 @@ describe('NativeShieldedToken', () => {
       VAL_TYPE_STRING,
       VAL_TYPE_INTEGER,
     ]);
-    expect(events[2].len).toBe(1);
-    expect(events[2].valueBytes[0]).toBe(6); // decimals is one byte, not text
+    // decimals is `Uint<128>` (MIP Appendix A's recommended width): val-len 16,
+    // little-endian, so the number is in the low byte — never the digit's text.
+    expect(events[2].len).toBe(16);
+    expect(hex(events[2].valueBytes)).toBe('06000000000000000000000000000000');
+    expect(decodeInteger(events[2].valueBytes)).toBe(6n);
   });
 
   it('refuses to publish twice', async () => {
@@ -402,7 +405,10 @@ describe('ShieldedCollection', () => {
     expect(events.map((e) => e.keyText)).toEqual(['name', 'symbol', 'decimals']);
     expect(events[0].valueText).toBe(pieceName);
     expect(events[1].valueText).toBe('CNST');
-    expect(events[2].valueBytes[0]).toBe(0);
+    // 0 decimals as `Uint<128>`: sixteen NUL bytes, val-len 16.
+    expect(events[2].len).toBe(16);
+    expect(events[2].valueBytes).toHaveLength(16);
+    expect(decodeInteger(events[2].valueBytes)).toBe(0n);
     expect(events.map((e) => e.valType)).toEqual([
       VAL_TYPE_STRING,
       VAL_TYPE_STRING,

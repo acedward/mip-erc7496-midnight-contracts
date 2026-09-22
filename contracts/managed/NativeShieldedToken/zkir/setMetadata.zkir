@@ -1103,7 +1103,7 @@
     { "op": "reconstitute_field", "divisor": 1520, "modulus": 1219, "bits": 8 },
     { "op": "reconstitute_field", "divisor": 1521, "modulus": 1217, "bits": 8 },
     { "op": "reconstitute_field", "divisor": 1522, "modulus": 14, "bits": 8 },
-    { "op": "load_imm", "imm": "6D69702D787878783A746F6B656E2D6D657461646174615B76315D" },
+    { "op": "load_imm", "imm": "6D69702D303031383A746F6B656E2D6D657461646174615B76315D" },
     { "op": "load_imm", "imm": "10" },
     { "op": "load_imm", "imm": "33" },
     { "op": "load_imm", "imm": "04" },

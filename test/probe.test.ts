@@ -1,6 +1,7 @@
 /**
- * The compile-and-layout proof for the MIP's 256-byte payload (MIP sections 1,
- * 2, 2.1, 2.2 and 3 of `mips/mip-xxxx-on-chain-token-metadata.md` @ `f433056`).
+ * The compile-and-layout proof for the MIP's 256-byte payload (MIP-0018
+ * sections 1, 2, 2.1, 2.2, 3 and 5.1 —
+ * `mips/mip-0018-on-chain-token-metadata.md` @ `37a3471`, MIP PR #325).
  *
  * `Bytes[...spread, byte, ...spread]` is what the reference module uses to
  * concatenate the six fields into one `Bytes<256>`. These tests assert that it
@@ -16,12 +17,19 @@ import {
   KIND_SHIELDED,
   KIND_UNSHIELDED,
   LEGACY_EVENT_NAME,
+  MAX_INTEGER_LEN,
   MAX_VALUE_LEN,
   MISC_EVENT_SIZE,
   PAYLOAD_SIZE,
+  PRE_MIP_EVENT_NAME,
   VAL_TYPE_INTEGER,
+  VAL_TYPE_JSON,
+  VAL_TYPE_NULL,
+  VAL_TYPE_RESERVED_FROM,
   VAL_TYPE_STRING,
+  decodeInteger,
   deploy,
+  encodeInteger,
   hex,
   pad,
   rawMiscBytes,
@@ -46,7 +54,7 @@ describe('the MIP payload layout', () => {
 
     // MIP section 1: 0x6d69702d…5b76315d (27 bytes) followed by five NULs.
     expect(hex(nameBytes)).toBe(
-      '6d69702d787878783a746f6b656e2d6d657461646174615b76315d0000000000',
+      '6d69702d303031383a746f6b656e2d6d657461646174615b76315d0000000000',
     );
     expect(hex(nameBytes)).toBe(hex(pad(32, EVENT_NAME)));
     expect(nameBytes.subarray(27).every((b) => b === 0)).toBe(true);
@@ -78,9 +86,12 @@ describe('the MIP payload layout', () => {
     expect(events[0].valueText).toBe('Umbra Probe');
     expect(events[1].len).toBe(6);
     expect(events[1].valueText).toBe('UPROBE');
-    // decimals is a big-endian unsigned integer in exactly one byte.
-    expect(events[2].len).toBe(1);
-    expect(events[2].valueBytes[0]).toBe(6);
+    // decimals travels as `Uint<128>` — MIP Appendix A's recommended width —
+    // so val-len is 16 and the 16 bytes are the LITTLE-ENDIAN serialization of
+    // the number: the value in the low byte, then fifteen NULs.
+    expect(events[2].len).toBe(16);
+    expect(hex(events[2].valueBytes)).toBe('06000000000000000000000000000000');
+    expect(decodeInteger(events[2].valueBytes)).toBe(6n);
 
     // The name field is NUL-padded after `val-len`, never truncated.
     expect(events[0].value.subarray(11).every((b) => b === 0)).toBe(true);
@@ -192,11 +203,143 @@ describe('the MIP payload layout', () => {
       reason: 'key_empty',
     });
 
-    // val-type 2 with val-len 0 breaks the integer rule (1 <= val-len <= 16)
+    // val-type 2 with val-len 0 breaks the integer rule (1 <= val-len <= 31)
     const badInt = await raw(KIND_SHIELDED, pad(32, 'decimals'), VAL_TYPE_INTEGER, 0);
     expect(validateTokenMetadataEvent(badInt.events[0])).toEqual({
       outcome: 'rejected',
       reason: 'val_type_rule',
+    });
+
+    // val-type 6 is the FIRST reserved value in the final text: 5 became Null.
+    const firstReserved = await raw(KIND_SHIELDED, pad(32, 'name'), VAL_TYPE_RESERVED_FROM, 0);
+    expect(firstReserved.events[0].valType).toBe(6);
+    expect(validateTokenMetadataEvent(firstReserved.events[0])).toEqual({
+      outcome: 'rejected',
+      reason: 'val_type_reserved',
+    });
+  });
+
+  it('accepts every integer width MIP section 2.1 permits, and no other', async () => {
+    const c = await probe();
+    const raw = (valType: number, valLen: number, value: Uint8Array) =>
+      c.call('publishRaw', pad(32, 'umbra:probe'), BigInt(KIND_SHIELDED), pad(32, 'supplyCap'), BigInt(valType), BigInt(valLen), value);
+    const padded = (bytes: Uint8Array) => {
+      const v = new Uint8Array(MAX_VALUE_LEN);
+      v.set(bytes);
+      return v;
+    };
+
+    // `Uint<8>` through `Uint<248>`: 1..31 bytes, and every one must be taken.
+    for (const width of [1, 3, 16, MAX_INTEGER_LEN]) {
+      const { events } = await raw(VAL_TYPE_INTEGER, width, padded(encodeInteger(7n, width)));
+      expect(validateTokenMetadataEvent(events[0]), `val-len ${width}`).toEqual({ outcome: 'accepted' });
+      expect(decodeInteger(events[0].valueBytes), `val-len ${width}`).toBe(7n);
+    }
+
+    // 32 bytes would be `Uint<256>`, which is not a Compact unsigned integer.
+    const tooWide = await raw(VAL_TYPE_INTEGER, MAX_INTEGER_LEN + 1, padded(new Uint8Array(32).fill(1)));
+    expect(validateTokenMetadataEvent(tooWide.events[0])).toEqual({
+      outcome: 'rejected',
+      reason: 'val_type_rule',
+    });
+
+    // The bytes are little-endian, whatever the width.
+    const le = await raw(VAL_TYPE_INTEGER, 3, padded(encodeInteger(258n, 3)));
+    expect(hex(le.events[0].valueBytes)).toBe('020100');
+    expect(decodeInteger(le.events[0].valueBytes)).toBe(258n);
+  });
+
+  it('takes a complete JSON value of any shape and rejects a fragment (MIP section 2.1)', async () => {
+    const c = await probe();
+    const json = async (text: string) => {
+      const v = new Uint8Array(MAX_VALUE_LEN);
+      const bytes = new TextEncoder().encode(text);
+      v.set(bytes);
+      const { events } = await c.call(
+        'publishRaw',
+        pad(32, 'umbra:probe'),
+        BigInt(KIND_SHIELDED),
+        pad(32, 'metadata'),
+        BigInt(VAL_TYPE_JSON),
+        BigInt(bytes.length),
+        v,
+      );
+      return validateTokenMetadataEvent(events[0]);
+    };
+
+    // object, array and scalar values are all one complete JSON value
+    expect(await json('{"description":"Example"}')).toEqual({ outcome: 'accepted' });
+    expect(await json('[1,2,3]')).toEqual({ outcome: 'accepted' });
+    expect(await json('1.25')).toEqual({ outcome: 'accepted' });
+    expect(await json('null')).toEqual({ outcome: 'accepted' });
+
+    // A fragment is not. This is exactly what retires the `metadata/<n>`
+    // multipart convention this repository used against the #315 draft: the
+    // MIP defines no reassembly, so a part can only be rejected.
+    expect(await json('{"description":"A nebula published in parts, because one Tok')).toEqual({
+      outcome: 'rejected',
+      reason: 'val_type_rule',
+    });
+    // Neither is an empty JSON payload (MIP section 2.2).
+    expect(await json('')).toEqual({ outcome: 'rejected', reason: 'val_type_rule' });
+  });
+
+  it('treats val-type 5 as Null only when val-len is zero (MIP sections 2.1 and 6.2)', async () => {
+    const c = await probe();
+    const nul = (valLen: number, value: Uint8Array) =>
+      c.call('publishRaw', pad(32, 'umbra:probe'), BigInt(KIND_SHIELDED), pad(32, 'description'), BigInt(VAL_TYPE_NULL), BigInt(valLen), value);
+
+    const proper = await nul(0, emptyValue);
+    expect(proper.events[0].valType).toBe(5);
+    expect(proper.events[0].len).toBe(0);
+    expect(validateTokenMetadataEvent(proper.events[0])).toEqual({ outcome: 'accepted' });
+
+    // Consumers MUST ignore all 189 bytes, so a non-NUL filler changes nothing.
+    const noisy = await nul(0, new Uint8Array(MAX_VALUE_LEN).fill(0x5a));
+    expect(validateTokenMetadataEvent(noisy.events[0])).toEqual({ outcome: 'accepted' });
+
+    // A non-zero val-len is not a Null: `serialize<[], 0>([])` is zero bytes.
+    const wrong = await nul(4, emptyValue);
+    expect(validateTokenMetadataEvent(wrong.events[0])).toEqual({
+      outcome: 'rejected',
+      reason: 'val_type_rule',
+    });
+  });
+
+  it('requires a `/metadata/` key to be an RFC 6901 pointer, and leaves every other key alone', async () => {
+    const c = await probe();
+    const withKey = async (key: Uint8Array) => {
+      const { events } = await c.call(
+        'publishRaw',
+        pad(32, 'umbra:probe'),
+        BigInt(KIND_SHIELDED),
+        key,
+        BigInt(VAL_TYPE_STRING),
+        2n,
+        (() => {
+          const v = new Uint8Array(MAX_VALUE_LEN);
+          v.set(new TextEncoder().encode('ok'));
+          return v;
+        })(),
+      );
+      return validateTokenMetadataEvent(events[0]);
+    };
+
+    // MIP Appendix A's own example, and both legal escapes.
+    expect(await withKey(pad(32, '/metadata/0'))).toEqual({ outcome: 'accepted' });
+    expect(await withKey(pad(32, '/metadata/a~1b~0c'))).toEqual({ outcome: 'accepted' });
+    // `~2` is not an escape RFC 6901 defines.
+    expect(await withKey(pad(32, '/metadata/~2'))).toEqual({
+      outcome: 'rejected',
+      reason: 'key_pointer_invalid',
+    });
+    // A key that merely contains the text is not under the prefix.
+    expect(await withKey(pad(32, 'x/metadata/~2'))).toEqual({ outcome: 'accepted' });
+    // `metadata/0` — the old multipart key — is an ordinary key, not a pointer.
+    expect(await withKey(pad(32, 'metadata/0'))).toEqual({ outcome: 'accepted' });
+    // MIP section 5.1: another key is never rejected for its encoding.
+    expect(await withKey(Uint8Array.from([0xff, 0xfe, 0x01, ...new Uint8Array(29)]))).toEqual({
+      outcome: 'accepted',
     });
   });
 
@@ -236,6 +379,34 @@ describe('the MIP payload layout', () => {
     expect(events[0].payload).toHaveLength(PAYLOAD_SIZE);
     // Everything about the payload is well formed; only the name disqualifies it.
     expect(events[0].valueText).toBe('Old!');
+    expect(validateTokenMetadataEvent(events[0])).toEqual({
+      outcome: 'ignored',
+      reason: 'event_name',
+    });
+  });
+
+  it('ignores the #315 placeholder name the Stagenet reference set was deployed with', async () => {
+    // MIP sections 1 and 8: the event name IS the layout version, so a v1
+    // MIP-0018 consumer ignores `mip-xxxx:token-metadata[v1]` exactly as it
+    // ignores the pre-MIP name — nothing was redeployed when the number landed.
+    const c = await probe();
+    const { events } = await c.call(
+      'publishPreMipName',
+      pad(32, 'umbra:probe'),
+      BigInt(KIND_SHIELDED),
+      pad(32, 'name'),
+      BigInt(VAL_TYPE_STRING),
+      13n,
+      (() => {
+        const v = new Uint8Array(MAX_VALUE_LEN);
+        v.set(new TextEncoder().encode('Shielded Star'));
+        return v;
+      })(),
+    );
+
+    expect(events[0].eventName).toBe(PRE_MIP_EVENT_NAME);
+    expect(events[0].payload).toHaveLength(PAYLOAD_SIZE);
+    expect(events[0].valueText).toBe('Shielded Star');
     expect(validateTokenMetadataEvent(events[0])).toEqual({
       outcome: 'ignored',
       reason: 'event_name',

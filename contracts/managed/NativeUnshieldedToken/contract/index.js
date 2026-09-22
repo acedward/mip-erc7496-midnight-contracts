@@ -130,7 +130,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('tokenColor',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 59 char 1',
+                                     'NativeUnshieldedToken.compact line 60 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -154,7 +154,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('domainSep',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 63 char 1',
+                                     'NativeUnshieldedToken.compact line 64 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -178,7 +178,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('decimals',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 67 char 1',
+                                     'NativeUnshieldedToken.compact line 68 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -202,7 +202,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('kind',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 72 char 1',
+                                     'NativeUnshieldedToken.compact line 73 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -226,7 +226,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('publishMetadata',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 80 char 1',
+                                     'NativeUnshieldedToken.compact line 81 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -254,35 +254,35 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('setMetadata',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 95 char 1',
+                                     'NativeUnshieldedToken.compact line 96 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(key_0.buffer instanceof ArrayBuffer && key_0.BYTES_PER_ELEMENT === 1 && key_0.length === 32)) {
           __compactRuntime.typeError('setMetadata',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 95 char 1',
+                                     'NativeUnshieldedToken.compact line 96 char 1',
                                      'Bytes<32>',
                                      key_0)
         }
         if (!(typeof(valType_0) === 'bigint' && valType_0 >= 0n && valType_0 <= 255n)) {
           __compactRuntime.typeError('setMetadata',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 95 char 1',
+                                     'NativeUnshieldedToken.compact line 96 char 1',
                                      'Uint<0..256>',
                                      valType_0)
         }
         if (!(typeof(valLen_0) === 'bigint' && valLen_0 >= 0n && valLen_0 <= 255n)) {
           __compactRuntime.typeError('setMetadata',
                                      'argument 3 (argument 4 as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 95 char 1',
+                                     'NativeUnshieldedToken.compact line 96 char 1',
                                      'Uint<0..256>',
                                      valLen_0)
         }
         if (!(value_0.buffer instanceof ArrayBuffer && value_0.BYTES_PER_ELEMENT === 1 && value_0.length === 189)) {
           __compactRuntime.typeError('setMetadata',
                                      'argument 4 (argument 5 as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 95 char 1',
+                                     'NativeUnshieldedToken.compact line 96 char 1',
                                      'Bytes<189>',
                                      value_0)
         }
@@ -316,21 +316,21 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('mint',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 106 char 1',
+                                     'NativeUnshieldedToken.compact line 107 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
         if (!(typeof(recipient_0) === 'object' && typeof(recipient_0.is_left) === 'boolean' && typeof(recipient_0.left) === 'object' && recipient_0.left.bytes.buffer instanceof ArrayBuffer && recipient_0.left.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.left.bytes.length === 32 && typeof(recipient_0.right) === 'object' && recipient_0.right.bytes.buffer instanceof ArrayBuffer && recipient_0.right.bytes.BYTES_PER_ELEMENT === 1 && recipient_0.right.bytes.length === 32)) {
           __compactRuntime.typeError('mint',
                                      'argument 1 (argument 2 as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 106 char 1',
+                                     'NativeUnshieldedToken.compact line 107 char 1',
                                      'struct Either<is_left: Boolean, left: struct ContractAddress<bytes: Bytes<32>>, right: struct UserAddress<bytes: Bytes<32>>>',
                                      recipient_0)
         }
         if (!(typeof(amount_0) === 'bigint' && amount_0 >= 0n && amount_0 <= 18446744073709551615n)) {
           __compactRuntime.typeError('mint',
                                      'argument 2 (argument 3 as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 106 char 1',
+                                     'NativeUnshieldedToken.compact line 107 char 1',
                                      'Uint<0..18446744073709551616>',
                                      amount_0)
         }
@@ -360,7 +360,7 @@ export class Contract {
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext.currentQueryContext != undefined)) {
           __compactRuntime.typeError('owner',
                                      'argument 1 (as invoked from Typescript)',
-                                     'NativeUnshieldedToken.compact line 120 char 1',
+                                     'NativeUnshieldedToken.compact line 121 char 1',
                                      'CircuitContext',
                                      contextOrig_0)
         }
@@ -426,56 +426,56 @@ export class Contract {
     if (!(typeof(owner_0) === 'object' && typeof(owner_0.is_left) === 'boolean' && owner_0.left.buffer instanceof ArrayBuffer && owner_0.left.BYTES_PER_ELEMENT === 1 && owner_0.left.length === 32 && typeof(owner_0.right) === 'object' && owner_0.right.bytes.buffer instanceof ArrayBuffer && owner_0.right.bytes.BYTES_PER_ELEMENT === 1 && owner_0.right.bytes.length === 32)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 1 (argument 2 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'struct Either<is_left: Boolean, left: Bytes<32>, right: struct ContractAddress<bytes: Bytes<32>>>',
                                  owner_0)
     }
     if (!(domain__0.buffer instanceof ArrayBuffer && domain__0.BYTES_PER_ELEMENT === 1 && domain__0.length === 32)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 2 (argument 3 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Bytes<32>',
                                  domain__0)
     }
     if (!(nameBytes__0.buffer instanceof ArrayBuffer && nameBytes__0.BYTES_PER_ELEMENT === 1 && nameBytes__0.length === 32)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 3 (argument 4 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Bytes<32>',
                                  nameBytes__0)
     }
     if (!(typeof(nameLen__0) === 'bigint' && nameLen__0 >= 0n && nameLen__0 <= 255n)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 4 (argument 5 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Uint<0..256>',
                                  nameLen__0)
     }
     if (!(symbolBytes__0.buffer instanceof ArrayBuffer && symbolBytes__0.BYTES_PER_ELEMENT === 1 && symbolBytes__0.length === 32)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 5 (argument 6 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Bytes<32>',
                                  symbolBytes__0)
     }
     if (!(typeof(symbolLen__0) === 'bigint' && symbolLen__0 >= 0n && symbolLen__0 <= 255n)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 6 (argument 7 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Uint<0..256>',
                                  symbolLen__0)
     }
     if (!(typeof(decimals__0) === 'bigint' && decimals__0 >= 0n && decimals__0 <= 255n)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 7 (argument 8 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Uint<0..256>',
                                  decimals__0)
     }
     if (!(typeof(kind__0) === 'bigint' && kind__0 >= 0n && kind__0 <= 255n)) {
       __compactRuntime.typeError('Contract state constructor',
                                  'argument 8 (argument 9 as invoked from Typescript)',
-                                 'NativeUnshieldedToken.compact line 38 char 1',
+                                 'NativeUnshieldedToken.compact line 39 char 1',
                                  'Uint<0..256>',
                                  kind__0)
     }
@@ -839,8 +839,10 @@ export class Contract {
     return result_0;
   }
   _EVENT_NAME_0() {
-    return new Uint8Array([109, 105, 112, 45, 120, 120, 120, 120, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
+    return new Uint8Array([109, 105, 112, 45, 48, 48, 49, 56, 58, 116, 111, 107, 101, 110, 45, 109, 101, 116, 97, 100, 97, 116, 97, 91, 118, 49, 93, 0, 0, 0, 0, 0]);
   }
+  _VAL_TYPE_STRING_0() { return 1n; }
+  _VAL_TYPE_INTEGER_0() { return 2n; }
   async _emitTokenMetadata_0(context,
                              partialProofData,
                              domainSep_0,
@@ -896,7 +898,7 @@ export class Contract {
                                     domainSep_0,
                                     kind_0,
                                     new Uint8Array([110, 97, 109, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                                    1n,
+                                    this._VAL_TYPE_STRING_0(),
                                     nameLen_0,
                                     Uint8Array.from([...Array.from(name__0,
                                                                    BigInt),
@@ -908,7 +910,7 @@ export class Contract {
                                     domainSep_0,
                                     kind_0,
                                     new Uint8Array([115, 121, 109, 98, 111, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                                    1n,
+                                    this._VAL_TYPE_STRING_0(),
                                     symbolLen_0,
                                     Uint8Array.from([...Array.from(symbol__0,
                                                                    BigInt),
@@ -920,8 +922,8 @@ export class Contract {
                                     domainSep_0,
                                     kind_0,
                                     new Uint8Array([100, 101, 99, 105, 109, 97, 108, 115, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-                                    2n,
-                                    1n,
+                                    this._VAL_TYPE_INTEGER_0(),
+                                    16n,
                                     Uint8Array.from([decimals__0,
                                                      ...Array.from(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                                                    BigInt)],

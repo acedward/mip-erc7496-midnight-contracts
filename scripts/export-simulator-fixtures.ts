@@ -32,15 +32,20 @@ import { Contract as ShieldedCollection } from '../contracts/managed/ShieldedCol
 import { Contract as LedgerTokenContract } from '../contracts/managed/LedgerToken/contract/index.js';
 import { Contract as MetadataProbe } from '../contracts/managed/MetadataProbe/contract/index.js';
 import {
+  DEFAULT_INTEGER_LEN,
   EVENT_NAME,
   LEGACY_EVENT_NAME,
   MAX_VALUE_LEN,
+  PRE_MIP_EVENT_NAME,
   VAL_TYPE_INTEGER,
   VAL_TYPE_JSON,
+  VAL_TYPE_NULL,
   VAL_TYPE_OPAQUE,
   VAL_TYPE_STRING,
   VAL_TYPE_URI,
+  decodeInteger,
   deploy,
+  encodeInteger,
   hex,
   pad,
   validateTokenMetadataEvent,
@@ -93,6 +98,13 @@ function value189(text: string): { bytes: Uint8Array; len: bigint } {
   return { bytes, len: BigInt(encoded.length) };
 }
 
+/** The 189-byte field holding `serialize<Uint<8*length>, length>(value)`, little-endian. */
+function value189Integer(value: number, length = DEFAULT_INTEGER_LEN): { bytes: Uint8Array; len: bigint } {
+  const bytes = new Uint8Array(MAX_VALUE_LEN);
+  bytes.set(encodeInteger(BigInt(value), length));
+  return { bytes, len: BigInt(length) };
+}
+
 const zswapRecipient = (label: string) => ({
   is_left: true,
   left: { bytes: pad(32, label) },
@@ -137,12 +149,14 @@ interface Row {
  * The val-type a step carries. The reference set states it explicitly; these
  * fallbacks are MIP Appendix A's, kept in step with
  * scripts/generate-literal-contracts.ts.
+ *
+ * There is deliberately no `metadata/<n>` rule: MIP-0018 defines no multipart
+ * representation (section 5.4) and a val-type 3 value must be ONE complete JSON
+ * value (section 2.1), so a fragment is rejected rather than reassembled.
  */
 function valTypeOf(step: Step): number {
   if (step.valType !== undefined) return step.valType;
-  const key = step.key ?? '';
-  if (/^metadata\/\d+$/.test(key)) return VAL_TYPE_JSON;
-  switch (key) {
+  switch (step.key ?? '') {
     case 'decimals':
       return VAL_TYPE_INTEGER;
     case 'metadata':
@@ -152,6 +166,26 @@ function valTypeOf(step: Step): number {
     default:
       return VAL_TYPE_STRING;
   }
+}
+
+/**
+ * The 189-byte `value` field a metadata step carries, by its val-type.
+ *
+ * - Null (5): no bytes at all — `val-len` MUST be 0 (MIP section 2.1).
+ * - integer (2): the number stated in decimal, serialized little-endian as
+ *   `Uint<128>` — never the digits' UTF-8 bytes, which are a different number.
+ * - everything else: the value's UTF-8 bytes.
+ */
+function stepValue(step: Step): { bytes: Uint8Array; len: bigint } {
+  const valType = valTypeOf(step);
+  if (valType === VAL_TYPE_NULL) {
+    if (step.value !== undefined) {
+      throw new Error(`a val-type 5 (Null) step carries no value; got "${step.value}"`);
+    }
+    return { bytes: new Uint8Array(MAX_VALUE_LEN), len: 0n };
+  }
+  if (valType === VAL_TYPE_INTEGER) return value189Integer(Number(step.value!));
+  return value189(step.value!);
 }
 
 const referenceSet = JSON.parse(readFileSync(join(ROOT, 'deployments', 'reference-set.json'), 'utf8')) as {
@@ -253,7 +287,7 @@ function callFor(row: Row, step: Step): [string, unknown[]] {
     case 'publishShielded':
       return ['publishShielded', []];
     case 'setMetadata': {
-      const { bytes, len } = value189(step.value!);
+      const { bytes, len } = stepValue(step);
       const key = pad(32, step.key!);
       const valType = BigInt(valTypeOf(step));
       return row.template === 'NativeDualToken'
@@ -280,7 +314,7 @@ function callFor(row: Row, step: Step): [string, unknown[]] {
         [pieceDomain, pad(32, step.pieceName!), BigInt(new TextEncoder().encode(step.pieceName!).length)],
       ];
     case 'setPieceTrait': {
-      const { bytes, len } = value189(step.value!);
+      const { bytes, len } = stepValue(step);
       return ['setPieceTrait', [pieceDomain, pad(32, step.key!), BigInt(valTypeOf(step)), len, bytes]];
     }
     default:
@@ -440,8 +474,38 @@ async function runRow(row: Row) {
     // Last write wins, in emission order (MIP section 6.2). Appendix A's core
     // keys are projected into columns; everything else is a trait, kept verbatim
     // with its val-type (MIP section 5.2).
+    if (event.valType === VAL_TYPE_NULL) {
+      // MIP sections 2.1 and 6.2: the key's CURRENT value becomes Null. The one
+      // projected column that key fed is dropped; any other key is recorded
+      // with val-type 5, so a reader can tell "cleared on chain" from "never
+      // said". History is not erased — the earlier events stay in events.json.
+      switch (event.keyText) {
+        case 'name':
+          delete token.name;
+          break;
+        case 'symbol':
+          delete token.symbol;
+          break;
+        case 'decimals':
+          delete token.decimals;
+          break;
+        case 'tokenUri':
+          delete token.tokenUri;
+          break;
+        default:
+          (token.traits as Record<string, unknown>)[event.keyText] = {
+            valType: VAL_TYPE_NULL,
+            valLen: 0,
+            valueHex: '',
+            text: null,
+          };
+      }
+      byIdentity.set(key, token);
+      continue;
+    }
     if (event.keyText === 'decimals' && event.valType === VAL_TYPE_INTEGER) {
-      token.decimals = Number(Buffer.from(event.valueHex, 'hex')[0] ?? 0);
+      // MIP section 2.1: any width 1..31, decoded little-endian.
+      token.decimals = Number(decodeInteger(Uint8Array.from(Buffer.from(event.valueHex, 'hex'))));
     } else if (event.keyText === 'name' && event.valType === VAL_TYPE_STRING) {
       token.name = event.valueText;
     } else if (event.keyText === 'symbol' && event.valType === VAL_TYPE_STRING) {
@@ -495,8 +559,10 @@ async function runRow(row: Row) {
  * Three outcomes, and the difference between them is the point:
  *
  *   - `ignored`   not a TokenMetadata event at all (MIP section 1). Not stored,
- *                 NOT recorded as rejected: the pre-MIP `TokenMetadata` name is
- *                 the case that matters here.
+ *                 NOT recorded as rejected. Two names matter here: the pre-MIP
+ *                 `TokenMetadata` of this repository's 00020 contracts, and the
+ *                 `mip-xxxx:token-metadata[v1]` placeholder of the #315 draft,
+ *                 which is what the Stagenet reference set actually emits.
  *   - `rejected`  a TokenMetadata event whose payload breaks MIP section 2.1,
  *                 2.2 or 3. `reason` is the stable reason of spec 00021 FR-102.
  *   - `applied`   a valid event at the transport level. Some of these are keys
@@ -518,7 +584,10 @@ async function runNegatives() {
     reason?: string;
     /** True when the event is applied but its Appendix A projection must fail. */
     projectionFails?: boolean;
+    /** Emit under the pre-MIP `TokenMetadata` name. */
     legacyName?: boolean;
+    /** Emit under the `mip-xxxx:token-metadata[v1]` placeholder of the #315 draft. */
+    preMipName?: boolean;
     kind: number;
     key: Uint8Array;
     keyLabel: string;
@@ -541,6 +610,17 @@ async function runNegatives() {
       valType: VAL_TYPE_STRING,
       len: 10,
       value: value189('Old Name!!').bytes,
+    },
+    {
+      why: 'the `mip-xxxx:token-metadata[v1]` PLACEHOLDER name of the #315 draft, which is the name this repository\'s Stagenet reference set was actually deployed with: the event name is the layout version, so a MIP-0018 v1 consumer ignores it too — a consumer that wants to show the legacy deployment must recognise the second name explicitly and validate it under the draft rules',
+      mip: '1',
+      expect: 'ignored',
+      preMipName: true,
+      kind: 1,
+      ...key('name'),
+      valType: VAL_TYPE_STRING,
+      len: 13,
+      value: value189('Shielded Star').bytes,
     },
     // ---- MIP section 2.2: transport validation ---------------------------
     {
@@ -566,17 +646,39 @@ async function runNegatives() {
       len: 4,
       value: value189('void').bytes,
     },
+    {
+      why: 'a `/metadata/` key that is not a valid RFC 6901 pointer: `~2` is not one of the two legal escapes (`~0`, `~1`)',
+      mip: '5.1',
+      expect: 'rejected',
+      reason: 'key_pointer_invalid',
+      kind: 1,
+      ...key('/metadata/~2'),
+      valType: VAL_TYPE_STRING,
+      len: 3,
+      value: value189('bad').bytes,
+    },
     // ---- MIP section 2.1: the val-type byte ------------------------------
     {
-      why: 'val-type 5, the first reserved value',
+      why: 'val-type 5 (Null) with a non-zero val-len: the Null payload is `serialize<[], 0>([])`, so val-len MUST be zero',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_rule',
+      kind: 1,
+      ...key('description'),
+      valType: VAL_TYPE_NULL,
+      len: 4,
+      value: value189('five').bytes,
+    },
+    {
+      why: 'val-type 6, the FIRST reserved value in the final text (the #315 draft reserved from 5, which is now Null)',
       mip: '2.1',
       expect: 'rejected',
       reason: 'val_type_reserved',
       kind: 1,
       ...key('name'),
-      valType: 5,
-      len: 4,
-      value: value189('five').bytes,
+      valType: 6,
+      len: 3,
+      value: value189('six').bytes,
     },
     {
       why: 'val-type 7, a reserved value in the middle of the range',
@@ -612,7 +714,7 @@ async function runNegatives() {
       value: fill([0xff, 0xfe, 0xfd]),
     },
     {
-      why: 'val-type 2 with val-len 0 — an integer needs 1..16 bytes',
+      why: 'val-type 2 with val-len 0 — an integer is `Uint<8*val-len>`, so it needs 1..31 bytes',
       mip: '2.1',
       expect: 'rejected',
       reason: 'val_type_rule',
@@ -623,15 +725,26 @@ async function runNegatives() {
       value: empty,
     },
     {
-      why: 'val-type 2 with val-len 17 — above the 16-byte integer ceiling',
+      why: 'val-type 2 with val-len 32 — above `Uint<248>`, the widest byte-aligned unsigned integer',
       mip: '2.1',
       expect: 'rejected',
       reason: 'val_type_rule',
       kind: 1,
       ...key('supplyCap'),
       valType: VAL_TYPE_INTEGER,
-      len: 17,
+      len: 32,
       value: new Uint8Array(MAX_VALUE_LEN).fill(0x01),
+    },
+    {
+      why: 'val-type 3 carrying a JSON FRAGMENT — the head of the six-part `metadata/<n>` document this repository published against the #315 draft. The final text requires ONE complete JSON value and defines no reassembly, so the part is rejected, not collected',
+      mip: '2.1',
+      expect: 'rejected',
+      reason: 'val_type_rule',
+      kind: 1,
+      ...key('metadata/0'),
+      valType: VAL_TYPE_JSON,
+      len: 67,
+      value: value189('{"description":"A nebula published in parts, because one TokenMetad').bytes,
     },
     {
       why: 'val-type 4 carrying a relative reference instead of an absolute URI',
@@ -709,6 +822,66 @@ async function runNegatives() {
       len: 4,
       value: fill([0xde, 0xad, 0xbe, 0xef]),
     },
+    {
+      why: 'val-type 5 (Null) done properly — val-len 0 and 189 NUL bytes: APPLIED, and it sets the key\'s current value to Null. Distinct from an empty string and from the JSON literal `null`; the key\'s earlier values remain history',
+      mip: '2.1',
+      expect: 'applied',
+      kind: 1,
+      ...key('description'),
+      valType: VAL_TYPE_NULL,
+      len: 0,
+      value: empty,
+    },
+    {
+      why: 'val-type 5 (Null) whose 189 value bytes are NOT NUL: emitters SHOULD zero them, consumers MUST ignore them, so this is applied and identical in meaning to the case above',
+      mip: '2.2',
+      expect: 'applied',
+      kind: 1,
+      ...key('hemisphere'),
+      valType: VAL_TYPE_NULL,
+      len: 0,
+      value: new Uint8Array(MAX_VALUE_LEN).fill(0x5a),
+    },
+    {
+      why: 'val-type 3 carrying a JSON SCALAR rather than an object: the final text allows object, array and scalar values, so this is applied',
+      mip: '2.1',
+      expect: 'applied',
+      kind: 1,
+      ...key('magnitudeJson'),
+      valType: VAL_TYPE_JSON,
+      len: 4,
+      value: value189('1.25').bytes,
+    },
+    {
+      why: 'a valid RFC 6901 pointer key (MIP Appendix A\'s `/metadata/0` example) with a UTF-8 value: applied, and nothing about arrays, nesting or assembly follows from the path',
+      mip: '5.1',
+      expect: 'applied',
+      kind: 1,
+      ...key('/metadata/0'),
+      valType: VAL_TYPE_STRING,
+      len: 11,
+      value: value189('hello world').bytes,
+    },
+    {
+      why: 'a pointer key with both legal escapes, `/metadata/a~1b~0c`: applied — `~1` is a literal `/` and `~0` a literal `~` inside one reference token',
+      mip: '5.1',
+      expect: 'applied',
+      kind: 1,
+      ...key('/metadata/a~1b~0c'),
+      valType: VAL_TYPE_STRING,
+      len: 2,
+      value: value189('ok').bytes,
+    },
+    {
+      why: 'decimals as `Uint<24>` (val-len 3) instead of Appendix A\'s recommended `Uint<128>`: every permitted width 1..31 MUST be accepted and decoded little-endian, so this is applied AND projects to 6 — `Uint<128>` is an emitter default, not a decoder fallback',
+      mip: '2.1',
+      expect: 'applied',
+      kind: 1,
+      ...key('decimals'),
+      valType: VAL_TYPE_INTEGER,
+      len: 3,
+      value: fill([0x06, 0x00, 0x00]),
+    },
     // ---- MIP section 5.3 / Appendix A: projection fails, event applied ----
     {
       why: 'the well-known key `decimals` carried as a UTF-8 string ("6") instead of Appendix A’s integer: APPLIED as a trait, projection fails, decimals column untouched',
@@ -781,7 +954,7 @@ async function runNegatives() {
   const out: Record<string, unknown>[] = [];
   for (const c of cases) {
     const { events: emitted } = await probe.call(
-      c.legacyName ? 'publishLegacyName' : 'publishRaw',
+      c.legacyName ? 'publishLegacyName' : c.preMipName ? 'publishPreMipName' : 'publishRaw',
       pad(32, 'umbra:probe'),
       BigInt(c.kind),
       c.key,
@@ -834,10 +1007,10 @@ const negatives = await runNegatives();
 
 mkdirSync(OUT, { recursive: true });
 const provenance = {
-  standard: `MIP PR #315, mips/mip-xxxx-on-chain-token-metadata.md @ f433056; event name "${EVENT_NAME}" (the pre-MIP "${LEGACY_EVENT_NAME}" is ignored, MIP section 1)`,
+  standard: `MIP-0018 (MIP PR #325), mips/mip-0018-on-chain-token-metadata.md @ 37a3471; event name "${EVENT_NAME}". A v1 consumer IGNORES every other name, including this repository's pre-MIP "${LEGACY_EVENT_NAME}" and the #315 draft placeholder "${PRE_MIP_EVENT_NAME}" that the Stagenet reference set in fixtures/stagenet/ was deployed with (MIP sections 1 and 8).`,
   source: 'Compact simulator (@midnight-ntwrk/compact-runtime 0.19.0), compactc 0.34.0',
   producedBy: 'scripts/export-simulator-fixtures.ts',
-  note: 'Real compiled-contract output, executed in process. Contract addresses are sha256("umbra:00020:<row id>") so everything here is reproducible; there are no block heights, transaction hashes or indexer event ids, and `eventId` is simply the emission order across the whole corpus. Token rows are keyed by the MIP\'s identity `(contractAddress, domainSep, kind 0..3)`; `privacy` and `storage` are derived from the kind byte and `status` is one of observed | declared | described (MIP section 7.2).',
+  note: 'Real compiled-contract output, executed in process. Contract addresses are sha256("umbra:00020:<row id>") so everything here is reproducible; there are no block heights, transaction hashes or indexer event ids, and `eventId` is simply the emission order across the whole corpus. Token rows are keyed by the MIP\'s identity `(contractAddress, domainSep, kind 0..3)`; `privacy` and `storage` are derived from the kind byte and `status` is one of observed | declared | described (MIP section 7.2). val-type 2 values are the little-endian Compact serialization of `Uint<8*val-len>` (MIP section 2.1), and `decimals` is emitted as `Uint<128>`, i.e. val-len 16. A val-type 5 (Null) event sets the key\'s CURRENT value to Null without erasing history: in expected-tokens.json the projected column it fed is absent and a non-projected key appears in `traits` with `valType: 5` — a consumer may instead delete the row.',
 };
 const write = (file: string, body: unknown) =>
   writeFileSync(join(OUT, file), `${JSON.stringify({ ...provenance, ...(body as object) }, null, 2)}\n`);

@@ -8,10 +8,12 @@
 //
 // It is also the source of the negative corpus: every field is a parameter, so
 // the probe can emit payloads a conforming consumer MUST reject (a reserved
-// val-type, a val-len above 189, an empty key, an unknown kind byte) and the
-// one event a consumer MUST ignore rather than reject — a `Misc` event under
-// the pre-MIP name `TokenMetadata` (MIP section 1: "Any other event MUST be
-// ignored").
+// val-type, a val-len above 189, an empty key, an unknown kind byte, a JSON
+// fragment, a Null with a non-zero val-len, a `/metadata/` key that is not an
+// RFC 6901 pointer) and the events a consumer MUST ignore rather than reject —
+// a `Misc` event under the pre-MIP name `TokenMetadata`, and one under the
+// `mip-xxxx:token-metadata[v1]` placeholder name the Stagenet reference set was
+// deployed with (MIP section 1: any other name MUST be ignored).
 
 pragma language_version >= 0.26.0;
 
@@ -79,7 +81,7 @@ export circuit publishFixture(): [] {
  * @description Emits a well-formed MIP payload under the PRE-MIP event name
  * `TokenMetadata` (what this repository's 00020 contracts emitted). A MIP
  * consumer must IGNORE it — not store it, not reject it — because the name is
- * not `mip-xxxx:token-metadata[v1]` (MIP section 1). The name is written here
+ * not `mip-0018:token-metadata[v1]` (MIP section 1). The name is written here
  * rather than taken from the module on purpose: the module has exactly one
  * event name and it is the current one.
  */
@@ -94,6 +96,33 @@ export circuit publishLegacyName(
   _calls.increment(1);
   emit(Misc {
     name: pad(32, "TokenMetadata"),
+    payload: Bytes[...disclose(domainSep), disclose(kind), ...disclose(key),
+                   disclose(valType), disclose(valLen), ...disclose(value)]
+  });
+}
+
+/**
+ * @description Emits a payload under `mip-xxxx:token-metadata[v1]`, the
+ * PLACEHOLDER name of the #315 draft, which is the name this repository's
+ * Stagenet reference set was actually deployed with (commit `1721636`, blocks
+ * 508 432 – 508 599). The event name is the layout version (MIP section 8), so
+ * a conforming MIP-0018 v1 consumer IGNORES these too — a consumer that also
+ * wants to display the legacy deployment must recognise the second name
+ * explicitly and validate it under the draft's rules. This circuit exists so
+ * that case is real compiled-contract output in the corpus rather than a
+ * hand-built payload.
+ */
+export circuit publishPreMipName(
+  domainSep: Bytes<32>,
+  kind: Uint<8>,
+  key: Bytes<32>,
+  valType: Uint<8>,
+  valLen: Uint<8>,
+  value: Bytes<189>
+): [] {
+  _calls.increment(1);
+  emit(Misc {
+    name: pad(32, "mip-xxxx:token-metadata[v1]"),
     payload: Bytes[...disclose(domainSep), disclose(kind), ...disclose(key),
                    disclose(valType), disclose(valLen), ...disclose(value)]
   });

@@ -27,6 +27,13 @@ export type ImpureCircuits<PS> = {
                     valType_0: bigint,
                     valLen_0: bigint,
                     value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  publishPreMipName(context: __compactRuntime.CircuitContext<PS>,
+                    domainSep_0: Uint8Array,
+                    kind_0: bigint,
+                    key_0: Uint8Array,
+                    valType_0: bigint,
+                    valLen_0: bigint,
+                    value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
   calls(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
 }
 
@@ -48,6 +55,13 @@ export type ProvableCircuits<PS> = {
                   decimals__0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishFixture(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishLegacyName(context: __compactRuntime.CircuitContext<PS>,
+                    domainSep_0: Uint8Array,
+                    kind_0: bigint,
+                    key_0: Uint8Array,
+                    valType_0: bigint,
+                    valLen_0: bigint,
+                    value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  publishPreMipName(context: __compactRuntime.CircuitContext<PS>,
                     domainSep_0: Uint8Array,
                     kind_0: bigint,
                     key_0: Uint8Array,
@@ -78,6 +92,13 @@ export type Circuits<PS> = {
                   decimals__0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishFixture(context: __compactRuntime.CircuitContext<PS>): Promise<__compactRuntime.CircuitResults<PS, []>>;
   publishLegacyName(context: __compactRuntime.CircuitContext<PS>,
+                    domainSep_0: Uint8Array,
+                    kind_0: bigint,
+                    key_0: Uint8Array,
+                    valType_0: bigint,
+                    valLen_0: bigint,
+                    value_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+  publishPreMipName(context: __compactRuntime.CircuitContext<PS>,
                     domainSep_0: Uint8Array,
                     kind_0: bigint,
                     key_0: Uint8Array,

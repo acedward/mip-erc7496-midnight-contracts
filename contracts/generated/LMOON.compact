@@ -14,6 +14,7 @@
 //   publishMetadata (3 events)
 //   ledgerMint
 //   publishRename (2 events)
+//   update1 (1 event)
 
 pragma language_version >= 0.26.0;
 
@@ -84,8 +85,8 @@ export circuit publishMetadata(): [] {
   TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "name"), 1, 11, pad(189, "Ledger Moon"));
   // symbol = "LMOON" (val-type 1 string, val-len 5)
   TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "symbol"), 1, 5, pad(189, "LMOON"));
-  // decimals = "8" (val-type 2 integer, val-len 1)
-  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "decimals"), 2, 1, Bytes[0x08, ...pad(188, "")]);
+  // decimals = "8" (val-type 2 integer, val-len 16)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "decimals"), 2, 16, Bytes[0x08, ...pad(188, "")]);
 }
 
 /**
@@ -96,4 +97,12 @@ export circuit publishRename(): [] {
   TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "name"), 1, 21, pad(189, "Ledger Moon (renamed)"));
   // description = "A ledger token that renamed itself in a later block." (val-type 1 string, val-len 52)
   TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "description"), 1, 52, pad(189, "A ledger token that renamed itself in a later block."));
+}
+
+/**
+ * @description setMetadata — 1 TokenMetadata event, every byte a compile-time literal.
+ */
+export circuit update1(): [] {
+  // description = Null — the current value is cleared, the history is not (val-type 5 Null, val-len 0)
+  TM_emitTokenMetadata(pad(32, "umbra:lmoon"), 2, pad(32, "description"), 5, 0, pad(189, ""));
 }

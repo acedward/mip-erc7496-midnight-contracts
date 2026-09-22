@@ -185,6 +185,60 @@
       }
     },
     {
+      "name": "publishPreMipName",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "domainSep",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "kind",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "key",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "valType",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "valLen",
+          "type": {
+            "type-name": "Uint",
+            "maxval": 255
+          }
+        },
+        {
+          "name": "value",
+          "type": {
+            "type-name": "Bytes",
+            "length": 189
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
       "name": "calls",
       "pure": false,
       "proof": true,
