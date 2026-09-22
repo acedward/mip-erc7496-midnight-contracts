@@ -133,8 +133,26 @@ interface DecodedPayload {
   valueText: string | null;
 }
 
-/** The MIP's event name, `pad(32, "mip-xxxx:token-metadata[v1]")` (MIP section 1). */
-const EVENT_NAME = 'mip-xxxx:token-metadata[v1]';
+/**
+ * The MIP's event name, `pad(32, "mip-0018:token-metadata[v1]")` (MIP section 1).
+ *
+ * The name is the layout version (section 8), and the Stagenet reference set in
+ * `fixtures/stagenet/` was deployed under the #315 draft's placeholder
+ * `mip-xxxx:token-metadata[v1]` and never redeployed — so re-recording THAT
+ * deployment needs the override below. A fresh deployment of the current
+ * sources needs nothing.
+ */
+const EVENT_NAME = process.env.TOKEN_METADATA_EVENT_NAME ?? 'mip-0018:token-metadata[v1]';
+/** The placeholder the Stagenet reference set emits; pass it in the variable above. */
+const PRE_MIP_EVENT_NAME = 'mip-xxxx:token-metadata[v1]';
+log('event-name', {
+  filteringOn: EVENT_NAME,
+  legacy: EVENT_NAME === PRE_MIP_EVENT_NAME,
+  note:
+    EVENT_NAME === PRE_MIP_EVENT_NAME
+      ? 're-recording the pre-final #315 deployment; a MIP-0018 v1 consumer ignores these events'
+      : 'MIP-0018 v1',
+});
 /** The value field is 189 bytes wide (MIP section 2). */
 const MAX_VALUE_LEN = 189;
 
@@ -369,7 +387,15 @@ for (const matrixRow of matrix.rows) {
     // Appendix A's core keys are projected only when they carry the type it gives them.
     if (decoded.keyText === 'name' && decoded.valType === 1) token.name = decoded.valueText;
     else if (decoded.keyText === 'symbol' && decoded.valType === 1) token.symbol = decoded.valueText;
-    else if (decoded.keyText === 'decimals' && decoded.valType === 2) token.decimals = valueBytes[0] ?? null;
+    else if (decoded.keyText === 'decimals' && decoded.valType === 2) {
+      // MIP section 2.1: a val-type 2 value is `Uint<8 * val-len>` serialized
+      // LITTLE-ENDIAN, any width 1..31 — `Uint<128>` (val-len 16) is only the
+      // emitter default. Reading byte 0 alone happens to be right for a small
+      // number but is wrong the moment a value needs two bytes.
+      let decimals = 0n;
+      for (let i = valueBytes.length - 1; i >= 0; i -= 1) decimals = (decimals << 8n) | BigInt(valueBytes[i]!);
+      token.decimals = decimals <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(decimals) : null;
+    }
     else if (decoded.keyText) {
       token.traits[decoded.keyText] = {
         valType: decoded.valType,
