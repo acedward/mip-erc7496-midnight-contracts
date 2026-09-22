@@ -2,7 +2,7 @@
 
 This is a measured comparison of five equivalent **historical pre-MIP** token-metadata circuits pinned to contract revision `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6`. It targets the byte-heavy paths in that revision's `MetadataProbe` and uses generated `SSTAR.publishMetadata` as its deployed fixed-literal control. The matching addresses and transactions are preserved in the [pinned Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/8eda51c0448c77bb1e1326f738f8ebc6c83f4eaf/stagenet-token-metadata-deployments.md).
 
-These fixtures emit `TokenMetadata` with the earlier five-field payload and use `Bytes<16>` symbols. They do not measure the current MIP implementation, which emits `mip-xxxx:token-metadata[v1]`, adds normative value-type semantics, and uses `Bytes<32>` symbols for the standard fields.
+These fixtures emit `TokenMetadata` with the earlier five-field payload and use `Bytes<16>` symbols. They do not measure the current MIP implementation, which emits `mip-0018:token-metadata[v1]`, adds normative value-type semantics, and uses `Bytes<32>` symbols for the standard fields.
 
 The follow-up [metadata-shape measurements](token-metadata-shapes.md) cover a user-requested typed format, a ledger-backed publisher, and independent one/two/three-event runtime scaling.
 

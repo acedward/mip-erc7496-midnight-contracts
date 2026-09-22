@@ -18,7 +18,7 @@ The source is intentionally divided by wire-format status:
 Both suites emit the legacy NUL-padded name `TokenMetadata` and use
 `Bytes<16>` symbols. The typed examples happen to share the current MIP's
 189-byte value width, but they do not use the current event name
-`mip-xxxx:token-metadata[v1]`, its normative tag rules, or its `Bytes<32>`
+`mip-0018:token-metadata[v1]`, its normative tag rules, or its `Bytes<32>`
 standard-field symbol. They are not measurements of the current MIP contracts
 or deployments.
 

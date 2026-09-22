@@ -2,7 +2,7 @@
 
 This report measures five MinoCrab-v3 artifacts that answer four token-metadata design questions. The format is a benchmark-local, user-requested typed variant built from historical contracts pinned at `71c5b0b5fc0503187df5fb7bb67687b3a5c55ef6`. It was not deployed to Stagenet. Historical deployments for the separate five-field fixtures remain in the [pinned Effectstream deployment record](https://github.com/effectstream/staging-tokens-addresses/blob/8eda51c0448c77bb1e1326f738f8ebc6c83f4eaf/stagenet-token-metadata-deployments.md).
 
-The typed payload happens to use the current MIP's 189-byte value width, but the fixture still emits the legacy name `TokenMetadata`, uses benchmark-local value-type tags, and retains the historical `Bytes<16>` symbol shape. It is not equivalent to, and does not measure, the current `mip-xxxx:token-metadata[v1]` contracts, whose standard fields use `Bytes<32>` symbols.
+The typed payload happens to use the current MIP's 189-byte value width, but the fixture still emits the legacy name `TokenMetadata`, uses benchmark-local value-type tags, and retains the historical `Bytes<16>` symbol shape. It is not equivalent to, and does not measure, the current `mip-0018:token-metadata[v1]` contracts, whose standard fields use `Bytes<32>` symbols.
 
 ## Results
 
